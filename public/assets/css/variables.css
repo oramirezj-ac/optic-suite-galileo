@@ -1,0 +1,24 @@
+/* ==========================================================================
+   1. Variables de Diseño (Colores, Tipografía, etc.)
+   ========================================================================== */
+
+:root {
+    /* Paleta de Colores */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #e2e8f0;
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: #334155;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --accent-color: #3b82f6;
+    --border-color: #e2e8f0;
+
+    /* Tipografía */
+    --font-main: 'Inter', sans-serif;
+
+    /* Otros */
+    --header-height: 60px;
+    --sidebar-width: 260px;
+}

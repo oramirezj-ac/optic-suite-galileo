@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Archivo Principal de Estilos - Optic Suite Galileo
+   ========================================================================== */
+
+/*
+ * Importamos las variables y componentes primero para que estén
+ * disponibles para el resto de los estilos.
+ */
+@import 'variables.css';
+@import 'components/buttons.css';
+
+
+/* ==========================================================================
+   1. Estilos Globales y Reseteo
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+    color: var(--accent-color);
+}
+
+
+/* ==========================================================================
+   2. Estructura del Layout (Grid)
+   ========================================================================== */
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: var(--header-height) 1fr auto;
+    grid-template-areas:
+        "sidebar header"
+        "sidebar main"
+        "sidebar footer";
+    height: 100vh;
+}
+
+
+/* ==========================================================================
+   3. Estilos de Componentes del Layout
+   ========================================================================== */
+
+/* --- Header --- */
+.header {
+    grid-area: header;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+
+.header-search input {
+    width: 300px;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-family: var(--font-main);
+}
+
+.header-user-profile {
+    font-weight: 500;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    grid-area: sidebar;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--sidebar-text-hover);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    color: var(--sidebar-text);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-nav li a:hover {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-text-hover);
+}
+
+.sidebar-nav li a.active {
+    background-color: var(--accent-color);
+    color: var(--sidebar-text-hover);
+    font-weight: 500;
+}
+
+/* --- Main Content --- */
+.main-content {
+    grid-area: main;
+    padding: 2rem;
+    overflow-y: auto; /* Solo esta área tendrá scroll */
+}
+
+.main-content h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Footer --- */
+.footer {
+    grid-area: footer;
+    background-color: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
