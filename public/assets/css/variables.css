@@ -3,20 +3,35 @@
    ========================================================================== */
 
 :root {
-    /* Paleta de Colores */
+    /* Paleta de Colores Refinada */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8f9fa;
-    --sidebar-bg: #1e293b;
-    --sidebar-text: #e2e8f0;
-    --sidebar-text-hover: #ffffff;
-    --sidebar-active-bg: #334155;
-    --text-primary: #1e293b;
+    --bg-secondary: #f1f5f9; /* Un gris más suave */
+    --sidebar-bg: #334155; /* Tono grafito, menos oscuro */
+    --sidebar-text: #94a3b8; /* Texto gris claro para contraste */
+    --sidebar-text-hover: #f1f5f9; /* Texto casi blanco al pasar el mouse */
+    --sidebar-active-bg: #475569; /* Un tono ligeramente más claro para el hover/activo */
+    --text-primary: #0f172a; /* Texto principal oscuro */
     --text-secondary: #64748b;
-    --accent-color: #3b82f6;
+    --accent-color: #38bdf8; /* Un azul cian más vibrante */
+    --accent-color-darker: #0ea5e9;
     --border-color: #e2e8f0;
+
+    /* Colores para Botones Específicos */
+    --btn-primary-bg: #38bdf8;             /* Mismo color que --accent-color */
+    --btn-primary-hover-bg: #0ea5e9;       /* Mismo color que --accent-color-darker */
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: #e2e8f0;
+    --btn-secondary-hover-bg: #cbd5e1;
+    --btn-secondary-text: #475569;
+    --btn-success-bg: #22c55e;
+    --btn-success-hover-bg: #16a34a;
+    --btn-danger-bg: #ef4444;
+    --btn-danger-hover-bg: #dc2626;
+    
 
     /* Tipografía */
     --font-main: 'Inter', sans-serif;
+    --font-size-base: 17px; /* Aumentamos el tamaño base */
 
     /* Otros */
     --header-height: 60px;

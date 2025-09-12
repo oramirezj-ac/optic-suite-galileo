@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Componente: Formularios
+   ========================================================================== */
+
+/* Contenedores y Layout */
+.form-row {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+#domicilio-group { flex-grow: 3; }
+#telefono-group { flex-grow: 2; }
+#edad-group { flex-grow: 1; }
+
+/* Elementos de Formulario */
+.form-group,
+.form-group-checkbox,
+.form-actions {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-main);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 5rem;
+}
+
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-actions {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+    margin-top: 1rem;
+}

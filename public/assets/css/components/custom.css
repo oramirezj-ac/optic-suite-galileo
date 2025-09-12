@@ -39,3 +39,129 @@ thead th {
 }
 .badge-success { background-color: #dcfce7; color: #166534; }
 .badge-danger { background-color: #fee2e2; color: #991b1b; }
+
+/* ==========================================================================
+   Componente: Formularios
+   ========================================================================== */
+
+/*
+ * Contenedores para cada elemento del formulario (label, input, etc.)
+ * y para la sección de botones de acción.
+ */
+.form-group,
+.form-group-checkbox,
+.form-actions {
+    margin-bottom: 1.5rem;
+}
+
+/* Estilo para las etiquetas de los campos */
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Estilo general para campos de texto, email, password y selectores */
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-main);
+}
+
+/* Contenedor para checkboxes para alinearlos con su etiqueta */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Contenedor para los botones de envío, con una línea de separación superior */
+.form-actions {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* ==========================================================================
+    Componente: Acciones y Alertas
+    ========================================================================== */
+.actions-cell { display: flex; gap: 0.5rem; }
+.alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px; border: 1px solid transparent; }
+.alert-success { background-color: #dcfce7; color: #166534; border-color: #a7f3d0; }
+.alert-danger { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
+
+/* Componente: Barra de Búsqueda */
+.card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+.search-bar {
+    display: flex;
+    gap: 0.5rem;
+}
+.search-bar input {
+    flex-grow: 1;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* ==========================================================================
+   Componente: Vistas Dinámicas (Pestañas)
+   ========================================================================== */
+.view-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.view-actions .btn.active {
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-bg);
+}
+
+.view-panel {
+    display: none; /* Ocultamos todas las pestañas por defecto */
+}
+.view-panel.active {
+    display: block; /* Mostramos solo la que tenga la clase 'active' */
+}
+
+/* ==========================================================================
+   Layout para Mostrar Datos (Data Grid)
+   ========================================================================== */
+.data-grid {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
+    gap: 1rem; /* Espacio entre los elementos */
+    padding-top: 1rem;
+}
+.data-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.data-item.full { flex-basis: 100%; }
+.data-item.half { flex-basis: calc(50% - 0.5rem); } /* 50% menos la mitad del gap */
+.data-item.quarter { flex-basis: calc(25% - 0.75rem); } /* 25% menos parte del gap */
+
+.data-item strong {
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   Componente: Pie de Tarjeta (Card Footer)
+   ========================================================================== */
+
+.card-footer {
+    display: flex; /* Activa Flexbox para poder alinear el contenido */
+    justify-content: flex-end; /* Alinea los elementos hijos (el botón) al final (derecha) */
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+}

@@ -3,6 +3,8 @@
         <input type="search" placeholder="Buscar paciente...">
     </div>
     <div class="header-user-profile">
-        <span>👤 admin</span>
+        <span>
+            👤 <?= htmlspecialchars($_SESSION['user_fullname']) ?> (<?= htmlspecialchars($_SESSION['user_role']) ?>)
+        </span>
     </div>
 </header>
