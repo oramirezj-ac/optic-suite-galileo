@@ -1,0 +1,208 @@
+<?php
+/* ==========================================================================
+   Modelo para la Gestión de Pacientes (Lógica de Base de Datos)
+   ========================================================================== */
+
+class PatientModel
+{
+    /**
+     * @var PDO La conexión a la base de datos
+     */
+    private $pdo;
+
+    /**
+     * Constructor. Recibe la conexión PDO.
+     * @param PDO $pdo
+     */
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    /**
+     * Obtiene todos los pacientes o busca por término.
+     * @param string $searchTerm
+     * @return array
+     */
+    public function getAll($searchTerm = '')
+    {
+        if (!empty($searchTerm)) {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM pacientes 
+                 WHERE CONCAT(nombre, ' ', apellido_paterno) LIKE ? OR telefono LIKE ? 
+                 ORDER BY apellido_paterno ASC, apellido_materno ASC, nombre ASC"
+            );
+            $stmt->execute(['%' . $searchTerm . '%', '%' . $searchTerm . '%']);
+        } else {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM pacientes 
+                 ORDER BY apellido_paterno ASC, apellido_materno ASC, nombre ASC LIMIT 50"
+            );
+            $stmt->execute();
+        }
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Crea un nuevo paciente.
+     * @param array $data Datos del paciente (nombre, apellido_paterno, etc.)
+     * @return string|false El ID del nuevo paciente si tuvo éxito, False si no.
+     */
+    public function create($data)
+    {
+        try {
+            $sql = "INSERT INTO pacientes (nombre, apellido_paterno, apellido_materno, domicilio, telefono, edad, antecedentes_medicos) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+            
+            $stmt = $this->pdo->prepare($sql);
+            
+            // 1. Ejecutamos la consulta
+            $success = $stmt->execute([
+                $data['nombre'],
+                $data['apellido_paterno'],
+                $data['apellido_materno'],
+                $data['domicilio'],
+                $data['telefono'],
+                $data['edad'],
+                $data['antecedentes']
+            ]);
+
+            // 2. Si tuvo éxito (true)...
+            if ($success) {
+                // 3. ...DEVOLVEMOS EL ÚLTIMO ID INSERTADO (¡esto es lo correcto!)
+                return $this->pdo->lastInsertId();
+            }
+            
+            return false; // Si $success fue false
+
+        } catch (PDOException $e) {
+            // Aquí podríamos loguear el error $e->getMessage()
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza un paciente existente.
+     * @param int $id ID del paciente
+     * @param array $data Datos del paciente (nombre, apellido_paterno, etc.)
+     * @return bool True si tuvo éxito, False si no.
+     */
+    public function update($id, $data)
+    {
+        try {
+            $sql = "UPDATE pacientes SET 
+                        nombre = ?, 
+                        apellido_paterno = ?, 
+                        apellido_materno = ?, 
+                        domicilio = ?, 
+                        telefono = ?, 
+                        edad = ?, 
+                        antecedentes_medicos = ? 
+                    WHERE id = ?";
+            
+            $stmt = $this->pdo->prepare($sql);
+            
+            return $stmt->execute([
+                $data['nombre'],
+                $data['apellido_paterno'],
+                $data['apellido_materno'],
+                $data['domicilio'],
+                $data['telefono'],
+                $data['edad'],
+                $data['antecedentes'],
+                $id
+            ]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un paciente.
+     * @param int $id ID del paciente
+     * @return bool True si tuvo éxito, False si no.
+     */
+    public function delete($id)
+    {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM pacientes WHERE id = ?");
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Obtiene un paciente específico por su ID.
+     * @param int $id
+     * @return array|false
+     */
+    public function getById($id)
+    {
+        $id = (int) $id;
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM pacientes WHERE id = ?");
+            $stmt->execute([$id]);
+            return $stmt->fetch(); // Devuelve un solo array o false si no lo encuentra
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Busca pacientes similares por teléfono o nombre.
+     * Esta es la "puerta de control" para evitar duplicados.
+     *
+     * @param array $data Datos del paciente (telefono, nombre, apellido_paterno)
+     * @return array Una lista de pacientes duplicados encontrados.
+     */
+    public function findSimilar($data)
+    {
+        // Preparamos los datos para que sean seguros
+        $nombre = $data['nombre'] ?? '';
+        $ap_paterno = $data['apellido_paterno'] ?? '';
+        $telefono = $data['telefono'] ?? '';
+        
+        $duplicates = []; // Aquí guardaremos los resultados únicos
+
+        /*
+         * Búsqueda 1: Por Teléfono (Alta Confianza)
+         * Si el teléfono existe y no está vacío, es la coincidencia más fuerte.
+         */
+        if (!empty($telefono)) {
+            $stmt = $this->pdo->prepare("SELECT * FROM pacientes WHERE telefono = ?");
+            $stmt->execute([$telefono]);
+            while ($row = $stmt->fetch()) {
+                // Usamos el ID como clave del array para que no se repitan
+                $duplicates[$row['id']] = $row; 
+            }
+        }
+
+        /*
+         * Búsqueda 2: Por Nombre (Media Confianza)
+         * Para el caso "Dulce" vs "Dulce Paola".
+         * Buscamos por Apellido Paterno Y la primera palabra del Nombre.
+         */
+        if (!empty($nombre) && !empty($ap_paterno)) {
+            
+            // Obtenemos solo la primera palabra del nombre
+            $primer_nombre = explode(' ', $nombre)[0];
+            
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM pacientes WHERE 
+                 apellido_paterno = ? AND 
+                 nombre LIKE ?"
+            );
+            
+            // Buscamos 'Dulce%' para que coincida con "Dulce", "Dulce Paola", "Dulce María", etc.
+            $stmt->execute([$ap_paterno, $primer_nombre . '%']);
+            
+            while ($row = $stmt->fetch()) {
+                $duplicates[$row['id']] = $row; // Añade al array, sobrescribiendo si ya estaba
+            }
+        }
+        
+        // Devolvemos la lista final de duplicados únicos
+        return array_values($duplicates);
+    }
+}

@@ -1,25 +1,21 @@
 <?php
-// Obtenemos el ID del paciente de la URL.
-$patientId = $_GET['id'] ?? null;
-if (!$patientId) {
-    header('Location: /index.php?page=patients');
-    exit();
-}
+// 1. Incluimos el controlador
+require_once __DIR__ . '/../../Controllers/PatientController.php';
 
-// Seleccionamos las columnas de nombre por separado
-$pdo = getConnection();
-$stmt = $pdo->prepare("SELECT nombre, apellido_paterno, apellido_materno FROM pacientes WHERE id = ?");
-$stmt->execute([$patientId]);
-$patient = $stmt->fetch();
+// 2. Le decimos al controlador qué acción ejecutar
+$_GET['action'] = 'details'; // Usamos 'details' para buscar al paciente
 
+// 3. Llamamos al controlador
+$patient = handlePatientAction();
+
+// 4. Verificamos si el paciente existe
 if (!$patient) {
-    header('Location: /index.php?page=patients');
+    header('Location: /index.php?page=patients&error=not_found');
     exit();
 }
 
-// CORRECCIÓN: Construimos el nombre completo de forma segura
-// Usamos array_filter para eliminar partes del nombre que puedan estar vacías (null)
-// y luego implode para unirlas con un espacio.
+// 5. El resto del código funciona igual
+$patientId = $patient['id'];
 $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
 ?>
 

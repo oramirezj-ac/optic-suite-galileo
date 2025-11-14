@@ -4,7 +4,9 @@
 
 @import 'variables.css';
 @import 'components/buttons.css';
+@import 'components/custom.css';
 @import 'components/forms.css';
+@import 'components/graduaciones.css';
 
 /* ==========================================================================
    1. Estilos Globales y Reseteo

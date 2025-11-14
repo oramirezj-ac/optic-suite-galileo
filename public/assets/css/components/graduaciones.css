@@ -1,0 +1,118 @@
+/* ==========================================================================
+   Componente: Fórmulas de Graduación
+   ========================================================================== */
+
+/* --- 1. ESTRUCTURA BASE (Común para todos los tamaños) --- */
+.graduacion-formula {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem; /* Espacio entre elementos */
+    margin-bottom: 0.25rem; /* Espacio entre OD y OI */
+}
+
+/* La etiqueta del ojo (OD/OI) */
+.graduacion-formula .graduacion-ojo-label {
+    font-weight: bold;
+    color: var(--color-texto-secundario, #333);
+    min-width: 25px; /* Alineación */
+}
+
+/* Los símbolos (=, x, °) */
+.graduacion-formula .simbolo {
+    font-weight: bold;
+    color: var(--color-texto-terciario, #777);
+}
+
+/* La caja para el valor (Esf, Cil, Eje, Add) */
+.graduacion-formula .valor {
+    display: inline-block;
+    border: 1px solid var(--color-borde, #ccc);
+    background: var(--color-fondo-tarjeta, #fff);
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box; /* Importante para inputs */
+}
+
+/* Estilo especial para la Adición (Add) */
+.graduacion-formula .valor-add {
+    border-color: var(--color-primario-suave, #a9c5e8);
+    background: var(--color-fondo-suave, #f4f8fc);
+}
+
+
+/* --- 2. MODIFICADOR DE TAMAÑO: DISPLAY (Mediano, para listas) --- */
+.graduacion-display .graduacion-ojo-label {
+    font-size: 1.1em;
+}
+
+.graduacion-display .valor {
+    font-size: 0.95em;
+    padding: 0.3rem 0.4rem;
+    min-width: 45px;
+}
+
+/* --- 3. MODIFICADOR DE TAMAÑO: CAPTURE (Grande, para formularios) --- */
+.graduacion-capture-form .graduacion-ojo-label {
+    font-size: 1.5rem;
+    text-align: right;
+    min-width: 60px;
+    padding-right: 1rem;
+}
+
+.graduacion-capture-form .graduacion-formula {
+    gap: 0.8rem; /* Más espacio en el formulario */
+}
+
+.graduacion-capture-form .valor {
+    font-size: 1.1rem;
+    padding: 0.6rem 0.5rem;
+    width: 100%;
+    max-width: 95px; /* Ancho de las cajas de input */
+}
+
+/* Estos son los estilos para graduaciones */
+.lista-graduaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.graduacion-fila {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-fondo, #f9f9f9);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-borde, #eee);
+}
+.graduacion-columna-tipo { 
+    flex-basis: 200px; 
+    flex-shrink: 0; 
+    font-size: 1.1rem; 
+    padding-right: 1rem;
+    font-weight: bold;
+}
+.graduacion-columna-formulas { 
+    flex-grow: 1; 
+}
+.graduacion-columna-acciones { 
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 0.5rem; 
+    flex-basis: 150px; 
+}
+.badge-final {
+    font-size: 0.7em;
+    background-color: var(--color-exito, #28a745);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    margin-left: 0.5rem;
+}
+
+/* Estilos para el formulario de captura */
+.graduacion-capture-form {
+    display: grid;
+    grid-template-columns: auto 1fr; /* 2 columnas: etiqueta y cajas */
+    gap: 1.2rem;
+    align-items: center;
+}

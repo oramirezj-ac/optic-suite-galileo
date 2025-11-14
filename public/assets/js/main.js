@@ -29,4 +29,38 @@ function initializeDetailViewTabs() {
 }
 
 // Ejecutamos nuestra función cuando el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', initializeDetailViewTabs);
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDetailViewTabs();
+    // La función initializeNoteCaptureForm() se ha eliminado correctamente.
+});
+
+/* ==========================================================================
+   Activador de Pestañas (Tabs) desde la URL
+   ========================================================================== */
+
+/**
+ * Revisa si la URL contiene un parámetro 'tab' y activa la pestaña
+ * correspondiente en cualquier página que use el sistema de [data-view].
+ */
+function activateTabFromURL() {
+    // 1. Lee los parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 2. Busca el parámetro 'tab'
+    const tabToActivate = urlParams.get('tab');
+
+    if (tabToActivate) {
+        // 3. Busca el botón que tiene ese 'data-view'
+        const tabButton = document.querySelector(`.card-header .btn[data-view="${tabToActivate}"]`);
+
+        // 4. Si encontramos el botón, le damos clic
+        if (tabButton) {
+            // Asumimos que ya tienes un JS que maneja el clic
+            // de las pestañas. Esto lo simula.
+            tabButton.click();
+        }
+    }
+}
+
+// Ejecuta nuestra nueva función solo cuando la página haya cargado
+document.addEventListener('DOMContentLoaded', activateTabFromURL);

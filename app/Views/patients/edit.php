@@ -1,21 +1,19 @@
 <?php
-// Obtenemos el ID del paciente de la URL. Si no existe, es un error.
-$patientId = $_GET['id'] ?? null;
-if (!$patientId) {
-    header('Location: /index.php?page=patients');
-    exit();
-}
+/*
+ * NOTA DE REFACTORIZACIÓN:
+ * Este archivo (edit.php) ahora es "tonto".
+ * Se espera que la vista que lo incluye (ej. details.php)
+ * ya haya cargado al paciente en una variable llamada $patient.
+ * Ya no hace su propia consulta a la BD.
+ */
 
-// Buscamos los datos del paciente en la base de datos para rellenar el formulario.
-$pdo = getConnection();
-$stmt = $pdo->prepare("SELECT * FROM pacientes WHERE id = ?");
-$stmt->execute([$patientId]);
-$patient = $stmt->fetch();
-
-// Si no se encuentra un paciente con ese ID, volvemos a la lista.
-if (!$patient) {
-    header('Location: /index.php?page=patients');
-    exit();
+// Si $patient no existe (porque se intentó cargar este archivo directamente)
+if (!isset($patient) || !$patient) {
+     // Mostramos un error en lugar de cargar un formulario vacío
+     echo "<p class='alert alert-danger'>Error: No se pudieron cargar los datos del paciente para editar.</p>";
+     
+     // Detenemos la ejecución de este include para no mostrar un formulario roto
+     return; 
 }
 ?>
 

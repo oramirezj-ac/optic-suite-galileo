@@ -1,101 +1,205 @@
 <?php
 /* ==========================================================================
-   Controlador para la Gestión de Pacientes (CRUD)
+   Controlador para la Gestión de Pacientes (Lógica de Aplicación)
    ========================================================================== */
-
+require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../Models/PatientModel.php';
 
+// VOLVEMOS A LA FUNCIÓN ORIGINAL (SIN PARÁMETROS)
 function handlePatientAction()
 {
+    // El 'action' vendrá SIEMPRE de la URL
     $action = $_GET['action'] ?? 'list';
+    
+    $pdo = getConnection();
+    $patientModel = new PatientModel($pdo);
 
     switch ($action) {
         case 'store':
-            // ... (Lógica de 'store' sin cambios) ...
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                // 1. Validamos y preparamos los datos (como antes)
                 $nombre = !empty($_POST['nombre']) ? $_POST['nombre'] : null;
-                $apellido_paterno = !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null;
-                $apellido_materno = !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null;
-                $domicilio = !empty($_POST['domicilio']) ? $_POST['domicilio'] : null;
-                $telefono = !empty($_POST['telefono']) ? $_POST['telefono'] : null;
-                $edad = !empty($_POST['edad']) ? $_POST['edad'] : null;
-                $antecedentes = !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : '';
-                if ($nombre === null) { header('Location: /index.php?page=patients_create&error=' . urlencode('El campo Nombre es obligatorio.')); exit(); }
-                try {
-                    $pdo = getConnection();
-                    $stmt = $pdo->prepare("INSERT INTO pacientes (nombre, apellido_paterno, apellido_materno, domicilio, telefono, edad, antecedentes_medicos) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$nombre, $apellido_paterno, $apellido_materno, $domicilio, $telefono, $edad, $antecedentes]);
-                    header('Location: /index.php?page=patients&success=created');
+                if ($nombre === null) {
+                    header('Location: /index.php?page=patients_create&error=' . urlencode('El campo Nombre es obligatorio.'));
                     exit();
-                } catch (PDOException $e) { /* ... */ }
+                }
+
+                $data = [
+                    'nombre' => $nombre,
+                    'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
+                    'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
+                    'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
+                    'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
+                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
+                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                ];
+
+                // --- INICIO DE LA NUEVA LÓGICA DE CONTROL ---
+                
+                // 2. Llamamos a nuestra nueva función del Modelo
+                $duplicates = $patientModel->findSimilar($data);
+
+                // 3. Decidimos qué hacer
+                if (!empty($duplicates)) {
+                    // ¡DUPLICADOS ENCONTRADOS!
+                    
+                    // Guardamos los datos del NUEVO paciente en la sesión
+                    // para que la siguiente página pueda usarlos.
+                    $_SESSION['new_patient_data'] = $data; 
+                    
+                    // Redirigimos a la nueva página de revisión (que aún no existe)
+                    header('Location: /index.php?page=patients_review');
+                    exit();
+
+                } else {
+                    // NO HAY DUPLICADOS. Creamos al paciente (flujo normal)
+                    
+                    $newPatientId = $patientModel->create($data);
+                
+                    if ($newPatientId) {
+                        header('Location: /index.php?page=patients_details&id=' . $newPatientId . '&success=created');
+                    } else {
+                        header('Location: /index.php?page=patients_create&error=' . urlencode('Error al crear el paciente.'));
+                    }
+                    exit();
+                }
+                // --- FIN DE LA NUEVA LÓGICA DE CONTROL ---
             }
-            break;
+            break; // Fin de 'case store'
 
         case 'update':
-            // NUEVA LÓGICA PARA ACTUALIZAR
+            // ... (Esta lógica ya funcionaba, la dejamos como estaba)
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id = $_POST['id'] ?? null;
                 $nombre = !empty($_POST['nombre']) ? $_POST['nombre'] : null;
-                $apellido_paterno = !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null;
-                $apellido_materno = !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null;
-                $domicilio = !empty($_POST['domicilio']) ? $_POST['domicilio'] : null;
-                $telefono = !empty($_POST['telefono']) ? $_POST['telefono'] : null;
-                $edad = !empty($_POST['edad']) ? $_POST['edad'] : null;
-                $antecedentes = !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : '';
 
                 if ($id === null || $nombre === null) {
                     header('Location: /index.php?page=patients&error=invalid_data');
                     exit();
                 }
+                
+                $data = [
+                    'nombre' => $nombre,
+                    'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
+                    'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
+                    'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
+                    'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
+                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
+                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                ];
 
-                try {
-                    $pdo = getConnection();
-                    $stmt = $pdo->prepare(
-                        "UPDATE pacientes SET nombre = ?, apellido_paterno = ?, apellido_materno = ?, domicilio = ?, telefono = ?, edad = ?, antecedentes_medicos = ? 
-                         WHERE id = ?"
-                    );
-                    $stmt->execute([$nombre, $apellido_paterno, $apellido_materno, $domicilio, $telefono, $edad, $antecedentes, $id]);
-
+                if ($patientModel->update($id, $data)) {
                     header('Location: /index.php?page=patients&success=updated');
-                    exit();
-                } catch (PDOException $e) {
-                    $error_message = "Error al actualizar al paciente: " . $e->getMessage();
+                } else {
+                    $error_message = "Error al actualizar al paciente.";
                     header('Location: /index.php?page=patients_edit&id=' . $id . '&error=' . urlencode($error_message));
-                    exit();
                 }
+                exit();
             }
             break;
 
         case 'delete':
+            // ... (Esta lógica ya funcionaba)
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id = $_POST['id'] ?? null;
-                if (!$id) { header('Location: /index.php?page=patients&error=invalid_id'); exit(); }
-
-                try {
-                    $pdo = getConnection();
-                    // Esta es la consulta de borrado permanente
-                    $stmt = $pdo->prepare("DELETE FROM pacientes WHERE id = ?");
-                    $stmt->execute([$id]);
-                    header('Location: /index.php?page=patients&success=deleted');
-                    exit();
-                } catch (PDOException $e) {
-                    header('Location: /index.php?page=patients&error=delete_failed');
+                if (!$id) {
+                    header('Location: /index.php?page=patients&error=invalid_id');
                     exit();
                 }
+                
+                if ($patientModel->delete($id)) {
+                    header('Location: /index.php?page=patients&success=deleted');
+                } else {
+                    header('Location: /index.php?page=patients&error=delete_failed');
+                }
+                exit();
             }
             break;
         
-        default:
-            // ... (Lógica de búsqueda/listado sin cambios) ...
-            $pdo = getConnection();
-            $searchTerm = $_GET['search'] ?? '';
-            if (!empty($searchTerm)) {
-                $stmt = $pdo->prepare("SELECT * FROM pacientes WHERE CONCAT(nombre, ' ', apellido_paterno) LIKE ? OR telefono LIKE ? ORDER BY apellido_paterno ASC, apellido_materno ASC, nombre ASC");
-                $stmt->execute(['%' . $searchTerm . '%', '%' . $searchTerm . '%']);
-            } else {
-                $stmt = $pdo->prepare("SELECT * FROM pacientes ORDER BY apellido_paterno ASC, apellido_materno ASC, nombre ASC LIMIT 50");
-                $stmt->execute();
+        // ESTE ES EL CAMBIO IMPORTANTE
+        case 'details':
+            // El controlador leerá el 'id' directamente de la URL
+            $id = $_GET['id'] ?? null;
+            if (!$id) { 
+                return false; 
             }
-            return $stmt->fetchAll();
+            return $patientModel->getById($id);
+        
+        /* ==========================================================
+           CASO: FORZAR CREACIÓN (Botón "Crear paciente nuevo")
+           ========================================================== */
+        case 'force_create':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                
+                // 1. Obtenemos los datos del formulario (de los campos ocultos)
+                $data = [
+                    'nombre' => !empty($_POST['nombre']) ? $_POST['nombre'] : null,
+                    'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
+                    'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
+                    'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
+                    'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
+                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
+                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                ];
+
+                // 2. Creamos el paciente
+                $newPatientId = $patientModel->create($data);
+                
+                // 3. (MUY IMPORTANTE) Limpiamos la sesión
+                unset($_SESSION['new_patient_data']);
+
+                if ($newPatientId) {
+                    header('Location: /index.php?page=patients_details&id=' . $newPatientId . '&success=created_forced');
+                } else {
+                    header('Location: /index.php?page=patients_create&error=' . urlencode('Error al forzar la creación.'));
+                }
+                exit();
+            }
+            break;
+
+        /* ==========================================================
+           CASO: FORZAR ACTUALIZACIÓN (Botón "Actualizar Paciente")
+           ========================================================== */
+        case 'force_update':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                
+                // 1. Obtenemos el ID del paciente EXISTENTE a actualizar
+                $id = $_POST['id'] ?? null;
+                if (!$id) {
+                    header('Location: /index.php?page=patients&error=invalid_id');
+                    exit();
+                }
+
+                // 2. Obtenemos los datos NUEVOS del formulario
+                $data = [
+                    'nombre' => !empty($_POST['nombre']) ? $_POST['nombre'] : null,
+                    'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
+                    'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
+                    'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
+                    'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
+                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
+                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                ];
+
+                // 3. Llamamos al modelo para actualizar
+                if ($patientModel->update($id, $data)) {
+                    
+                    // 4. (MUY IMPORTANTE) Limpiamos la sesión
+                    unset($_SESSION['new_patient_data']);
+                    
+                    header('Location: /index.php?page=patients_details&id=' . $id . '&success=updated_from_review');
+                } else {
+                    $error_message = "Error al actualizar el paciente.";
+                    header('Location: /index.php?page=patients_review&error=' . urlencode($error_message));
+                }
+                exit();
+            }
+            break;
+
+        default:
+            // 'list' (default)
+            $searchTerm = $_GET['search'] ?? '';
+            return $patientModel->getAll($searchTerm);
     }
 }

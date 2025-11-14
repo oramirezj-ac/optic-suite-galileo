@@ -9,18 +9,34 @@ if (!isset($_SESSION['user_id'])) {
 require_once '../config/database.php';
 
 $page = $_GET['page'] ?? 'dashboard';
-// CAMBIO: Añadimos la nueva página a la lista de permitidas
-$allowedPages = ['dashboard', 'users', 'users_create', 'users_edit', 'users_delete', 'patients', 'patients_create', 'patients_edit', 'patients_details', 'patients_delete']; 
+// Lista de páginas permitidas en la navegación
+$allowedPages = [
+                    'dashboard', 
+                    'users', 
+                    'users_create', 
+                    'users_edit', 
+                    'users_delete', 
+                    'patients', 
+                    'patients_create', 
+                    'patients_edit', 
+                    'patients_details', 
+                    'patients_delete',
+                    'patients_review',
+                    'consultas_index',
+                    'consultas_create',
+                    'consultas_edit',
+                    'consultas_delete',
+                    'consultas_details',
+                ]; 
 
 if (!in_array($page, $allowedPages)) {
     $page = 'dashboard';
 }
+    if (($page === 'users' || $page === 'users_create' || $page === 'users_edit' || $page === 'users_delete') && $_SESSION['user_role'] !== 'admin') {
+        $page = 'dashboard'; 
+    }
 
-if (($page === 'users' || $page === 'users_create' || $page === 'users_edit' || $page === 'users_delete') && $_SESSION['user_role'] !== 'admin') {
-    $page = 'dashboard'; 
-}
-
-// CAMBIO: Lógica mejorada para encontrar el archivo de la vista
+// Lógica mejorada para encontrar el archivo de la vista
 $viewPath = '';
 if ($page === 'dashboard') {
     $viewPath = "../app/Views/dashboard.php";
@@ -30,8 +46,15 @@ if ($page === 'dashboard') {
 } elseif (strpos($page, 'users') === 0) { // Lógica simplificada para todas las páginas de usuarios
     $viewPath = "../app/Views/users/" . str_replace('users_', '', $page) . ".php";
     if ($page === 'users') $viewPath = "../app/Views/users/index.php";
+} elseif (strpos($page, 'consultas') === 0) {
+    // Si la página empieza con 'consultas_', busca en la carpeta /app/Views/consultas/
+    $viewPath = "../app/Views/consultas/" . str_replace('consultas_', '', $page) . ".php";
+    
+    // Si la página es solo 'consultas' (o 'consultas_index'), usa index.php
+    if ($page === 'consultas' || $page === 'consultas_index') {
+        $viewPath = "../app/Views/consultas/index.php";
+    }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -40,7 +63,6 @@ if ($page === 'dashboard') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= ucfirst(str_replace('_', ' ', $page)) ?> - Optic Suite Galileo</title>
     <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/components/custom.css">
 </head>
 <body>
     

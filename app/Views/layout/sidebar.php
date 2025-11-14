@@ -14,11 +14,6 @@
             </li>
             <li>
                 <a href="#">
-                    <span class="icon">📋</span> Consultas
-                </a>
-            </li>
-            <li>
-                <a href="#">
                     <span class="icon">🛒</span> Ventas
                 </a>
             </li>

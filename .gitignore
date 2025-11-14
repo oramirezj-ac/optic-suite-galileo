@@ -5,3 +5,5 @@
 .phpunit.result.cache
 /logs/*
 !logs/.gitkeep
+# Ignorar archivos de sesión temporales
+sessions/*
