@@ -3,18 +3,17 @@
 require_once __DIR__ . '/../../Controllers/PatientController.php';
 
 // 2. Le decimos al controlador qué acción ejecutar
-$_GET['action'] = 'details'; // Usamos 'details' para buscar al paciente
+$_GET['action'] = 'details';
+$data = handlePatientAction(); // <-- CAMBIO: Recibimos el PAQUETE
 
-// 3. Llamamos al controlador
-$patient = handlePatientAction();
-
-// 4. Verificamos si el paciente existe
-if (!$patient) {
+// 3. Verificamos y DESEMPAQUETAMOS
+if (!$data || !$data['patient']) {
     header('Location: /index.php?page=patients&error=not_found');
     exit();
 }
+$patient = $data['patient']; // <-- CAMBIO: Extraemos el paciente del paquete
 
-// 5. El resto del código funciona igual
+// 4. El resto del código funciona igual
 $patientId = $patient['id'];
 $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
 ?>
@@ -35,7 +34,7 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                 <input type="hidden" name="id" value="<?= $patientId ?>">
                 <div class="form-actions" style="border-top: none; padding-top: 0; display: flex; gap: 1rem;">
                     <button type="submit" class="btn btn-danger">Sí, borrar permanentemente</button>
-                    <a href="/index.php?page=patients" class="btn btn-secondary">Cancelar</a>
+                    <a href="/index.php?page=patients_details&id=<?= $patientId ?>" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>

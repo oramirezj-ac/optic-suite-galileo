@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../Models/PatientModel.php';
+require_once __DIR__ . '/../Models/ConsultaModel.php';
 
 // VOLVEMOS A LA FUNCIÓN ORIGINAL (SIN PARÁMETROS)
 function handlePatientAction()
@@ -14,6 +15,7 @@ function handlePatientAction()
     
     $pdo = getConnection();
     $patientModel = new PatientModel($pdo);
+    $consultaModel = new ConsultaModel($pdo);
 
     switch ($action) {
         case 'store':
@@ -117,14 +119,30 @@ function handlePatientAction()
             }
             break;
         
-        // ESTE ES EL CAMBIO IMPORTANTE
+       
+        // CASO: VER DETALLES DE UN PACIENTE
         case 'details':
-            // El controlador leerá el 'id' directamente de la URL
             $id = $_GET['id'] ?? null;
             if (!$id) { 
                 return false; 
             }
-            return $patientModel->getById($id);
+
+            // 1. Buscamos al paciente
+            $patient = $patientModel->getById($id);
+
+            if (!$patient) {
+                return false;
+            }
+
+            // 2. Buscamos su resumen de consultas
+            $resumenConsultas = $consultaModel->getResumenConsultasPorPaciente($id);
+
+            // 3. Devolvemos AMBOS datos a la vista
+            return [
+                'patient' => $patient,
+                'resumen' => $resumenConsultas
+            ];
+            break;
         
         /* ==========================================================
            CASO: FORZAR CREACIÓN (Botón "Crear paciente nuevo")

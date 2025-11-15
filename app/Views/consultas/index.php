@@ -1,6 +1,7 @@
 <?php
 // 1. Incluimos y ejecutamos el controlador
 require_once __DIR__ . '/../../Controllers/ConsultaController.php';
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 $data = handleConsultaAction(); // Esto nos da ['paciente' => ..., 'consultas' => ...]
 
 // 2. Desempaquetamos los datos
@@ -54,7 +55,7 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     <?php else: ?>
                         <?php foreach ($consultas as $consulta): ?>
                             <tr>
-                                <td><?= htmlspecialchars(date('d/m/Y H:i A', strtotime($consulta['fecha']))) ?></td>
+                                <td><?= FormatHelper::dateFull($consulta['fecha']) ?></td>
                                 
                                 <td>
                                     <div class="graduacion-display">

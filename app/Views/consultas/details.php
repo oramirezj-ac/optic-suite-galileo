@@ -1,6 +1,7 @@
 <?php
 // 1. Incluimos y ejecutamos el controlador
 require_once __DIR__ . '/../../Controllers/ConsultaController.php';
+require_once __DIR__ . '/../../Helpers/FormHelper.php';
 $_GET['action'] = 'details'; // Forzamos la acción 'details'
 $data = handleConsultaAction();
 
@@ -45,15 +46,58 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
             <h3>Graduaciones Registradas</h3>
         </div>
         <div class="card-body">
-            <?php if (empty($graduaciones)): ?>
+
+            <?php
+            // --- INICIO DE LÓGICA DE AGRUPACIÓN ---
+            
+            // 1. Creamos un array vacío para agrupar las graduaciones
+            $graduacionesAgrupadas = [];
+
+            // 2. Iteramos sobre los datos crudos de la BD
+            foreach ($graduaciones as $grad) {
+                $tipo = $grad['tipo'];
+                $ojo = $grad['ojo']; // 'OD' u 'OI'
+
+                // 3. Si es la primera vez que vemos este 'tipo', creamos la entrada
+                if (!isset($graduacionesAgrupadas[$tipo])) {
+                    $graduacionesAgrupadas[$tipo] = [
+                        'tipo_label' => ucfirst($tipo), // 'Final', 'Lensometro', etc.
+                        'es_final' => $grad['es_graduacion_final'],
+                        'OD' => null, // Espacio para OD
+                        'OI' => null  // Espacio para OI
+                    ];
+                }
+
+                // 4. Guardamos los datos del ojo en el lugar correcto
+                if ($ojo === 'OD' || $ojo === 'AO') {
+                    $graduacionesAgrupadas[$tipo]['OD'] = $grad;
+                }
+                if ($ojo === 'OI' || $ojo === 'AO') {
+                    $graduacionesAgrupadas[$tipo]['OI'] = $grad;
+                }
+            }
+            // --- FIN DE LÓGICA DE AGRUPACIÓN ---
+            ?>
+
+
+            <?php if (empty($graduacionesAgrupadas)): ?>
                 <p style="text-align: center;">Aún no hay graduaciones registradas para esta consulta.</p>
             <?php else: ?>
+                
                 <div class="lista-graduaciones">
-                <?php foreach ($graduaciones as $grad): ?>
+                
+                <?php foreach ($graduacionesAgrupadas as $tipo => $grad): ?>
+                    
+                    <?php
+                    // Obtenemos los datos de OD y OI (o un array vacío si no existen)
+                    $od = $grad['OD'] ?? [];
+                    $oi = $grad['OI'] ?? [];
+                    ?>
+
                     <div class="graduacion-fila">
                         <div class="graduacion-columna-tipo">
-                            <strong><?= htmlspecialchars($grad['tipo']) ?></strong>
-                            <?php if($grad['es_graduacion_final']): ?>
+                            <strong><?= htmlspecialchars($grad['tipo_label']) ?></strong>
+                            <?php if($grad['es_final']): ?>
                                 <span class="badge-final">FINAL</span>
                             <?php endif; ?>
                         </div>
@@ -61,23 +105,23 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                         <div class="graduacion-columna-formulas graduacion-display">
                             <div class="graduacion-formula">
                                 <span class="graduacion-ojo-label">OD</span>
-                                <span class="valor"><?= htmlspecialchars($grad['esfera'] ?? '0.00') ?></span>
+                                <span class="valor"><?= htmlspecialchars($od['esfera'] ?? '0.00') ?></span>
                                 <span class="simbolo">=</span>
-                                <span class="valor"><?= htmlspecialchars($grad['cilindro'] ?? '0.00') ?></span>
+                                <span class="valor"><?= htmlspecialchars($od['cilindro'] ?? '0.00') ?></span>
                                 <span class="simbolo">x</span>
-                                <span class="valor"><?= htmlspecialchars($grad['eje'] ?? '0') ?></span>
+                                <span class="valor"><?= htmlspecialchars($od['eje'] ?? '0') ?></span>
                                 <span class="simbolo">°</span>
-                                <span class="valor valor-add"><?= htmlspecialchars($grad['adicion'] ?? '0.00') ?></span>
+                                <span class="valor valor-add"><?= htmlspecialchars($od['adicion'] ?? '0.00') ?></span>
                             </div>
                             <div class="graduacion-formula">
                                 <span class="graduacion-ojo-label">OI</span>
-                                <span class="valor"><?= htmlspecialchars($grad['esfera'] ?? '0.00') ?></span>
+                                <span class="valor"><?= htmlspecialchars($oi['esfera'] ?? '0.00') ?></span>
                                 <span class="simbolo">=</span>
-                                <span class="valor"><?= htmlspecialchars($grad['cilindro'] ?? '0.00') ?></span>
+                                <span class="valor"><?= htmlspecialchars($oi['cilindro'] ?? '0.00') ?></span>
                                 <span class="simbolo">x</span>
-                                <span class="valor"><?= htmlspecialchars($grad['eje'] ?? '0') ?></span>
+                                <span class="valor"><?= htmlspecialchars($oi['eje'] ?? '0') ?></span>
                                 <span class="simbolo">°</span>
-                                <span class="valor valor-add"><?= htmlspecialchars($grad['adicion'] ?? '0.00') ?></span>
+                                <span class="valor valor-add"><?= htmlspecialchars($oi['adicion'] ?? '0.00') ?></span>
                             </div>
                         </div>
 

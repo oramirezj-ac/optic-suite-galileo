@@ -1,25 +1,32 @@
 <?php
-/*
- * NOTA DE REFACTORIZACIÓN:
- * Este archivo (edit.php) ahora es "tonto".
- * Se espera que la vista que lo incluye (ej. details.php)
- * ya haya cargado al paciente en una variable llamada $patient.
- * Ya no hace su propia consulta a la BD.
- */
+// 1. Incluimos el controlador
+require_once __DIR__ . '/../../Controllers/PatientController.php';
 
-// Si $patient no existe (porque se intentó cargar este archivo directamente)
-if (!isset($patient) || !$patient) {
-     // Mostramos un error en lugar de cargar un formulario vacío
-     echo "<p class='alert alert-danger'>Error: No se pudieron cargar los datos del paciente para editar.</p>";
-     
-     // Detenemos la ejecución de este include para no mostrar un formulario roto
-     return; 
+// 2. Obtenemos el ID de la URL
+$patientId = $_GET['id'] ?? null;
+if (!$patientId) {
+    header('Location: /index.php?page=patients');
+    exit();
 }
+
+// 3. Le decimos al controlador qué acción ejecutar y con qué ID
+$_GET['action'] = 'details';
+$data = handlePatientAction('details', $patientId); // <-- CAMBIO: Recibimos el PAQUETE
+
+// 4. Verificamos y DESEMPAQUETAMOS
+if (!$data || !$data['patient']) {
+    header('Location: /index.php?page=patients&error=not_found');
+    exit();
+}
+$patient = $data['patient']; // <-- CAMBIO: Extraemos el paciente del paquete
+
+// 5. Creamos el nombre completo
+$fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
 ?>
 
 <div class="page-header">
-    <h1>Editar Paciente: <?= htmlspecialchars($patient['nombre'] . ' ' . $patient['apellido_paterno']) ?></h1>
-    <a href="/index.php?page=patients" class="btn btn-secondary">Cancelar</a>
+    <h1>Editar Paciente: <?= htmlspecialchars($fullName) ?></h1>
+    <a href="/index.php?page=patients_details&id=<?= $patientId ?>" class="btn btn-secondary">Cancelar</a>
 </div>
 
 <div class="page-content">
@@ -27,7 +34,7 @@ if (!isset($patient) || !$patient) {
         <div class="card-body">
 
             <?php if (isset($_GET['error'])): ?>
-                <div class="error-message" style="margin-bottom: 1.5rem;">
+                <div class="alert alert-danger">
                     <?= htmlspecialchars($_GET['error']) ?>
                 </div>
             <?php endif; ?>
@@ -67,7 +74,7 @@ if (!isset($patient) || !$patient) {
                 
                 <div class="form-group">
                     <label for="antecedentes_medicos">Antecedentes Médicos</label>
-                    <textarea id="antecedentes_medicos" name="antecedentes_medicos" rows="2"><?= htmlspecialchars($patient['antecedentes_medicos'] ?? '') ?></textarea>
+                    <textarea id="antecedentes_medicos" name="antecedentes_medicos" rows="3"><?= htmlspecialchars($patient['antecedentes_medicos'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-actions">
