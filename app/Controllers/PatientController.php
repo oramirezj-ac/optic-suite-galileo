@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../Models/PatientModel.php';
 require_once __DIR__ . '/../Models/ConsultaModel.php';
+require_once __DIR__ . '/../Models/VentaModel.php';
 
 // VOLVEMOS A LA FUNCIÓN ORIGINAL (SIN PARÁMETROS)
 function handlePatientAction()
@@ -16,6 +17,7 @@ function handlePatientAction()
     $pdo = getConnection();
     $patientModel = new PatientModel($pdo);
     $consultaModel = new ConsultaModel($pdo);
+    $ventaModel = new VentaModel($pdo);
 
     switch ($action) {
         case 'store':
@@ -129,18 +131,19 @@ function handlePatientAction()
 
             // 1. Buscamos al paciente
             $patient = $patientModel->getById($id);
+            if (!$patient) { return false; }
 
-            if (!$patient) {
-                return false;
-            }
-
-            // 2. Buscamos su resumen de consultas
+            // 2. Buscamos resumen de consultas
             $resumenConsultas = $consultaModel->getResumenConsultasPorPaciente($id);
 
-            // 3. Devolvemos AMBOS datos a la vista
+            // 3. Buscamos historial de ventas (NUEVO)
+            $ventas = $ventaModel->getAllByPaciente($id);
+
+            // 4. Devolvemos TODO el paquete
             return [
                 'patient' => $patient,
-                'resumen' => $resumenConsultas
+                'resumen' => $resumenConsultas,
+                'ventas' => $ventas // <-- Dato nuevo
             ];
             break;
         

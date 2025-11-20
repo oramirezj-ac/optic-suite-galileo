@@ -165,3 +165,45 @@ thead th {
     background-color: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
 }
+
+/* ==========================================================================
+   Componente: Texto de Énfasis
+   ========================================================================== */
+
+/* * Texto de introducción o énfasis, usado en páginas 
+ * de confirmación (como 'delete.php').
+ */
+.emphasis-text {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   Componente: Cabecera de Contexto
+   ========================================================================== */
+
+/* * Contenedor para la barra de 'sub-encabezado' que muestra 
+ * el paciente y la fecha actual.
+ */
+.context-header {
+    margin-bottom: 1.5rem;
+}
+
+.context-header .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem; /* Menos padding que un card-body normal */
+}
+
+.context-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Utilidad para alineación de texto */
+.text-center {
+    text-align: center;
+}

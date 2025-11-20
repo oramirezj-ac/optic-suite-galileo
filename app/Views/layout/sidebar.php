@@ -13,7 +13,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="index.php?page=ventas_index" class="<?= ($page === 'ventas_index') ? 'active' : '' ?>">
                     <span class="icon">🛒</span> Ventas
                 </a>
             </li>

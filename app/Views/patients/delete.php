@@ -25,7 +25,7 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
 <div class="page-content">
     <div class="card">
         <div class="card-body">
-            <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+            <p class="emphasis-text">
                 ¿Estás seguro de que quieres borrar permanentemente al paciente <strong><?= htmlspecialchars($fullName) ?></strong>?
             </p>
             <p class="alert alert-danger"><strong>Advertencia:</strong> Esta acción no se puede deshacer. Se eliminará el paciente y todo su historial de consultas y ventas asociadas.</p>

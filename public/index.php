@@ -26,7 +26,18 @@ $allowedPages = [
                     'consultas_create',
                     'consultas_edit',
                     'consultas_delete',
-                    'consultas_details',
+                    'graduaciones_index',
+                    'graduaciones_create',
+                    'graduaciones_edit',
+                    'graduaciones_delete',
+                    'ventas_index',
+                    'ventas_create',
+                    'ventas_details',
+                    'ventas_edit',
+                    'ventas_delete',
+                    'abonos_create',
+                    'abonos_edit',
+                    'abonos_delete',
                 ]; 
 
 if (!in_array($page, $allowedPages)) {
@@ -54,6 +65,36 @@ if ($page === 'dashboard') {
     if ($page === 'consultas' || $page === 'consultas_index') {
         $viewPath = "../app/Views/consultas/index.php";
     }
+} elseif (strpos($page, 'graduaciones') === 0) {
+    // Si la página empieza con 'graduaciones_', busca en la carpeta /app/Views/graduaciones/
+    $viewFile = str_replace('graduaciones_', '', $page);
+    
+    // Carga el archivo correspondiente (index.php, create.php, etc.)
+    $viewPath = "../app/Views/graduaciones/" . $viewFile . ".php";
+    
+    // Caso especial para la página principal
+    if ($page === 'graduaciones' || $page === 'graduaciones_index') {
+        $viewPath = "../app/Views/graduaciones/index.php";
+    }
+}
+elseif (strpos($page, 'ventas') === 0) {
+    // Reemplaza 'ventas_' por nada para obtener el nombre del archivo
+    $viewFile = str_replace('ventas_', '', $page);
+    
+    // Busca en la carpeta /app/Views/ventas/
+    $viewPath = "../app/Views/ventas/" . $viewFile . ".php";
+    
+    // Caso especial para el índice
+    if ($page === 'ventas' || $page === 'ventas_index') {
+        $viewPath = "../app/Views/ventas/index.php";
+    }
+}
+elseif (strpos($page, 'abonos') === 0) {
+    // Reemplaza 'abonos_' por nada para obtener el nombre del archivo
+    $viewFile = str_replace('abonos_', '', $page);
+    
+    // Busca en la carpeta /app/Views/abonos/
+    $viewPath = "../app/Views/abonos/" . $viewFile . ".php";
 }
 ?>
 <!DOCTYPE html>
@@ -71,6 +112,18 @@ if ($page === 'dashboard') {
         <?php require_once '../app/Views/layout/header.php'; ?>
         <main class="main-content">
             <?php
+            // Si la página es de abonos, muéstrame qué estás buscando
+            /*DEBUGG--------
+            if (strpos($page, 'abonos') === 0) {
+                echo "<div style='background:yellow; padding:10px; border:1px solid red;'>";
+                echo "<strong>DEBUG INFO:</strong><br>";
+                echo "Página solicitada: " . htmlspecialchars($page) . "<br>";
+                echo "Ruta generada (\$viewPath): " . htmlspecialchars($viewPath) . "<br>";
+                echo "¿Existe el archivo?: " . (file_exists($viewPath) ? 'SÍ' : 'NO') . "<br>";
+                echo "Ruta absoluta intentada: " . realpath($viewPath); // Esto ayuda mucho
+                echo "</div>";
+            }
+            DEBUGG--------*/
             if (file_exists($viewPath)) {
                 require_once $viewPath;
             } else {

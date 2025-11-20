@@ -89,4 +89,103 @@ class GraduacionModel
             return [];
         }
     }
+
+    /**
+     * Obtiene un par de graduaciones (OD y OI) por su 'tipo' 
+     * dentro de una consulta específica.
+     *
+     * @param int $consultaId El ID de la consulta.
+     * @param string $tipo El tipo de graduación (ej. 'final', 'lensometro').
+     * @return array Un array asociativo ['OD' => [...], 'OI' => [...]].
+     */
+    public function getByConsultaAndType($consultaId, $tipo)
+    {
+        $graduaciones = [
+            'OD' => null,
+            'OI' => null
+        ];
+
+        try {
+            $sql = "SELECT * FROM graduaciones 
+                    WHERE consulta_id = ? 
+                    AND tipo = ? 
+                    AND (ojo = 'OD' OR ojo = 'OI')";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([(int)$consultaId, $tipo]);
+            
+            // Agrupamos los resultados
+            while ($row = $stmt->fetch()) {
+                if ($row['ojo'] === 'OD') {
+                    $graduaciones['OD'] = $row;
+                } elseif ($row['ojo'] === 'OI') {
+                    $graduaciones['OI'] = $row;
+                }
+            }
+            
+            return $graduaciones;
+
+        } catch (PDOException $e) {
+            error_log("Error en GraduacionModel::getByConsultaAndType: " . $e->getMessage());
+            return $graduaciones; // Devuelve el array vacío
+        }
+    }
+
+    /**
+     * Elimina un par de graduaciones (OD y OI) por su 'tipo'
+     * dentro de una consulta específica.
+     *
+     * @param int $consultaId El ID de la consulta.
+     * @param string $tipo El tipo de graduación (ej. 'final').
+     * @return bool True si el borrado fue exitoso, false si no.
+     */
+    public function deleteGraduacionByType($consultaId, $tipo)
+    {
+        try {
+            $sql = "DELETE FROM graduaciones 
+                    WHERE consulta_id = ? 
+                    AND tipo = ?";
+            
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([(int)$consultaId, $tipo]);
+
+        } catch (PDOException $e) {
+            error_log("Error en GraduacionModel::deleteGraduacionByType: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza una fila de graduación existente por su ID.
+     *
+     * @param int $graduacionId El ID (llave primaria) de la fila a actualizar.
+     * @param array $data Los nuevos datos (esfera, cilindro, etc.).
+     * @return bool True si la actualización fue exitosa, false si no.
+     */
+    public function updateGraduacion($graduacionId, $data)
+    {
+        try {
+            // Nota: No actualizamos 'tipo' ni 'ojo'
+            $sql = "UPDATE graduaciones SET 
+                        esfera = ?,
+                        cilindro = ?,
+                        eje = ?,
+                        adicion = ?
+                    WHERE id = ?";
+            
+            $stmt = $this->pdo->prepare($sql);
+            
+            return $stmt->execute([
+                $data['esfera'],
+                $data['cilindro'],
+                $data['eje'],
+                $data['adicion'],
+                (int)$graduacionId
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error en GraduacionModel::updateGraduacion: " . $e->getMessage());
+            return false;
+        }
+    }
 }

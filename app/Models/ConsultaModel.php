@@ -183,4 +183,58 @@ class ConsultaModel
             return false;
         }
     }
+
+    /**
+     * Elimina una consulta específica por su ID.
+     * (Gracias a 'ON DELETE CASCADE' en la BD, esto también
+     * eliminará todas las 'graduaciones' asociadas).
+     *
+     * @param int $consultaId El ID de la consulta a borrar.
+     * @return bool True si el borrado fue exitoso, false si no.
+     */
+    public function deleteConsulta($consultaId)
+    {
+        try {
+            $sql = "DELETE FROM consultas WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([(int)$consultaId]);
+
+        } catch (PDOException $e) {
+            error_log("Error en ConsultaModel::deleteConsulta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza una consulta existente por su ID.
+     *
+     * @param int $consultaId El ID de la consulta a actualizar.
+     * @param array $data Los nuevos datos (fecha, motivo, etc.).
+     * @return bool True si la actualización fue exitosa, false si no.
+     */
+    public function updateConsulta($consultaId, $data)
+    {
+        try {
+            $sql = "UPDATE consultas SET 
+                        fecha = ?,
+                        motivo_consulta = ?,
+                        detalle_motivo = ?,
+                        observaciones = ?
+                    WHERE id = ?";
+            
+            $stmt = $this->pdo->prepare($sql);
+            
+            return $stmt->execute([
+                $data['fecha'],
+                $data['motivo_consulta'],
+                $data['detalle_motivo'],
+                $data['observaciones'],
+                (int)$consultaId
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error en ConsultaModel::updateConsulta: " . $e->getMessage());
+            return false;
+        }
+    }
 }

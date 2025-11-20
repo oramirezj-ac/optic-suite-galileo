@@ -1,41 +1,44 @@
 <?php
-// 1. Incluimos y ejecutamos el controlador
+// 1. Incluimos los helpers y el controlador de Consultas
+// (Usamos el ConsultaController porque su acción 'details' ya 
+// nos da los 3 paquetes de datos: Paciente, Consulta, y Graduaciones)
 require_once __DIR__ . '/../../Controllers/ConsultaController.php';
-require_once __DIR__ . '/../../Helpers/FormHelper.php';
-$_GET['action'] = 'details'; // Forzamos la acción 'details'
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
+// require_once __DIR__ . '/../../Helpers/FormHelper.php'; // (Aún no lo usamos)
+
+// 2. Forzamos la acción 'details' del ConsultaController
+$_GET['action'] = 'details'; 
 $data = handleConsultaAction();
 
-// 2. Desempaquetamos los 3 grupos de datos
+// 3. Desempaquetamos los 3 grupos de datos
 $paciente = $data['paciente'];
 $consulta = $data['consulta'];
 $graduaciones = $data['graduaciones'];
 
-// 3. (Seguridad)
+// 4. (Seguridad)
 if (!$paciente || !$consulta) {
     header('Location: /index.php?page=patients&error=data_not_found');
     exit();
 }
 
-// 4. Creamos nombres y fechas para mostrar
+// 5. Creamos nombres y fechas para mostrar
 $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
-$fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
+$fechaConsulta = FormatHelper::dateFull($consulta['fecha']);
 ?>
 
 <div class="page-header">
-    <h1>Detalle de Consulta</h1>
+    <h1>Graduaciones</h1>
     <div class="view-actions">
-        <a href="#" class="btn btn-secondary">Editar Consulta</a>
-        <a href="#" class="btn btn-danger">Eliminar Consulta</a>
         <a href="/index.php?page=consultas_index&patient_id=<?= $paciente['id'] ?>" class="btn btn-secondary">
-            &larr; Volver al Historial
+            &larr; Volver al Historial de Consultas
         </a>
     </div>
 </div>
 
-<div class_card" style="margin-bottom: 1.5rem;">
+<div class="card" style="margin-bottom: 1.5rem;">
     <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin: 0;">Paciente: <?= htmlspecialchars($fullName) ?></h3>
-        <h3 style="margin: 0;">Fecha: <?= htmlspecialchars($fechaConsulta) ?></h3>
+        <h3 style="margin: 0;">Consulta: <?= $fechaConsulta ?></h3>
     </div>
 </div>
 
@@ -49,36 +52,24 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
 
             <?php
             // --- INICIO DE LÓGICA DE AGRUPACIÓN ---
-            
-            // 1. Creamos un array vacío para agrupar las graduaciones
             $graduacionesAgrupadas = [];
-
-            // 2. Iteramos sobre los datos crudos de la BD
             foreach ($graduaciones as $grad) {
                 $tipo = $grad['tipo'];
-                $ojo = $grad['ojo']; // 'OD' u 'OI'
+                $ojo = $grad['ojo']; 
 
-                // 3. Si es la primera vez que vemos este 'tipo', creamos la entrada
                 if (!isset($graduacionesAgrupadas[$tipo])) {
                     $graduacionesAgrupadas[$tipo] = [
-                        'tipo_label' => ucfirst($tipo), // 'Final', 'Lensometro', etc.
+                        'tipo_label' => ucfirst($tipo),
                         'es_final' => $grad['es_graduacion_final'],
-                        'OD' => null, // Espacio para OD
-                        'OI' => null  // Espacio para OI
+                        'OD' => null,
+                        'OI' => null
                     ];
                 }
-
-                // 4. Guardamos los datos del ojo en el lugar correcto
-                if ($ojo === 'OD' || $ojo === 'AO') {
-                    $graduacionesAgrupadas[$tipo]['OD'] = $grad;
-                }
-                if ($ojo === 'OI' || $ojo === 'AO') {
-                    $graduacionesAgrupadas[$tipo]['OI'] = $grad;
-                }
+                if ($ojo === 'OD' || $ojo === 'AO') $graduacionesAgrupadas[$tipo]['OD'] = $grad;
+                if ($ojo === 'OI' || $ojo === 'AO') $graduacionesAgrupadas[$tipo]['OI'] = $grad;
             }
             // --- FIN DE LÓGICA DE AGRUPACIÓN ---
             ?>
-
 
             <?php if (empty($graduacionesAgrupadas)): ?>
                 <p style="text-align: center;">Aún no hay graduaciones registradas para esta consulta.</p>
@@ -87,13 +78,10 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                 <div class="lista-graduaciones">
                 
                 <?php foreach ($graduacionesAgrupadas as $tipo => $grad): ?>
-                    
                     <?php
-                    // Obtenemos los datos de OD y OI (o un array vacío si no existen)
                     $od = $grad['OD'] ?? [];
                     $oi = $grad['OI'] ?? [];
                     ?>
-
                     <div class="graduacion-fila">
                         <div class="graduacion-columna-tipo">
                             <strong><?= htmlspecialchars($grad['tipo_label']) ?></strong>
@@ -126,8 +114,8 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                         </div>
 
                         <div class="graduacion-columna-acciones">
-                            <a href="#" class="btn btn-secondary btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Borrar</a>
+                            <a href="/index.php?page=graduaciones_edit&consulta_id=<?= $consulta['id'] ?>&tipo=<?= $tipo ?>&patient_id=<?= $paciente['id'] ?>" class="btn btn-secondary btn-sm">Editar</a>
+                            <a href="/index.php?page=graduaciones_delete&consulta_id=<?= $consulta['id'] ?>&tipo=<?= $tipo ?>&patient_id=<?= $paciente['id'] ?>" class="btn btn-danger btn-sm">Borrar</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -147,58 +135,26 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
                 <input type="hidden" name="patient_id" value="<?= $paciente['id'] ?>">
 
+                <div class="form-group form-group-third">
+                    <label for="tipo_graduacion">Tipo de Graduación</label>
+                    <select id="tipo_graduacion" name="tipo" required>
+                        <option value="final">Final</option>
+                        <option value="autorrefractometro">Autorefractómetro</option>
+                        <option value="lensometro">Lensómetro</option>
+                        <option value="foroptor">Foroptor</option>
+                        <option value="ambulatorio">Ambulatorio</option>
+                    </select>
+                </div>
+
                 <div class="graduacion-capture-form">
                     
-                    <div class="form-group form-group-third form-group-full-span">
-                        <label for="tipo_graduacion">Tipo de Graduación</label>
-                        <select id="tipo_graduacion" name="tipo" required>
-                            <option value="final">Final</option>
-                            <option value="autorrefractometro">Autorefractómetro</option>
-                            <option value="lensometro">Lensómetro</option>
-                            <option value="foroptor">Foroptor</option>
-                            <option value="ambulatorio">Ambulatorio</option>
-                        </select>
-                    </div>
-
                     <span class="graduacion-ojo-label">OD</span>
                     <div class="graduacion-formula">
-                        <input 
-                            type="number" 
-                            name="od_esfera" 
-                            placeholder="Esfera" 
-                            class="valor" 
-                            required
-                            step="0.25" 
-                            min="-20.00" 
-                            max="20.00"
-                            list="valores_esfera" 
-                        >
-                        <datalist id="valores_esfera">
-                            <option value="-2.00">
-                            <option value="-1.75">
-                            <option value="-1.50">
-                            <option value="-1.25">
-                            <option value="-1.00">
-                            <option value="-0.75">
-                            <option value="-0.50">
-                            <option value="-0.25">
-                            <option value="0.00">
-                            <option value="0.25">
-                            <option value="0.50">
-                            </datalist>
+                        <input type="number" name="od_esfera" placeholder="Esfera" class="valor" step="0.25" min="-20.00" max="20.00" required>
                         <span class="simbolo">=</span>
-                        <input 
-                            type="number" 
-                            name="od_cilindro" 
-                            placeholder="Cilindro" 
-                            class="valor"
-                            step="0.25"
-                            max="0.00"
-                            min="-10.00"
-                            list="valores_cilindro"
-                        >
+                        <input type="number" name="od_cilindro" placeholder="Cilindro" class="valor" step="0.25" max="0.00" min="-10.00" list="valores_cilindro">
                         <span class="simbolo">x</span>
-                        <input type="text" name="od_eje" placeholder="Eje" class="valor">
+                        <input type="number" name="od_eje" placeholder="Eje" class="valor" min="0" max="180" step="1">
                         <span class="simbolo">°</span>
                         <select name="od_adicion" class="valor valor-add">
                             <option value="0.00" selected>0.00</option>
@@ -214,53 +170,16 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                             <option value="2.50">2.50</option>
                             <option value="2.75">2.75</option>
                             <option value="3.00">3.00</option>
-                            <option value="3.25">3.25</option>
-                            <option value="3.50">3.50</option>
-                            <option value="3.75">3.75</option>
-                            <option value="4.00">4.00</option>
                         </select>
                     </div>
 
                     <span class="graduacion-ojo-label">OI</span>
                     <div class="graduacion-formula">
-                        <input 
-                            type="number" 
-                            name="oi_esfera" 
-                            placeholder="Esfera" 
-                            class="valor" 
-                            required
-                            step="0.25" 
-                            min="-20.00" 
-                            max="20.00"
-                            list="valores_esfera" 
-                        >
-
-                        <datalist id="valores_esfera">
-                            <option value="-2.00">
-                            <option value="-1.75">
-                            <option value="-1.50">
-                            <option value="-1.25">
-                            <option value="-1.00">
-                            <option value="-0.75">
-                            <option value="-0.50">
-                            <option value="-0.25">
-                            <option value="0.00">
-                            <option value="0.25">
-                            <option value="0.50">
-                            </datalist>
+                        <input type="number" name="oi_esfera" placeholder="Esfera" class="valor" step="0.25" min="-20.00" max="20.00" required>
                         <span class="simbolo">=</span>
-                        <input 
-                            type="number" 
-                            name="oi_cilindro" 
-                            placeholder="Cilindro" 
-                            class="valor"
-                            step="0.25"
-                            max="0.00"
-                            min="-10.00"
-                            list="valores_cilindro"
-                        >
+                        <input type="number" name="oi_cilindro" placeholder="Cilindro" class="valor" step="0.25" max="0.00" min="-10.00" list="valores_cilindro">
                         <span class="simbolo">x</span>
-                        <input type="text" name="oi_eje" placeholder="Eje" class="valor">
+                        <input type="number" name="oi_eje" placeholder="Eje" class="valor" min="0" max="180" step="1">
                         <span class="simbolo">°</span>
                         <select name="oi_adicion" class="valor valor-add">
                             <option value="0.00" selected>0.00</option>
@@ -276,10 +195,6 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                             <option value="2.50">2.50</option>
                             <option value="2.75">2.75</option>
                             <option value="3.00">3.00</option>
-                            <option value="3.25">3.25</option>
-                            <option value="3.50">3.50</option>
-                            <option value="3.75">3.75</option>
-                            <option value="4.00">4.00</option>
                         </select>
                     </div>
 
@@ -287,6 +202,7 @@ $fechaConsulta = date('d/m/Y H:i A', strtotime($consulta['fecha']));
                     <button type="submit" class="btn btn-primary">Guardar Graduación</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
