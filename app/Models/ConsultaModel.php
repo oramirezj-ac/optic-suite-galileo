@@ -21,7 +21,7 @@ class ConsultaModel
 
     /**
      * Obtiene un resumen de las 3 consultas más recientes de un paciente,
-     * incluyendo la graduación final (OD y OI) en una sola fila.
+     * incluyendo graduación final y datos biométricos.
      *
      * @param int $patientId El ID del paciente.
      * @return array Una lista de hasta 3 consultas.
@@ -29,14 +29,14 @@ class ConsultaModel
     public function getResumenConsultasPorPaciente($patientId)
     {
         try {
-            // Esta consulta compleja usa LEFT JOIN y MAX(CASE...) para "pivotar"
-            // los datos de graduación (OD y OI) y ponerlos en una sola fila
-            // por cada consulta.
-            
             $sql = "
                 SELECT 
                     c.id AS consulta_id, 
                     c.fecha, 
+                    c.dp_lejos_total,
+                    c.dp_od,
+                    c.dp_oi,
+                    c.altura_oblea,
                     
                     -- Columnas para Ojo Derecho (OD)
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.esfera ELSE NULL END) AS od_esfera,
@@ -56,7 +56,7 @@ class ConsultaModel
                 WHERE 
                     c.paciente_id = ?
                 GROUP BY 
-                    c.id, c.fecha
+                    c.id, c.fecha, c.dp_lejos_total, c.dp_od, c.dp_oi, c.altura_oblea
                 ORDER BY 
                     c.fecha DESC
                 LIMIT 3
@@ -68,7 +68,6 @@ class ConsultaModel
             return $stmt->fetchAll();
 
         } catch (PDOException $e) {
-            // En caso de error, devolvemos un array vacío
             error_log("Error en ConsultaModel::getResumenConsultas: " . $e->getMessage());
             return [];
         }
@@ -234,6 +233,85 @@ class ConsultaModel
 
         } catch (PDOException $e) {
             error_log("Error en ConsultaModel::updateConsulta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza exclusivamente los datos biométricos de la consulta.
+     *
+     * @param int $id El ID de la consulta.
+     * @param array $data Los datos (dp_total, dp_od, dp_oi, altura).
+     * @return bool
+     */
+    public function updateBiometria($id, $data)
+    {
+        try {
+            $sql = "UPDATE consultas SET 
+                        dp_lejos_total = ?,
+                        dp_od = ?,
+                        dp_oi = ?,
+                        altura_oblea = ?
+                    WHERE id = ?";
+            
+            $stmt = $this->pdo->prepare($sql);
+            
+            return $stmt->execute([
+                $data['dp_lejos_total'] ?: null, // Si está vacío, guarda NULL
+                $data['dp_od'] ?: null,
+                $data['dp_oi'] ?: null,
+                $data['altura_oblea'] ?: null,
+                (int)$id
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error en ConsultaModel::updateBiometria: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Obtiene todas las opciones del catálogo de agudeza visual.
+     * @return array Lista de [id, valor] (ej. 1 => '20/20')
+     */
+    public function getCatalogoAV()
+    {
+        try {
+            $stmt = $this->pdo->query("SELECT * FROM catalogo_agudeza_visual ORDER BY id ASC");
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Actualiza los datos clínicos (AV y CV) usando los IDs del catálogo.
+     * * @param int $id ID de la consulta.
+     * @param array $data Array con los IDs de av_od_id, av_oi_id, etc.
+     */
+    public function updateDatosClinicos($id, $data)
+    {
+        try {
+            // Actualizamos los 4 campos principales de AV/CV
+            $sql = "UPDATE consultas SET 
+                        av_od_id = ?, 
+                        av_oi_id = ?,
+                        cv_od_id = ?, 
+                        cv_oi_id = ?
+                    WHERE id = ?";
+
+            $stmt = $this->pdo->prepare($sql);
+            
+            return $stmt->execute([
+                $data['av_od_id'] ?: null,
+                $data['av_oi_id'] ?: null,
+                $data['cv_od_id'] ?: null,
+                $data['cv_oi_id'] ?: null,
+                (int)$id
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error en updateDatosClinicos: " . $e->getMessage());
             return false;
         }
     }

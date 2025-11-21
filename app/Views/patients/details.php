@@ -60,6 +60,33 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                 <?php if (empty($resumenConsultas)): ?>
                     <p style="text-align: center;">Este paciente aún no tiene consultas registradas.</p>
                 <?php else: ?>
+                    
+                    <?php 
+                    // Lógica para el Header de Biometría (Última Consulta)
+                    $ultimaConsulta = $resumenConsultas[0];
+                    $tieneBiometria = !empty($ultimaConsulta['dp_lejos_total']) || !empty($ultimaConsulta['altura_oblea']);
+                    ?>
+
+                    <?php if ($tieneBiometria): ?>
+                        <div style="background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+                            <strong style="display:block; margin-bottom:0.5rem; color:var(--text-secondary);">Últimos Datos Biométricos:</strong>
+                            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                                <?php if($ultimaConsulta['dp_lejos_total']): ?>
+                                    <div>
+                                        <strong>DP:</strong> <?= htmlspecialchars($ultimaConsulta['dp_lejos_total']) ?> mm
+                                        <small class="text-muted">(<?= htmlspecialchars($ultimaConsulta['dp_od']) ?> / <?= htmlspecialchars($ultimaConsulta['dp_oi']) ?>)</small>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if($ultimaConsulta['altura_oblea']): ?>
+                                    <div>
+                                        <strong>Altura:</strong> <?= htmlspecialchars($ultimaConsulta['altura_oblea']) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <table class="consultation-summary-table">
                         <thead>
                             <tr>

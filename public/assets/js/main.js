@@ -64,3 +64,43 @@ function activateTabFromURL() {
 
 // Ejecuta nuestra nueva función solo cuando la página haya cargado
 document.addEventListener('DOMContentLoaded', activateTabFromURL);
+
+/* ==========================================================================
+   Automatización de Datos Biométricos (DP)
+   ========================================================================== */
+
+function initializeBiometricsCalculator() {
+    // 1. Identificamos los elementos del DOM
+    const dpTotalInput = document.getElementById('dp_lejos_total');
+    const dpOdInput = document.getElementById('dp_od');
+    const dpOiInput = document.getElementById('dp_oi');
+
+    // 2. Cláusula de Guardia: Si no estamos en la página correcta, salimos.
+    if (!dpTotalInput || !dpOdInput || !dpOiInput) {
+        return;
+    }
+
+    // 3. Agregamos el escuchador de eventos
+    dpTotalInput.addEventListener('input', function() {
+        const total = parseFloat(this.value);
+        
+        // Validamos que sea un número real y positivo
+        if (!isNaN(total) && total > 0) {
+            const half = total / 2;
+            
+            // Llenamos los campos monoculares automáticamente
+            // (El usuario aún puede editarlos manualmente si lo necesita)
+            dpOdInput.value = half;
+            dpOiInput.value = half;
+        } else {
+            // Si borran el total, limpiamos los hijos (opcional, pero limpio)
+            if (this.value === '') {
+                dpOdInput.value = '';
+                dpOiInput.value = '';
+            }
+        }
+    });
+}
+
+// Agregamos la función a la cola de ejecución al cargar la página
+document.addEventListener('DOMContentLoaded', initializeBiometricsCalculator);

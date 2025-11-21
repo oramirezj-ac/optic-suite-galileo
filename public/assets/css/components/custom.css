@@ -207,3 +207,22 @@ thead th {
 .text-center {
     text-align: center;
 }
+
+/* ==========================================================================
+   Utilerías de Espaciado y Alineación (Helpers)
+   ========================================================================== */
+
+/* Margen inferior estándar para separar tarjetas */
+.mb-2 {
+    margin-bottom: 2rem;
+}
+
+/* Alineación vertical al final (para alinear inputs con botones) */
+.align-end {
+    align-items: flex-end;
+}
+
+/* Evita que un elemento flex crezca (para botones que no deben estirarse) */
+.flex-no-grow {
+    flex-grow: 0;
+}

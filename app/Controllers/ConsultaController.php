@@ -20,7 +20,7 @@ function handleConsultaAction()
     $pdo = getConnection();
     
     $action = $_GET['action'] ?? 'index';
-    if ($action === 'store' || $action === 'delete' ) {
+    if ($action === 'store' || $action === 'delete' || $action === 'update_biometria' || $action === 'update_clinicos') {
         $patientId = $_POST['patient_id'] ?? null;
     } else {
         $patientId = $_GET['patient_id'] ?? null;
@@ -111,16 +111,19 @@ function handleConsultaAction()
         $paciente = $patientModel->getById($patientId);
         // 2. Buscamos los datos de la Consulta
         $consulta = $consultaModel->getConsultaById($consultaId);
-        // 3. Buscamos la lista de Graduaciones
-        $graduaciones = $graduacionModel->getAllByConsulta($consultaId);
+       // 3. Buscamos la lista de Graduaciones
+            $graduaciones = $graduacionModel->getAllByConsulta($consultaId);
+            
+            // 4. (NUEVO) Buscamos el catálogo de Agudeza Visual
+            $catalogoAV = $consultaModel->getCatalogoAV();
 
-        // 4. Devolvemos los 3 grupos de datos a la vista
-        return [
-            'paciente' => $paciente,
-            'consulta' => $consulta,
-            'graduaciones' => $graduaciones
-        ];
-        break;
+            // 5. Devolvemos los 4 grupos de datos a la vista
+            return [
+                'paciente' => $paciente,
+                'consulta' => $consulta,
+                'graduaciones' => $graduaciones,
+                'catalogoAV' => $catalogoAV // <-- Dato nuevo
+            ];
 
         case 'delete':
             // Esta es la acción para 'action=delete'
@@ -196,6 +199,72 @@ function handleConsultaAction()
                 } else {
                     // 5. Error: Redirigimos de vuelta al formulario de edición
                     header('Location: /index.php?page=consultas_edit&id=' . $consultaId . '&patient_id=' . $patientId . '&error=update_failed');
+                }
+                exit();
+            }
+            break;
+
+        /* ------------------------------------------------------
+           CASE: UPDATE_BIOMETRIA (Guardar DP y Altura)
+           ------------------------------------------------------ */
+        case 'update_biometria':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                
+                // 1. IDs de contexto
+                $consultaId = $_POST['consulta_id'] ?? null;
+                $patientId = $_POST['patient_id'] ?? null;
+
+                if (!$consultaId || !$patientId) {
+                    header('Location: /index.php?page=patients&error=missing_ids');
+                    exit();
+                }
+
+                // 2. Preparamos los datos biométricos
+                $data = [
+                    'dp_lejos_total' => $_POST['dp_lejos_total'] ?? null,
+                    'dp_od' => $_POST['dp_od'] ?? null,
+                    'dp_oi' => $_POST['dp_oi'] ?? null,
+                    'altura_oblea' => $_POST['altura_oblea'] ?? null
+                ];
+
+                // 3. Llamamos al modelo
+                if ($consultaModel->updateBiometria($consultaId, $data)) {
+                    // ÉXITO: Recargamos la misma página
+                    header('Location: /index.php?page=graduaciones_index&id=' . $consultaId . '&patient_id=' . $patientId . '&success=bio_updated');
+                } else {
+                    // ERROR: Recargamos con mensaje de error
+                    header('Location: /index.php?page=graduaciones_index&id=' . $consultaId . '&patient_id=' . $patientId . '&error=bio_failed');
+                }
+                exit();
+            }
+            break;
+        
+        /* ------------------------------------------------------
+           CASE: UPDATE_CLINICOS (Guardar AV y CV)
+           ------------------------------------------------------ */
+        case 'update_clinicos':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                
+                $consultaId = $_POST['consulta_id'] ?? null;
+                $patientId = $_POST['patient_id'] ?? null;
+
+                if (!$consultaId || !$patientId) {
+                    header('Location: /index.php?page=patients&error=missing_ids');
+                    exit();
+                }
+
+                // Preparamos los IDs de los catálogos
+                $data = [
+                    'av_od_id' => $_POST['av_od_id'] ?? null,
+                    'av_oi_id' => $_POST['av_oi_id'] ?? null,
+                    'cv_od_id' => $_POST['cv_od_id'] ?? null,
+                    'cv_oi_id' => $_POST['cv_oi_id'] ?? null
+                ];
+
+                if ($consultaModel->updateDatosClinicos($consultaId, $data)) {
+                    header('Location: /index.php?page=graduaciones_index&id=' . $consultaId . '&patient_id=' . $patientId . '&tab=clinicos&success=clinical_updated');
+                } else {
+                    header('Location: /index.php?page=graduaciones_index&id=' . $consultaId . '&patient_id=' . $patientId . '&tab=clinicos&error=clinical_failed');
                 }
                 exit();
             }
