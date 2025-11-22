@@ -66,6 +66,10 @@ function handleVentaAction()
                     $ventas = $ventaModel->searchByDateRange($start, $end);
                 }
             } 
+            elseif ($tab === 'all') {
+                // Pestaña Histórico Completo
+                $ventas = $ventaModel->getAll();
+            }
             else {
                 // Pestaña Recientes (Default)
                 $ventas = $ventaModel->getAllWithPatient(); // La función de límite 50 que ya tenías
@@ -95,34 +99,40 @@ function handleVentaAction()
         case 'store':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
-                // 1. Recopilamos Datos de la Venta
+                // 1. Preparamos los montos para decidir el estado
+                $costoTotal = $_POST['costo_total'] ?? 0.00;
+                $anticipo = $_POST['monto_anticipo'] ?? 0.00;
+
+                // Lógica: Si el anticipo cubre el total, nace como 'pagado'
+                // (Usamos una pequeña tolerancia de 0.01 para errores de decimales)
+                if ($anticipo >= ($costoTotal - 0.01)) {
+                    $estadoInicial = 'pagado';
+                } else {
+                    $estadoInicial = 'pendiente';
+                }
+
+                // 2. Recopilamos Datos de la Venta
                 $dataVenta = [
                     'id_paciente' => $patientId,
                     'numero_nota' => $_POST['numero_nota'],
-                    'numero_nota_sufijo' => $_POST['numero_nota_sufijo'] ?? null, // Para el futuro
+                    'numero_nota_sufijo' => $_POST['numero_nota_sufijo'] ?? null,
                     'fecha_venta' => $_POST['fecha_venta'] ?? date('Y-m-d'),
-                    'costo_total' => $_POST['costo_total'] ?? 0.00,
-                    // El estado se calcula: si hay saldo 0 es 'pagado', si no 'pendiente'
-                    // Por defecto 'pendiente', luego lo refinaremos
-                    'estado_pago' => 'pendiente', 
+                    'costo_total' => $costoTotal,
+                    'estado_pago' => $estadoInicial, // <-- USAMOS EL ESTADO CALCULADO
                     'observaciones' => $_POST['observaciones'] ?? null
                 ];
 
-                // TODO: Aquí validaremos duplicados en el futuro (Paso Extra)
-
                 try {
-                    // Iniciamos transacción para asegurar que se guarde Venta Y Abono o nada
                     $pdo->beginTransaction();
 
-                    // 2. Guardamos la Venta
+                    // 3. Guardamos la Venta
                     $newVentaId = $ventaModel->create($dataVenta);
 
                     if (!$newVentaId) {
                         throw new Exception("No se pudo crear la venta.");
                     }
 
-                    // 3. Guardamos el Anticipo (si existe)
-                    $anticipo = $_POST['monto_anticipo'] ?? 0;
+                    // 4. Guardamos el Anticipo (si existe y es mayor a 0)
                     if ($anticipo > 0) {
                         $dataAbono = [
                             'id_venta' => $newVentaId,
@@ -134,7 +144,7 @@ function handleVentaAction()
 
                     $pdo->commit();
 
-                    // 4. Éxito: Redirigimos al "Hub de Venta"
+                    // 5. Éxito
                     header('Location: /index.php?page=ventas_details&id=' . $newVentaId . '&patient_id=' . $patientId . '&success=sale_created');
                     exit();
 

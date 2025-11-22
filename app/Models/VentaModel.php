@@ -257,4 +257,29 @@ class VentaModel
             return false;
         }
     }
+
+    /**
+     * Obtiene TODAS las ventas registradas (Histórico Completo).
+     * Ordenado por Número de Nota descendente.
+     * ¡Cuidado! Puede traer muchos registros.
+     */
+    public function getAll()
+    {
+        try {
+            $sql = "SELECT 
+                        v.*, 
+                        p.nombre, 
+                        p.apellido_paterno, 
+                        p.apellido_materno 
+                    FROM ventas v
+                    LEFT JOIN pacientes p ON v.id_paciente = p.id
+                    ORDER BY v.numero_nota DESC"; // Sin LIMIT
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

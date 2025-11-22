@@ -5,15 +5,17 @@ require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 $_GET['action'] = 'index';
 $data = handleVentaAction();
 $ventas = $data['ventas'];
-$activeTab = $data['activeTab']; // 'recent', 'search', o 'dates'
+$activeTab = $data['activeTab']; // 'recent', 'search', 'dates', 'all'
 
-// --- FUNCIÓN HELPER INTERNA PARA DIBUJAR LA TABLA ---
-// Esto evita repetir el código de la tabla 3 veces
+// --- FUNCIÓN HELPER PARA DIBUJAR LA TABLA ---
 function renderSalesTable($ventas) {
     if (empty($ventas)) {
-        echo '<div class="alert alert-secondary text-center">No se encontraron ventas con estos criterios.</div>';
+        echo '<div class="alert alert-secondary text-center">No se encontraron ventas.</div>';
         return;
     }
+    // Agregamos un contador de resultados
+    echo '<p class="text-muted" style="margin-bottom: 1rem;">Mostrando ' . count($ventas) . ' resultados.</p>';
+    
     echo '<table>
             <thead>
                 <tr>
@@ -58,36 +60,41 @@ function renderSalesTable($ventas) {
     <div class="card">
         
         <div class="card-header view-actions">
-            <button class="btn btn-secondary <?= $activeTab === 'recent' ? 'active' : '' ?>" data-view="recent">Recientes</button>
-            <button class="btn btn-secondary <?= $activeTab === 'search' ? 'active' : '' ?>" data-view="search">Buscador</button>
-            <button class="btn btn-secondary <?= $activeTab === 'dates' ? 'active' : '' ?>" data-view="dates">Por Fechas</button>
+            <a href="/index.php?page=ventas_index&tab=recent" class="btn btn-secondary <?= $activeTab === 'recent' ? 'active' : '' ?>">Recientes (50)</a>
+            <a href="/index.php?page=ventas_index&tab=all" class="btn btn-secondary <?= $activeTab === 'all' ? 'active' : '' ?>">Todas</a>
+            <a href="/index.php?page=ventas_index&tab=search" class="btn btn-secondary <?= $activeTab === 'search' ? 'active' : '' ?>">Buscador</a>
+            <a href="/index.php?page=ventas_index&tab=dates" class="btn btn-secondary <?= $activeTab === 'dates' ? 'active' : '' ?>">Por Fechas</a>
         </div>
 
         <div class="card-body">
             
-            <div id="view-recent" class="view-panel <?= $activeTab === 'recent' ? 'active' : '' ?>">
+            <?php if($activeTab === 'recent'): ?>
                 <h3>Últimas 50 Ventas</h3>
-                <?php if($activeTab === 'recent') renderSalesTable($ventas); ?>
-            </div>
+                <?php renderSalesTable($ventas); ?>
+            <?php endif; ?>
 
-            <div id="view-search" class="view-panel <?= $activeTab === 'search' ? 'active' : '' ?>">
-                
+            <?php if($activeTab === 'all'): ?>
+                <h3>Historial Completo de Ventas</h3>
+                <?php renderSalesTable($ventas); ?>
+            <?php endif; ?>
+
+            <?php if($activeTab === 'search'): ?>
                 <form action="/index.php" method="GET" style="margin-bottom: 2rem;">
                     <input type="hidden" name="page" value="ventas_index">
-                    <input type="hidden" name="tab" value="search"> <div class="search-bar">
+                    <input type="hidden" name="tab" value="search">
+                    <div class="search-bar">
                         <input type="text" name="q" placeholder="Buscar por Folio, Nombre o Apellidos..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" required>
                         <button type="submit" class="btn btn-primary">Buscar</button>
                     </div>
                 </form>
+                <?php if(isset($_GET['q'])) renderSalesTable($ventas); ?>
+            <?php endif; ?>
 
-                <?php if($activeTab === 'search') renderSalesTable($ventas); ?>
-            </div>
-
-            <div id="view-dates" class="view-panel <?= $activeTab === 'dates' ? 'active' : '' ?>">
-                
+            <?php if($activeTab === 'dates'): ?>
                 <form action="/index.php" method="GET" style="margin-bottom: 2rem;">
                     <input type="hidden" name="page" value="ventas_index">
-                    <input type="hidden" name="tab" value="dates"> <div class="form-row" style="align-items: flex-end;">
+                    <input type="hidden" name="tab" value="dates">
+                    <div class="form-row" style="align-items: flex-end;">
                         <div class="form-group">
                             <label>Fecha Inicio</label>
                             <input type="date" name="date_start" value="<?= htmlspecialchars($_GET['date_start'] ?? '') ?>" required>
@@ -101,9 +108,8 @@ function renderSalesTable($ventas) {
                         </div>
                     </div>
                 </form>
-
-                <?php if($activeTab === 'dates') renderSalesTable($ventas); ?>
-            </div>
+                <?php if(isset($_GET['date_start'])) renderSalesTable($ventas); ?>
+            <?php endif; ?>
 
         </div>
     </div>
