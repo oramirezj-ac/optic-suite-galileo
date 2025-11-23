@@ -252,3 +252,6 @@ thead th {
     color: var(--text-secondary);
     font-size: 0.85em;
 }
+
+/* Margen superior pequeño */
+.mt-2 { margin-top: 0.5rem; }

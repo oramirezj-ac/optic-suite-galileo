@@ -255,11 +255,13 @@ function handleConsultaAction()
 
                 // Preparamos los IDs de los catálogos
                 $data = [
-                    'av_od_id' => $_POST['av_od_id'] ?? null,
-                    'av_oi_id' => $_POST['av_oi_id'] ?? null,
-                    'cv_od_id' => $_POST['cv_od_id'] ?? null,
-                    'cv_oi_id' => $_POST['cv_oi_id'] ?? null
-                ];
+                'av_ao_id' => $_POST['av_ao_id'] ?? null, // <-- NUEVO
+                'av_od_id' => $_POST['av_od_id'] ?? null,
+                'av_oi_id' => $_POST['av_oi_id'] ?? null,
+                'cv_ao_id' => $_POST['cv_ao_id'] ?? null, // <-- NUEVO
+                'cv_od_id' => $_POST['cv_od_id'] ?? null,
+                'cv_oi_id' => $_POST['cv_oi_id'] ?? null
+            ];
 
                 if ($consultaModel->updateDatosClinicos($consultaId, $data)) {
                     header('Location: /index.php?page=graduaciones_index&id=' . $consultaId . '&patient_id=' . $patientId . '&tab=clinicos&success=clinical_updated');

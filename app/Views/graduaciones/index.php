@@ -192,14 +192,28 @@ foreach ($catalogoAV as $av) {
                     <input type="hidden" name="patient_id" value="<?= $paciente['id'] ?>">
 
                     <div class="form-row">
+                        
+                        <div class="form-group">
+                            <h4>Ambos Ojos (AO)</h4>
+                            <label class="mt-2">AV (Entrada)</label>
+                            <select name="av_ao_id">
+                                <?= str_replace('value="' . ($consulta['av_ao_id'] ?? '') . '"', 'value="' . ($consulta['av_ao_id'] ?? '') . '" selected', $avOptions) ?>
+                            </select>
+
+                            <label class="mt-2">CV (Salida)</label>
+                            <select name="cv_ao_id">
+                                <?= str_replace('value="' . ($consulta['cv_ao_id'] ?? '') . '"', 'value="' . ($consulta['cv_ao_id'] ?? '') . '" selected', $avOptions) ?>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <h4>Ojo Derecho (OD)</h4>
-                            <label class="mt-2">Agudeza Visual (Entrada)</label>
+                            <label class="mt-2">AV (Entrada)</label>
                             <select name="av_od_id">
                                 <?= str_replace('value="' . ($consulta['av_od_id'] ?? '') . '"', 'value="' . ($consulta['av_od_id'] ?? '') . '" selected', $avOptions) ?>
                             </select>
 
-                            <label class="mt-2">Corrección Visual (Salida)</label>
+                            <label class="mt-2">CV (Salida)</label>
                             <select name="cv_od_id">
                                 <?= str_replace('value="' . ($consulta['cv_od_id'] ?? '') . '"', 'value="' . ($consulta['cv_od_id'] ?? '') . '" selected', $avOptions) ?>
                             </select>
@@ -207,12 +221,12 @@ foreach ($catalogoAV as $av) {
 
                         <div class="form-group">
                             <h4>Ojo Izquierdo (OI)</h4>
-                            <label class="mt-2">Agudeza Visual (Entrada)</label>
+                            <label class="mt-2">AV (Entrada)</label>
                             <select name="av_oi_id">
                                 <?= str_replace('value="' . ($consulta['av_oi_id'] ?? '') . '"', 'value="' . ($consulta['av_oi_id'] ?? '') . '" selected', $avOptions) ?>
                             </select>
 
-                            <label class="mt-2">Corrección Visual (Salida)</label>
+                            <label class="mt-2">CV (Salida)</label>
                             <select name="cv_oi_id">
                                 <?= str_replace('value="' . ($consulta['cv_oi_id'] ?? '') . '"', 'value="' . ($consulta['cv_oi_id'] ?? '') . '" selected', $avOptions) ?>
                             </select>
@@ -225,5 +239,6 @@ foreach ($catalogoAV as $av) {
                 </form>
             </div>
 
-        </div> </div>
+        </div> <!-- card-body -->
+    </div> <!-- card -->
 </div>

@@ -286,16 +286,19 @@ class ConsultaModel
 
     /**
      * Actualiza los datos clínicos (AV y CV) usando los IDs del catálogo.
-     * * @param int $id ID de la consulta.
-     * @param array $data Array con los IDs de av_od_id, av_oi_id, etc.
+     * Incluye OD, OI y AO.
+     * @param int $id ID de la consulta.
+     * @param array $data Array con los IDs de av_od_id, av_ao_id, etc.
      */
     public function updateDatosClinicos($id, $data)
     {
         try {
-            // Actualizamos los 4 campos principales de AV/CV
+            // Actualizamos los 6 campos (OD, OI, AO)
             $sql = "UPDATE consultas SET 
+                        av_ao_id = ?,
                         av_od_id = ?, 
                         av_oi_id = ?,
+                        cv_ao_id = ?,
                         cv_od_id = ?, 
                         cv_oi_id = ?
                     WHERE id = ?";
@@ -303,8 +306,10 @@ class ConsultaModel
             $stmt = $this->pdo->prepare($sql);
             
             return $stmt->execute([
+                $data['av_ao_id'] ?: null,
                 $data['av_od_id'] ?: null,
                 $data['av_oi_id'] ?: null,
+                $data['cv_ao_id'] ?: null,
                 $data['cv_od_id'] ?: null,
                 $data['cv_oi_id'] ?: null,
                 (int)$id
