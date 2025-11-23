@@ -51,8 +51,8 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     </div>
 
                     <div class="form-group">
-                        <label for="fecha">Fecha y Hora</label>
-                        <input type="datetime-local" id="fecha" name="fecha" value="<?= date('Y-m-d\TH:i') ?>" required>
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
                     </div>
                 </div>
 

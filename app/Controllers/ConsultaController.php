@@ -20,7 +20,7 @@ function handleConsultaAction()
     $pdo = getConnection();
     
     $action = $_GET['action'] ?? 'index';
-    if ($action === 'store' || $action === 'delete' || $action === 'update_biometria' || $action === 'update_clinicos') {
+    if ($action === 'store' || $action === 'delete' || $action === 'update_biometria' || $action === 'update_clinicos' || $action === 'update') {
         $patientId = $_POST['patient_id'] ?? null;
     } else {
         $patientId = $_GET['patient_id'] ?? null;
@@ -78,7 +78,7 @@ function handleConsultaAction()
                 $data = [
                     'patient_id' => $_POST['patient_id'] ?? null,
                     'usuario_id' => $_SESSION['user_id'], // Obtenemos al usuario de la sesión
-                    'fecha' => $_POST['fecha'] ?? date('Y-m-d H:i:s'),
+                    'fecha' => $_POST['fecha'] ?? date('Y-m-d'),
                     'motivo_consulta' => $_POST['motivo_consulta'] ?? null,
                     'detalle_motivo' => !empty($_POST['detalle_motivo']) ? $_POST['detalle_motivo'] : null,
                     'observaciones' => !empty($_POST['observaciones']) ? $_POST['observaciones'] : null

@@ -21,8 +21,8 @@ if (!$paciente || !$consulta) {
 // 5. Creamos el nombre completo
 $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
 
-// 6. Formateamos la fecha para el input 'datetime-local'
-$fechaInput = date('Y-m-d\TH:i', strtotime($consulta['fecha']));
+// 6. Formateamos la fecha para el input 'date'
+$fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
 ?>
 
 <div class="page-header">
@@ -59,8 +59,8 @@ $fechaInput = date('Y-m-d\TH:i', strtotime($consulta['fecha']));
                     </div>
 
                     <div class="form-group">
-                        <label for="fecha">Fecha y Hora</label>
-                        <input type="datetime-local" id="fecha" name="fecha" value="<?= $fechaInput ?>" required>
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" name="fecha" value="<?= $fechaInput ?>" required>
                     </div>
                 </div>
 

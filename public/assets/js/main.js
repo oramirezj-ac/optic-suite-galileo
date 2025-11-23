@@ -104,3 +104,43 @@ function initializeBiometricsCalculator() {
 
 // Agregamos la función a la cola de ejecución al cargar la página
 document.addEventListener('DOMContentLoaded', initializeBiometricsCalculator);
+
+/* ==========================================================================
+   Generador de Texto para Ventas (El "Lego")
+   ========================================================================== */
+
+function initializeTextGenerator() {
+    const textArea = document.getElementById('observaciones');
+    const helpers = document.querySelectorAll('.js-text-helper');
+
+    // Cláusula de guardia: Si no estamos en la página correcta, salir.
+    if (!textArea || helpers.length === 0) return;
+
+    helpers.forEach(select => {
+        select.addEventListener('change', function() {
+            const valor = this.value;
+            const prefix = this.getAttribute('data-prefix') || '';
+            
+            if (valor) {
+                // Construimos el fragmento de texto
+                let textToAppend = (prefix ? prefix + ' ' : '') + valor;
+
+                // Lógica de puntuación: Añadir coma si ya hay texto
+                if (textArea.value.trim().length > 0) {
+                    if (!textArea.value.endsWith('\n')) {
+                        textToAppend = ', ' + textToAppend;
+                    }
+                }
+
+                // Insertamos el texto
+                textArea.value += textToAppend;
+
+                // Reseteamos el selector y devolvemos el foco
+                this.selectedIndex = 0;
+                textArea.focus();
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initializeTextGenerator);

@@ -72,6 +72,57 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     </div>
                 </div>
 
+                <div class="form-toolbar">
+                    <span class="toolbar-title">Constructor Rápido de Descripción:</span>
+                    
+                    <div class="form-row">
+                        
+                        <div class="form-group">
+                            <select class="js-text-helper" data-prefix="Lente">
+                                <option value="" selected disabled>Tipo de Lente...</option>
+                                <option value="Monofocal">Monofocal</option>
+                                <option value="Bifocal Flap-Top">Bifocal Flap-Top</option>
+                                <option value="Bifocal Invisible">Bifocal Invisible</option>
+                                <option value="Progresivo">Progresivo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="js-text-helper" data-prefix="">
+                                <option value="" selected disabled>Material...</option>
+                                <option value="CR-39">CR-39</option>
+                                <option value="Policarbonato">Policarbonato</option>
+                                <option value="Hi-Index">Hi-Index</option>
+                                <option value="Trivex">Trivex</option>
+                                <option value="Cristal">Cristal</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="js-text-helper" data-prefix="con">
+                                <option value="" selected disabled>Tratamiento...</option>
+                                <option value="Antireflejante (AR)">AR</option>
+                                <option value="Blue Ray">Blue Ray</option>
+                                <option value="Fotocromático">Fotocromático</option>
+                                <option value="Transitions">Transitions</option>
+                                <option value="Crizal">Crizal</option>
+                                <option value="Blanco">Blanco</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="js-text-helper" data-prefix="en Armazón">
+                                <option value="" selected disabled>Armazón...</option>
+                                <option value="Propio">Propio</option>
+                                <option value="Genérico">Genérico</option>
+                                <option value="De Marca">De Marca</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <span class="toolbar-help-text">* Selecciona una opción para agregarla al texto de abajo.</span>
+                </div>
+
                 <div class="form-group">
                     <label for="observaciones">Descripción de Productos / Observaciones</label>
                     <textarea id="observaciones" name="observaciones" rows="4" placeholder="Describa aquí el armazón, micas, tratamientos y cualquier otro detalle de la nota antigua..."></textarea>
