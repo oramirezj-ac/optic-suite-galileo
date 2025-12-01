@@ -94,7 +94,8 @@ function handlePatientAction()
                 ];
 
                 if ($patientModel->update($id, $data)) {
-                    header('Location: /index.php?page=patients&success=updated');
+                    // Redirigimos a DETALLES del paciente, pasando el ID
+                    header('Location: /index.php?page=patients_details&id=' . $id . '&success=updated');
                 } else {
                     $error_message = "Error al actualizar al paciente.";
                     header('Location: /index.php?page=patients_edit&id=' . $id . '&error=' . urlencode($error_message));

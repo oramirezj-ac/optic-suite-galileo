@@ -46,20 +46,16 @@ function handleVentaAction()
            CASE: INDEX (Listado General con Filtros)
            ------------------------------------------------------ */
         case 'index':
-            // Detectamos qué pestaña está activa para saber qué buscar
-            $tab = $_GET['tab'] ?? 'recent'; // 'recent' es el default
+            $tab = $_GET['tab'] ?? 'recent'; 
             $ventas = [];
 
-            // Lógica según la pestaña
             if ($tab === 'search') {
-                // Pestaña Búsqueda
                 $term = $_GET['q'] ?? '';
                 if (!empty($term)) {
                     $ventas = $ventaModel->searchByTerm($term);
                 }
             } 
             elseif ($tab === 'dates') {
-                // Pestaña Fechas
                 $start = $_GET['date_start'] ?? '';
                 $end = $_GET['date_end'] ?? '';
                 if (!empty($start) && !empty($end)) {
@@ -67,17 +63,15 @@ function handleVentaAction()
                 }
             } 
             elseif ($tab === 'all') {
-                // Pestaña Histórico Completo
                 $ventas = $ventaModel->getAll();
             }
             else {
-                // Pestaña Recientes (Default)
-                $ventas = $ventaModel->getAllWithPatient(); // La función de límite 50 que ya tenías
+                $ventas = $ventaModel->getAllWithPatient(); 
             }
             
             return [
                 'ventas' => $ventas,
-                'activeTab' => $tab // Pasamos la pestaña activa a la vista
+                'activeTab' => $tab
             ];
             break;
 
@@ -85,12 +79,8 @@ function handleVentaAction()
            CASE: CREATE (Mostrar el formulario de nueva venta)
            ------------------------------------------------------ */
         case 'create':
-            // Buscamos los datos del paciente para el título
             $paciente = $patientModel->getById($patientId);
-            
-            return [
-                'paciente' => $paciente
-            ];
+            return [ 'paciente' => $paciente ];
             break;
 
         /* ------------------------------------------------------
@@ -99,52 +89,68 @@ function handleVentaAction()
         case 'store':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
-                // 1. Preparamos los montos para decidir el estado
+                // --- 1. Lógica Financiera (Estado Pagado/Pendiente) ---
                 $costoTotal = $_POST['costo_total'] ?? 0.00;
                 $anticipo = $_POST['monto_anticipo'] ?? 0.00;
 
-                // Lógica: Si el anticipo cubre el total, nace como 'pagado'
-                // (Usamos una pequeña tolerancia de 0.01 para errores de decimales)
                 if ($anticipo >= ($costoTotal - 0.01)) {
                     $estadoInicial = 'pagado';
                 } else {
                     $estadoInicial = 'pendiente';
                 }
 
-                // 2. Recopilamos Datos de la Venta
+                // --- 2. Lógica de Fecha (Agregamos hora fija 11:00) ---
+                $fechaVentaDB = ($_POST['fecha_venta'] ?? date('Y-m-d')) . ' 11:00:00';
+
+                // --- 3. Lógica de Duplicados (La regla de la 'D') ---
+                $numeroNota = $_POST['numero_nota'];
+                $sufijo = $_POST['numero_nota_sufijo'] ?? null;
+
+                // Verificamos si la nota ya existe
+                if ($ventaModel->existsNumeroNota($numeroNota)) {
+                    // Si existe y no escribiste un sufijo manual, ponemos 'D'
+                    if (empty($sufijo)) {
+                        $sufijo = 'D'; 
+                    }
+                }
+
+                // --- 4. Preparamos el Array final para el Modelo ---
                 $dataVenta = [
                     'id_paciente' => $patientId,
-                    'numero_nota' => $_POST['numero_nota'],
-                    'numero_nota_sufijo' => $_POST['numero_nota_sufijo'] ?? null,
-                    'fecha_venta' => $_POST['fecha_venta'] ?? date('Y-m-d'),
+                    'numero_nota' => $numeroNota,
+                    'numero_nota_sufijo' => $sufijo, // <-- Aquí va la 'D' si aplica
+                    'fecha_venta' => $fechaVentaDB,  // <-- Aquí va la fecha con hora
                     'costo_total' => $costoTotal,
-                    'estado_pago' => $estadoInicial, // <-- USAMOS EL ESTADO CALCULADO
+                    'estado_pago' => $estadoInicial,
                     'observaciones' => $_POST['observaciones'] ?? null
                 ];
 
                 try {
                     $pdo->beginTransaction();
 
-                    // 3. Guardamos la Venta
+                    // Guardamos la Venta
                     $newVentaId = $ventaModel->create($dataVenta);
 
                     if (!$newVentaId) {
                         throw new Exception("No se pudo crear la venta.");
                     }
 
-                    // 4. Guardamos el Anticipo (si existe y es mayor a 0)
+                    // Guardamos el Anticipo (si existe)
                     if ($anticipo > 0) {
+                        // Usamos la misma fecha de la venta para el anticipo
+                        $fechaAnticipo = ($_POST['fecha_anticipo'] ?? $_POST['fecha_venta']) . ' 11:00:00';
+                        
                         $dataAbono = [
                             'id_venta' => $newVentaId,
                             'monto' => $anticipo,
-                            'fecha' => $_POST['fecha_anticipo'] ?? $dataVenta['fecha_venta']
+                            'fecha' => $fechaAnticipo
                         ];
                         $abonoModel->create($dataAbono);
                     }
 
                     $pdo->commit();
 
-                    // 5. Éxito
+                    // Éxito: Redirigimos al Hub de Venta
                     header('Location: /index.php?page=ventas_details&id=' . $newVentaId . '&patient_id=' . $patientId . '&success=sale_created');
                     exit();
 
@@ -156,7 +162,7 @@ function handleVentaAction()
             }
             break;
 
-            /* ------------------------------------------------------
+        /* ------------------------------------------------------
            CASE: DETAILS (El Hub de la Venta)
            ------------------------------------------------------ */
         case 'details':
@@ -167,15 +173,11 @@ function handleVentaAction()
                 exit();
             }
 
-            // 1. Buscamos datos principales
             $paciente = $patientModel->getById($patientId);
             $venta = $ventaModel->getById($ventaId);
-            
-            // 2. Buscamos historial financiero
             $abonos = $abonoModel->getByVentaId($ventaId);
             $totalPagado = $abonoModel->getTotalPagado($ventaId);
 
-            // 3. Devolvemos todo el paquete
             return [
                 'paciente' => $paciente,
                 'venta' => $venta,
@@ -195,7 +197,6 @@ function handleVentaAction()
                 exit();
             }
 
-            // Buscamos los datos actuales para rellenar el formulario
             $venta = $ventaModel->getById($ventaId);
             $paciente = $patientModel->getById($patientId);
 
@@ -211,14 +212,13 @@ function handleVentaAction()
         case 'update':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ventaId = $_POST['id_venta'] ?? null;
-                // (Nota: $patientId ya se obtuvo automáticamente al inicio del controlador)
 
                 if (!$ventaId) {
                     header('Location: /index.php?page=patients&error=missing_ids');
                     exit();
                 }
 
-                // 1. Preparamos los datos a actualizar
+                // Preparamos datos
                 $data = [
                     'numero_nota' => $_POST['numero_nota'],
                     'fecha_venta' => $_POST['fecha_venta'],
@@ -226,12 +226,9 @@ function handleVentaAction()
                     'observaciones' => $_POST['observaciones']
                 ];
 
-                // 2. Llamamos al modelo
                 if ($ventaModel->update($ventaId, $data)) {
-                    // ÉXITO: Regresamos al Hub de la Venta
                     header('Location: /index.php?page=ventas_details&id=' . $ventaId . '&patient_id=' . $patientId . '&success=sale_updated');
                 } else {
-                    // ERROR: Regresamos al formulario de edición
                     header('Location: /index.php?page=ventas_edit&id=' . $ventaId . '&patient_id=' . $patientId . '&error=update_failed');
                 }
                 exit();
@@ -252,15 +249,12 @@ function handleVentaAction()
                 }
 
                 if ($ventaModel->delete($ventaId)) {
-                    // ÉXITO: Regresamos al expediente del paciente (Pestaña Ventas)
                     header('Location: /index.php?page=patients_details&id=' . $patientId . '&tab=ventas&success=sale_deleted');
                 } else {
-                    // ERROR: Regresamos a la confirmación
                     header('Location: /index.php?page=ventas_delete&id=' . $ventaId . '&patient_id=' . $patientId . '&error=delete_failed');
                 }
                 exit();
             }
             break;
-        
     }
 }

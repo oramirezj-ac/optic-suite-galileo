@@ -1,14 +1,13 @@
 <?php
-// 1. Incluimos los helpers y el controlador
-require_once __DIR__ . '/../../Controllers/ConsultaController.php';
+// 1. Incluimos el controlador CORRECTO (Graduaciones)
+require_once __DIR__ . '/../../Controllers/GraduacionController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
-// 2. Forzamos la acción 'edit' del *Controlador de Graduaciones*
-// (Aunque usamos el de Consultas para *cargar* los datos)
+// 2. Forzamos la acción 'edit' para obtener los datos de la graduación
 $_GET['action'] = 'edit'; 
-$data = handleConsultaAction(); // Reutilizamos el 'case edit' que ya busca todo
+$data = handleGraduacionAction(); // <-- CAMBIO: Llamamos al controlador de graduaciones
 
-// 3. Desempaquetamos los 4 grupos de datos
+// 3. Desempaquetamos los datos
 $paciente = $data['paciente'];
 $consulta = $data['consulta'];
 $graduacion = $data['graduacion']; // Contiene ['OD'] y ['OI']

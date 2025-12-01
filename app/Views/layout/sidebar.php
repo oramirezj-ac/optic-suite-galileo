@@ -1,5 +1,7 @@
 <aside class="sidebar">
-    <h1 class="sidebar-brand">Optic Suite</h1>
+    <h1 class="sidebar-brand">
+        <?= $_ENV['APP_NAME'] ?? 'Optic Suite' ?>
+    </h1>
     <nav class="sidebar-nav">
         <ul>
             <li>

@@ -131,8 +131,8 @@ function handleGraduacionAction()
                         $graduacionModel->create($consultaId, $dataOI);
                     }
                     
-                    // 3. Éxito: Redirigimos al "Taller de Graduaciones"
-                    header('Location: /index.php?page=graduaciones_index&consulta_id=' . $consultaId . '&patient_id=' . $patientId . '&success=grad_updated');
+                    // Usamos 'id' porque eso es lo que espera la página graduaciones_index
+                    header('Location: /index.php?page=graduaciones_index&id=' . $consultaId . '&patient_id=' . $patientId . '&success=grad_updated');
 
                 } catch (Exception $e) {
                     // 4. Error: Redirigimos de vuelta a la edición
