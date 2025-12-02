@@ -1,8 +1,10 @@
 /* ==========================================================================
-   Componente: Formularios
+   COMPONENTE: FORMULARIOS
    ========================================================================== */
 
-/* Contenedores y Layout */
+/* ------------------------------------------------------
+   1. Contenedores y Layout
+   ------------------------------------------------------ */
 .form-row {
     display: flex;
     gap: 1.5rem;
@@ -12,11 +14,27 @@
     flex: 1;
 }
 
+/* Layouts específicos (Legacy - considerar refactorizar a futuro) */
 #domicilio-group { flex-grow: 3; }
 #telefono-group { flex-grow: 2; }
 #edad-group { flex-grow: 1; }
 
-/* Elementos de Formulario */
+/* Modificadores de Alineación */
+.align-items-end {
+    align-items: flex-end;
+}
+.align-end { /* Alias corto */
+    align-items: flex-end;
+}
+
+/* Evita crecimiento en flexbox */
+.flex-no-grow {
+    flex-grow: 0;
+}
+
+/* ------------------------------------------------------
+   2. Elementos del Formulario
+   ------------------------------------------------------ */
 .form-group,
 .form-group-checkbox,
 .form-actions {
@@ -29,6 +47,7 @@
     font-weight: 500;
 }
 
+/* Inputs Genéricos */
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -56,18 +75,26 @@
     padding-top: 1.5rem;
     margin-top: 1rem;
 }
-/* ==========================================================================
-   Helpers de Layout para Forms
-   ========================================================================== */
 
-/*
- * Usar esta clase en un 'hijo' de un 'display: grid'
- * para hacer que ocupe todas las columnas.
- */
+/* ------------------------------------------------------
+   3. Helpers de Texto
+   ------------------------------------------------------ */
+.text-secondary {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* ------------------------------------------------------
+   4. Helpers de Ancho (Grid)
+   ------------------------------------------------------ */
+/* Ocupar todas las columnas disponibles */
 .form-group-full-span {
     grid-column: 1 / -1;
 }
-/* Usar esta clase para que el elemento ocupe un tercio del ancho del contenedor padre */
+
+/* Ocupar 1/3 del ancho (útil en filas largas) */
 .form-group-third {
     max-width: 33.33%;
 }

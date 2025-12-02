@@ -144,3 +144,50 @@ function initializeTextGenerator() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeTextGenerator);
+
+/* ==========================================================================
+   Calculadora Inversa de Edad (Pacientes)
+   ========================================================================== */
+
+function initAgeCalculator() {
+    // 1. Identificamos los inputs
+    const inputVisita = document.getElementById('fecha_primera_visita');
+    const inputEdad = document.getElementById('edad_calculadora'); // El campo visual
+    const inputNacimiento = document.getElementById('fecha_nacimiento'); // El campo oculto/real
+
+    // Si no estamos en el formulario de pacientes, salimos
+    if (!inputEdad || !inputNacimiento) return;
+
+    // 2. Función de cálculo
+    function calculateBirthDate() {
+        const edad = parseInt(inputEdad.value);
+        
+        // Si la fecha de visita está vacía, usamos HOY como referencia
+        const fechaRefString = inputVisita && inputVisita.value ? inputVisita.value : new Date().toISOString().split('T')[0];
+        const fechaRef = new Date(fechaRefString);
+
+        if (!isNaN(edad) && edad > 0) {
+            // Restamos la edad al año de referencia
+            const anioNacimiento = fechaRef.getFullYear() - edad;
+            
+            // Mantenemos mes y día de la fecha de referencia
+            // (Es una estimación, pero consistente)
+            const mes = (fechaRef.getMonth() + 1).toString().padStart(2, '0');
+            const dia = fechaRef.getDate().toString().padStart(2, '0');
+
+            // Formato YYYY-MM-DD para el input date
+            const fechaStr = `${anioNacimiento}-${mes}-${dia}`;
+            
+            inputNacimiento.value = fechaStr;
+        }
+    }
+
+    // 3. Escuchamos cambios en Edad y en Fecha de Visita
+    inputEdad.addEventListener('input', calculateBirthDate);
+    if (inputVisita) {
+        inputVisita.addEventListener('change', calculateBirthDate);
+    }
+}
+
+// Añadimos a la inicialización
+document.addEventListener('DOMContentLoaded', initAgeCalculator);

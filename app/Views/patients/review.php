@@ -72,12 +72,12 @@ function renderNewPatientHiddenFields($data) {
                 <div class="data-item half"><strong>Domicilio:</strong> <?= htmlspecialchars($newPatientData['domicilio'] ?? 'N/A') ?></div>
             </div>
 
-            <hr style="margin: 2rem 0;">
+            <hr class="section-divider">
 
             <h3>Coincidencias Encontradas (<?= count($duplicates) ?>):</h3>
             
             <?php foreach ($duplicates as $patient): ?>
-                <div class="data-grid highlight-existing" style="margin-bottom: 1.5rem;">
+                <div class="data-grid highlight-existing mb-1-5">
                     
                     <div class="data-item full"><strong>Nombre:</strong> <?= htmlspecialchars(formatPatientName($patient)) ?></div>
                     <div class="data-item half"><strong>Teléfono:</strong> <?= htmlspecialchars($patient['telefono'] ?? 'N/A') ?></div>
@@ -85,9 +85,9 @@ function renderNewPatientHiddenFields($data) {
                 </div>
             <?php endforeach; ?>
 
-        </div> <div class="card-footer" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: flex-start;">
+       </div><div class="card-footer justify-start flex-wrap">
             
-            <form action="/patient_handler.php?action=force_update" method="POST" style="display:inline-block;">
+            <form action="/patient_handler.php?action=force_update" method="POST" class="inline-block">
                 <input type="hidden" name="id" value="<?= $firstDuplicateId ?>">
                 <?php renderNewPatientHiddenFields($newPatientData); ?>
                 
@@ -100,7 +100,7 @@ function renderNewPatientHiddenFields($data) {
                 Descartar datos nuevos
             </a>
 
-            <form action="/patient_handler.php?action=force_create" method="POST" style="display:inline-block;">
+            <form action="/patient_handler.php?action=force_create" method="POST" class="inline-block">
                 <?php renderNewPatientHiddenFields($newPatientData); ?>
                 
                 <button type="submit" class="btn btn-success" title="Se crea paciente capturado">

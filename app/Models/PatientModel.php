@@ -45,38 +45,42 @@ class PatientModel
 
     /**
      * Crea un nuevo paciente.
-     * @param array $data Datos del paciente (nombre, apellido_paterno, etc.)
+     * @param array $data Datos del paciente.
      * @return string|false El ID del nuevo paciente si tuvo éxito, False si no.
      */
     public function create($data)
     {
         try {
-            $sql = "INSERT INTO pacientes (nombre, apellido_paterno, apellido_materno, domicilio, telefono, edad, antecedentes_medicos) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+            // SQL Actualizado: Cambiamos 'edad' por 'fecha_nacimiento' y 'fecha_primera_visita'
+            $sql = "INSERT INTO pacientes (
+                        nombre, 
+                        apellido_paterno, 
+                        apellido_materno, 
+                        fecha_nacimiento, 
+                        fecha_primera_visita, 
+                        domicilio, 
+                        telefono, 
+                        antecedentes_medicos
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             
             $stmt = $this->pdo->prepare($sql);
             
-            // 1. Ejecutamos la consulta
             $success = $stmt->execute([
                 $data['nombre'],
                 $data['apellido_paterno'],
                 $data['apellido_materno'],
+                $data['fecha_nacimiento'] ?: null,      // Guardamos fecha o NULL
+                $data['fecha_primera_visita'] ?: null,  // Guardamos fecha o NULL
                 $data['domicilio'],
                 $data['telefono'],
-                $data['edad'],
                 $data['antecedentes']
             ]);
 
-            // 2. Si tuvo éxito (true)...
             if ($success) {
-                // 3. ...DEVOLVEMOS EL ÚLTIMO ID INSERTADO (¡esto es lo correcto!)
                 return $this->pdo->lastInsertId();
             }
-            
-            return false; // Si $success fue false
-
+            return false;
         } catch (PDOException $e) {
-            // Aquí podríamos loguear el error $e->getMessage()
             return false;
         }
     }
@@ -84,19 +88,21 @@ class PatientModel
     /**
      * Actualiza un paciente existente.
      * @param int $id ID del paciente
-     * @param array $data Datos del paciente (nombre, apellido_paterno, etc.)
+     * @param array $data Datos del paciente
      * @return bool True si tuvo éxito, False si no.
      */
     public function update($id, $data)
     {
         try {
+            // SQL Actualizado: Cambiamos 'edad' por las fechas
             $sql = "UPDATE pacientes SET 
                         nombre = ?, 
                         apellido_paterno = ?, 
                         apellido_materno = ?, 
+                        fecha_nacimiento = ?,
+                        fecha_primera_visita = ?,
                         domicilio = ?, 
                         telefono = ?, 
-                        edad = ?, 
                         antecedentes_medicos = ? 
                     WHERE id = ?";
             
@@ -106,11 +112,12 @@ class PatientModel
                 $data['nombre'],
                 $data['apellido_paterno'],
                 $data['apellido_materno'],
+                $data['fecha_nacimiento'] ?: null,
+                $data['fecha_primera_visita'] ?: null,
                 $data['domicilio'],
                 $data['telefono'],
-                $data['edad'],
                 $data['antecedentes'],
-                $id
+                (int)$id
             ]);
         } catch (PDOException $e) {
             return false;

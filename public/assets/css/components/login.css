@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Componente: Pantalla de Login
+   ========================================================================== */
+
+/* Clase específica para el body del login (Centrado vertical) */
+.login-layout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--bg-secondary);
+}
+
+/* Tarjeta de Login (Hereda de .card pero con ancho fijo) */
+.login-card {
+    background-color: var(--bg-primary);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-card h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}

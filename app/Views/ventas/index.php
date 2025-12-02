@@ -14,7 +14,7 @@ function renderSalesTable($ventas) {
         return;
     }
     // Agregamos un contador de resultados
-    echo '<p class="text-muted" style="margin-bottom: 1rem;">Mostrando ' . count($ventas) . ' resultados.</p>';
+    echo '<p class="text-muted mb-1">Mostrando ' . count($ventas) . ' resultados.</p>';
     
     echo '<table>
             <thead>
@@ -79,7 +79,7 @@ function renderSalesTable($ventas) {
             <?php endif; ?>
 
             <?php if($activeTab === 'search'): ?>
-                <form action="/index.php" method="GET" style="margin-bottom: 2rem;">
+                <form action="/index.php" method="GET" class="mb-2">
                     <input type="hidden" name="page" value="ventas_index">
                     <input type="hidden" name="tab" value="search">
                     <div class="search-bar">
@@ -91,10 +91,10 @@ function renderSalesTable($ventas) {
             <?php endif; ?>
 
             <?php if($activeTab === 'dates'): ?>
-                <form action="/index.php" method="GET" style="margin-bottom: 2rem;">
+                <form action="/index.php" method="GET" class="mb-2">
                     <input type="hidden" name="page" value="ventas_index">
                     <input type="hidden" name="tab" value="dates">
-                    <div class="form-row" style="align-items: flex-end;">
+                   <div class="form-row align-items-end">
                         <div class="form-group">
                             <label>Fecha Inicio</label>
                             <input type="date" name="date_start" value="<?= htmlspecialchars($_GET['date_start'] ?? '') ?>" required>
@@ -103,8 +103,8 @@ function renderSalesTable($ventas) {
                             <label>Fecha Fin</label>
                             <input type="date" name="date_end" value="<?= htmlspecialchars($_GET['date_end'] ?? '') ?>" required>
                         </div>
-                        <div class="form-group" style="flex-grow: 0;">
-                            <button type="submit" class="btn btn-primary" style="margin-bottom: 0.2rem;">Filtrar</button>
+                       <div class="form-group flex-no-grow">
+                            <button type="submit" class="btn btn-primary mb-02">Filtrar</button>
                         </div>
                     </div>
                 </form>

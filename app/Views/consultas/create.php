@@ -24,7 +24,7 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
         <small>Registrar Consulta para:</small><br>
         <?= htmlspecialchars($fullName) ?>
     </h1>
-    <div class="header-actions" style="display: flex; gap: 0.5rem;">
+    <div class="view-actions">
         <a href="/index.php?page=consultas_index&patient_id=<?= $patientId ?>" class="btn btn-secondary">
             Cancelar
         </a>
@@ -39,7 +39,7 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
 
                 <div class="form-row">
-                    <div class="form-group" style="flex-grow: 2;">
+                    <div class="form-group flex-grow-2">
                         <label for="motivo_consulta">Motivo de la Consulta</label>
                         <select id="motivo_consulta" name="motivo_consulta" required>
                             <option value="" disabled selected>-- Seleccione un motivo --</option>

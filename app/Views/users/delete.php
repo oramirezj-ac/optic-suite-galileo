@@ -40,14 +40,14 @@ if ($action === 'activate') {
 <div class="page-content">
     <div class="card">
         <div class="card-body">
-            <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+            <p class="emphasis-text">
                 <?= $message ?> <strong><?= htmlspecialchars($user['nombre_completo']) ?></strong>?
             </p>
             
-            <form action="/user_handler.php?action=<?= $action ?>" method="POST" style="margin-top: 2rem;">
+           <form action="/user_handler.php?action=<?= $action ?>" method="POST" class="mt-2">
                 <input type="hidden" name="id" value="<?= $userId ?>">
 
-                <div class="form-actions" style="border-top: none; padding-top: 0; display: flex; gap: 1rem;">
+               <div class="form-actions actions-clean">
                     <button type="submit" class="btn <?= $buttonClass ?>"><?= $buttonText ?></button>
                     <a href="/index.php?page=users" class="btn btn-secondary">Cancelar</a>
                 </div>

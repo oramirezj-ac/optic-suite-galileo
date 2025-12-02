@@ -1,6 +1,10 @@
 /* ==========================================================================
-   Componentes Personalizados
+   COMPONENTES PERSONALIZADOS Y UTILIDADES
    ========================================================================== */
+
+/* ------------------------------------------------------
+   1. Encabezados de Página (.page-header)
+   ------------------------------------------------------ */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -8,28 +12,103 @@
     margin-bottom: 2rem;
 }
 
+/* ------------------------------------------------------
+   2. Tarjetas (.card)
+   ------------------------------------------------------ */
 .card {
     background-color: var(--bg-primary);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
 }
-.card-body { padding: 1.5rem; }
 
+.card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end; /* Alineación a la derecha por defecto */
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    gap: 1rem;
+}
+
+/* Sub-componente: Info Box (Usado en Biometría) */
+.info-box {
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.info-box-title {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+
+.info-box-content {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Componente: Cabecera de Contexto (Usado en Edición/Detalles) */
+.context-header {
+    margin-bottom: 1.5rem;
+}
+
+.context-header .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+}
+
+.context-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ------------------------------------------------------
+   3. Tablas (.table)
+   ------------------------------------------------------ */
 table {
     width: 100%;
     border-collapse: collapse;
 }
+
 th, td {
     padding: 0.75rem 1rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
+
 thead th {
     font-weight: 500;
     color: var(--text-secondary);
 }
 
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ------------------------------------------------------
+   4. Badges / Etiquetas y Alertas
+   ------------------------------------------------------ */
 .badge {
     padding: 0.25rem 0.6rem;
     border-radius: 12px;
@@ -40,66 +119,19 @@ thead th {
 .badge-success { background-color: #dcfce7; color: #166534; }
 .badge-danger { background-color: #fee2e2; color: #991b1b; }
 
-/* ==========================================================================
-   Componente: Formularios
-   ========================================================================== */
-
-/*
- * Contenedores para cada elemento del formulario (label, input, etc.)
- * y para la sección de botones de acción.
- */
-.form-group,
-.form-group-checkbox,
-.form-actions {
-    margin-bottom: 1.5rem;
+.alert { 
+    padding: 1rem; 
+    margin-bottom: 1.5rem; 
+    border-radius: 6px; 
+    border: 1px solid transparent; 
 }
-
-/* Estilo para las etiquetas de los campos */
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-/* Estilo general para campos de texto, email, password y selectores */
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 1rem;
-    font-family: var(--font-main);
-}
-
-/* Contenedor para checkboxes para alinearlos con su etiqueta */
-.form-group-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* Contenedor para los botones de envío, con una línea de separación superior */
-.form-actions {
-    border-top: 1px solid var(--border-color);
-    padding-top: 1.5rem;
-    margin-top: 2rem;
-}
-
-/* ==========================================================================
-    Componente: Acciones y Alertas
-    ========================================================================== */
-.actions-cell { display: flex; gap: 0.5rem; }
-.alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px; border: 1px solid transparent; }
 .alert-success { background-color: #dcfce7; color: #166534; border-color: #a7f3d0; }
 .alert-danger { background-color: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.alert-secondary { background-color: var(--bg-secondary); color: var(--text-secondary); border-color: var(--border-color); }
 
-/* Componente: Barra de Búsqueda */
-.card-header {
-    padding: 1rem 1.5rem;
-    background-color: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-}
+/* ------------------------------------------------------
+   5. Componentes de Navegación / Vistas
+   ------------------------------------------------------ */
 .search-bar {
     display: flex;
     gap: 0.5rem;
@@ -112,9 +144,7 @@ thead th {
     font-size: 1rem;
 }
 
-/* ==========================================================================
-   Componente: Vistas Dinámicas (Pestañas)
-   ========================================================================== */
+/* Pestañas (Tabs) */
 .view-actions {
     display: flex;
     gap: 0.5rem;
@@ -125,20 +155,16 @@ thead th {
     border-color: var(--btn-primary-bg);
 }
 
-.view-panel {
-    display: none; /* Ocultamos todas las pestañas por defecto */
-}
-.view-panel.active {
-    display: block; /* Mostramos solo la que tenga la clase 'active' */
-}
+.view-panel { display: none; }
+.view-panel.active { display: block; }
 
-/* ==========================================================================
-   Layout para Mostrar Datos (Data Grid)
-   ========================================================================== */
+/* ------------------------------------------------------
+   6. Layout de Datos (Data Grid)
+   ------------------------------------------------------ */
 .data-grid {
     display: flex;
-    flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
-    gap: 1rem; /* Espacio entre los elementos */
+    flex-wrap: wrap;
+    gap: 1rem;
     padding-top: 1rem;
 }
 .data-item {
@@ -146,91 +172,17 @@ thead th {
     border-bottom: 1px solid var(--border-color);
 }
 .data-item.full { flex-basis: 100%; }
-.data-item.half { flex-basis: calc(50% - 0.5rem); } /* 50% menos la mitad del gap */
-.data-item.quarter { flex-basis: calc(25% - 0.75rem); } /* 25% menos parte del gap */
+.data-item.half { flex-basis: calc(50% - 0.5rem); }
+.data-item.quarter { flex-basis: calc(25% - 0.75rem); }
 
 .data-item strong {
     color: var(--text-secondary);
     margin-right: 0.5rem;
 }
 
-/* ==========================================================================
-   Componente: Pie de Tarjeta (Card Footer)
-   ========================================================================== */
-
-.card-footer {
-    display: flex; /* Activa Flexbox para poder alinear el contenido */
-    justify-content: flex-end; /* Alinea los elementos hijos (el botón) al final (derecha) */
-    padding: 1rem 1.5rem;
-    background-color: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-}
-
-/* ==========================================================================
-   Componente: Texto de Énfasis
-   ========================================================================== */
-
-/* * Texto de introducción o énfasis, usado en páginas 
- * de confirmación (como 'delete.php').
- */
-.emphasis-text {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    line-height: 1.5;
-}
-
-/* ==========================================================================
-   Componente: Cabecera de Contexto
-   ========================================================================== */
-
-/* * Contenedor para la barra de 'sub-encabezado' que muestra 
- * el paciente y la fecha actual.
- */
-.context-header {
-    margin-bottom: 1.5rem;
-}
-
-.context-header .card-body {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem; /* Menos padding que un card-body normal */
-}
-
-.context-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-/* Utilidad para alineación de texto */
-.text-center {
-    text-align: center;
-}
-
-/* ==========================================================================
-   Utilerías de Espaciado y Alineación (Helpers)
-   ========================================================================== */
-
-/* Margen inferior estándar para separar tarjetas */
-.mb-2 {
-    margin-bottom: 2rem;
-}
-
-/* Alineación vertical al final (para alinear inputs con botones) */
-.align-end {
-    align-items: flex-end;
-}
-
-/* Evita que un elemento flex crezca (para botones que no deben estirarse) */
-.flex-no-grow {
-    flex-grow: 0;
-}
-
-/* ==========================================================================
-   Componente: Barra de Herramientas (Toolbar)
-   ========================================================================== */
-
+/* ------------------------------------------------------
+   7. Barra de Herramientas (Toolbar)
+   ------------------------------------------------------ */
 .form-toolbar {
     background-color: var(--bg-secondary);
     padding: 1rem;
@@ -246,12 +198,27 @@ thead th {
     font-weight: 600;
 }
 
-.form-toolbar .toolbar-help-text {
-    display: block;
-    margin-top: 0.5rem;
-    color: var(--text-secondary);
-    font-size: 0.85em;
+/* Layout / Flexbox */
+.w-100 { width: 100%; }
+.d-flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.justify-start { justify-content: flex-start !important; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+.inline-block { display: inline-block; }
+
+/* ==========================================================================
+   Utilidades de Color y Texto (FALTANTES)
+   ========================================================================== */
+
+.text-success {
+    color: var(--btn-success-bg); /* Verde */
 }
 
-/* Margen superior pequeño */
-.mt-2 { margin-top: 0.5rem; }
+.text-danger {
+    color: var(--btn-danger-bg); /* Rojo */
+}
+
+.fw-bold {
+    font-weight: bold;
+}

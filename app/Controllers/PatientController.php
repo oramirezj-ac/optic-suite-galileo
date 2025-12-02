@@ -29,13 +29,16 @@ function handlePatientAction()
                     exit();
                 }
 
+                // Preparamos los datos para el modelo (Store)
                 $data = [
                     'nombre' => $nombre,
                     'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
                     'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
+                    // NUEVO: Recibimos las fechas, ignoramos 'edad'
+                    'fecha_nacimiento' => !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null,
+                    'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : date('Y-m-d'),
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
-                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
                     'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
                 ];
 
@@ -83,13 +86,16 @@ function handlePatientAction()
                     exit();
                 }
                 
+               // Preparamos los datos para el modelo (Update)
                 $data = [
                     'nombre' => $nombre,
                     'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
                     'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
+                    // NUEVO: Recibimos las fechas
+                    'fecha_nacimiento' => !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null,
+                    'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : null,
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
-                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
                     'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
                 ];
 

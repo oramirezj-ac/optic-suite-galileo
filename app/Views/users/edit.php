@@ -28,7 +28,7 @@ if (!$user) {
     <div class="card">
         <div class="card-body">
             <?php if (isset($_GET['error'])): ?>
-                <div class="error-message" style="margin-bottom: 1.5rem;"><?= htmlspecialchars($_GET['error']) ?></div>
+                <div class="alert alert-danger"><?= htmlspecialchars($_GET['error']) ?></div>
             <?php endif; ?>
 
             <form action="/user_handler.php?action=update" method="POST">

@@ -61,7 +61,7 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                 <tbody>
                     <?php if (empty($consultas)): ?>
                         <tr>
-                            <td colspan="3" style="text-align: center;">No se encontraron consultas para este paciente.</td>
+                            <td colspan="3" class="text-center">No se encontraron consultas para este paciente.</td>
                         </tr>
                     <?php else: ?>
                         

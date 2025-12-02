@@ -179,7 +179,7 @@ foreach ($catalogoAV as $av) {
                                    placeholder="Ej: 22mm">
                         </div>
                         <div class="form-group flex-no-grow">
-                            <button type="submit" class="btn btn-primary" style="margin-bottom: 0.2rem;">Guardar Medidas</button>
+                            <button type="submit" class="btn btn-primary mb-02">Guardar Medidas</button>
                         </div>
                     </div>
                 </form>

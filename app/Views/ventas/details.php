@@ -38,7 +38,7 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
 
 <div class="page-content">
     
-    <div class="card" style="margin-bottom: 2rem;">
+    <div class="card mb-2">
         <div class="card-header">
             <h3>Detalles de la Venta</h3>
         </div>
@@ -49,21 +49,21 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
                 <div class="data-item quarter"><strong>Pagado:</strong> $<?= number_format($totalPagado, 2) ?></div>
                 <div class="data-item quarter">
                     <strong>Saldo:</strong> 
-                    <span style="color: <?= $saldoPendiente > 0 ? 'var(--btn-danger-bg)' : 'var(--btn-success-bg)' ?>; font-weight: bold;">
+                   <span class="fw-bold <?= $saldoPendiente > 0 ? 'text-danger' : 'text-success' ?>">
                         $<?= number_format($saldoPendiente, 2) ?>
-                    </span>
+                   </span>
                 </div>
 
                 <div class="data-item full">
                     <strong>Descripción de Productos / Observaciones:</strong><br>
-                    <p style="margin-top: 0.5rem; white-space: pre-wrap;"><?= htmlspecialchars($venta['observaciones_venta'] ?? 'Sin detalles registrados.') ?></p>
+                    <p class="observation-text"><?= htmlspecialchars($venta['observaciones_venta'] ?? 'Sin detalles registrados.') ?></p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="card-header d-flex justify-between align-center">
             <h3>Historial de Pagos</h3>
             
             <?php if ($saldoPendiente > 0): ?>

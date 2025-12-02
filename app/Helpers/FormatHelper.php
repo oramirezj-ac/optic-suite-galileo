@@ -33,4 +33,27 @@ class FormatHelper
      * (Aquí podremos añadir más funciones en el futuro, 
      * ej. formatCurrency(), formatPhone(), etc.)
      */
+
+    /**
+     * Calcula la edad actual basada en la fecha de nacimiento.
+     *
+     * @param string|null $fechaNacimiento Fecha en formato Y-m-d
+     * @return string Edad formateada (ej. "45 años") o "Edad desconocida"
+     */
+    public static function calculateAge($fechaNacimiento)
+    {
+        if (empty($fechaNacimiento)) {
+            return 'Edad desconocida';
+        }
+        
+        try {
+            $nacimiento = new DateTime($fechaNacimiento);
+            $hoy = new DateTime(); // Fecha actual del servidor
+            $diferencia = $hoy->diff($nacimiento);
+            
+            return $diferencia->y . ' años';
+        } catch (Exception $e) {
+            return 'Error en fecha';
+        }
+    }
 }

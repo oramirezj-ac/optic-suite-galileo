@@ -33,7 +33,7 @@ $searchTerm = $_GET['search'] ?? '';
                 <tbody>
                     <?php if (empty($patients)): ?>
                         <tr>
-                            <td colspan="4" style="text-align: center;">No se encontraron pacientes.</td>
+                            <td colspan="4" class="text-center">No se encontraron pacientes.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($patients as $patient): ?>

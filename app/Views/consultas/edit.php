@@ -47,7 +47,7 @@ $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
 
                 <div class="form-row">
-                    <div class="form-group" style="flex-grow: 2;">
+                    <div class="form-group flex-grow-2">
                         <label for="motivo_consulta">Motivo de la Consulta</label>
                         <select id="motivo_consulta" name="motivo_consulta" required>
                             <?php $motivo = $consulta['motivo_consulta']; ?>

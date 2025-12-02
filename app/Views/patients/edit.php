@@ -1,32 +1,47 @@
 <?php
-// 1. Incluimos el controlador
+// 1. Incluimos el controlador y helpers
 require_once __DIR__ . '/../../Controllers/PatientController.php';
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
-// 2. Obtenemos el ID de la URL
+// 2. Obtenemos el ID y buscamos al paciente
 $patientId = $_GET['id'] ?? null;
 if (!$patientId) {
     header('Location: /index.php?page=patients');
     exit();
 }
 
-// 3. Le decimos al controlador qué acción ejecutar y con qué ID
 $_GET['action'] = 'details';
-$data = handlePatientAction('details', $patientId); // <-- CAMBIO: Recibimos el PAQUETE
+$data = handlePatientAction('details', $patientId);
 
-// 4. Verificamos y DESEMPAQUETAMOS
+// 3. Verificamos
 if (!$data || !$data['patient']) {
     header('Location: /index.php?page=patients&error=not_found');
     exit();
 }
-$patient = $data['patient']; // <-- CAMBIO: Extraemos el paciente del paquete
+$patient = $data['patient'];
 
-// 5. Creamos el nombre completo
+// 4. Creamos el nombre completo
 $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
+
+// 5. Lógica de Pre-cálculo para la Vista
+// Si tenemos fecha de nacimiento, calculamos la edad (número) para llenar el input visual
+$edadCalculada = '';
+if (!empty($patient['fecha_nacimiento'])) {
+    try {
+        $nacimiento = new DateTime($patient['fecha_nacimiento']);
+        $hoy = new DateTime();
+        $edadCalculada = $hoy->diff($nacimiento)->y;
+    } catch (Exception $e) {
+        $edadCalculada = '';
+    }
+}
 ?>
 
 <div class="page-header">
     <h1>Editar Paciente: <?= htmlspecialchars($fullName) ?></h1>
-    <a href="/index.php?page=patients_details&id=<?= $patientId ?>" class="btn btn-secondary">Cancelar</a>
+    <div class="view-actions">
+        <a href="/index.php?page=patients_details&id=<?= $patientId ?>" class="btn btn-secondary">Cancelar</a>
+    </div>
 </div>
 
 <div class="page-content">
@@ -57,6 +72,27 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                     </div>
                 </div>
 
+                <div class="form-row align-items-end">
+                    
+                    <div class="form-group">
+                        <label for="fecha_primera_visita">Fecha de 1ª Visita</label>
+                        <input type="date" id="fecha_primera_visita" name="fecha_primera_visita" 
+                               value="<?= htmlspecialchars($patient['fecha_primera_visita'] ?? date('Y-m-d')) ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edad_calculadora">Edad</label>
+                        <input type="number" id="edad_calculadora" placeholder="Ej. 82" min="0" max="120" 
+                               value="<?= htmlspecialchars($edadCalculada) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" 
+                               value="<?= htmlspecialchars($patient['fecha_nacimiento'] ?? '') ?>" readonly>
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group" id="domicilio-group">
                         <label for="domicilio">Domicilio</label>
@@ -65,10 +101,6 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                     <div class="form-group" id="telefono-group">
                         <label for="telefono">Teléfono</label>
                         <input type="tel" id="telefono" name="telefono" value="<?= htmlspecialchars($patient['telefono'] ?? '') ?>">
-                    </div>
-                    <div class="form-group" id="edad-group">
-                        <label for="edad">Edad</label>
-                        <input type="number" id="edad" name="edad" min="1" max="110" value="<?= htmlspecialchars($patient['edad'] ?? '') ?>">
                     </div>
                 </div>
                 

@@ -47,10 +47,22 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                 <h3>Información General</h3>
                 <div class="data-grid">
                     <div class="data-item full"><strong>Nombre Completo:</strong> <?= htmlspecialchars($fullName) ?></div>
+                    
                     <div class="data-item half"><strong>Domicilio:</strong> <?= htmlspecialchars($patient['domicilio'] ?? 'No especificado') ?></div>
                     <div class="data-item quarter"><strong>Teléfono:</strong> <?= htmlspecialchars($patient['telefono'] ?? 'No especificado') ?></div>
-                    <div class="data-item quarter"><strong>Edad:</strong> <?= htmlspecialchars($patient['edad'] ?? 'No especificada') ?></div>
+                    
+                    <div class="data-item quarter">
+                        <strong>Edad Actual:</strong> 
+                        <?= FormatHelper::calculateAge($patient['fecha_nacimiento']) ?>
+                    </div>
+                    
                     <div class="data-item full"><strong>Antecedentes Médicos:</strong><br><?= nl2br(htmlspecialchars($patient['antecedentes_medicos'] ?? 'Sin antecedentes')) ?></div>
+
+                    <div class="data-item full">
+                        <small class="text-secondary">
+                            Fecha de 1ª Visita/Alta: <?= FormatHelper::dateFull($patient['fecha_primera_visita']) ?>
+                        </small>
+                    </div>
                 </div>
             </div>
 
@@ -58,19 +70,19 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                 <h3>Resumen de Consultas Recientes</h3>
                 
                 <?php if (empty($resumenConsultas)): ?>
-                    <p style="text-align: center;">Este paciente aún no tiene consultas registradas.</p>
+                    <p class="text-center">Este paciente aún no tiene consultas registradas.</p>
                 <?php else: ?>
                     
                     <?php 
-                    // Lógica para el Header de Biometría (Última Consulta)
+                    // Header de Biometría (Última Consulta)
                     $ultimaConsulta = $resumenConsultas[0];
                     $tieneBiometria = !empty($ultimaConsulta['dp_lejos_total']) || !empty($ultimaConsulta['altura_oblea']);
                     ?>
 
                     <?php if ($tieneBiometria): ?>
-                        <div style="background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
-                            <strong style="display:block; margin-bottom:0.5rem; color:var(--text-secondary);">Últimos Datos Biométricos:</strong>
-                            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                        <div class="info-box">
+                            <strong class="info-box-title">Últimos Datos Biométricos:</strong>
+                            <div class="info-box-content">
                                 <?php if($ultimaConsulta['dp_lejos_total']): ?>
                                     <div>
                                         <strong>DP:</strong> <?= htmlspecialchars($ultimaConsulta['dp_lejos_total']) ?> mm
@@ -139,7 +151,7 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                 <h3>Historial de Ventas</h3>
                 
                 <?php if (empty($ventas)): ?>
-                    <p style="text-align: center;">Este paciente no tiene ventas registradas.</p>
+                    <p class="text-center">Este paciente no tiene ventas registradas.</p>
                 <?php else: ?>
                     <table class="consultation-summary-table">
                         <thead>

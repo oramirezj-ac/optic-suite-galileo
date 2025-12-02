@@ -30,9 +30,9 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
             </p>
             <p class="alert alert-danger"><strong>Advertencia:</strong> Esta acción no se puede deshacer. Se eliminará el paciente y todo su historial de consultas y ventas asociadas.</p>
 
-            <form action="/patient_handler.php?action=delete" method="POST" style="margin-top: 2rem;">
+            <form action="/patient_handler.php?action=delete" method="POST" class="mt-2">
                 <input type="hidden" name="id" value="<?= $patientId ?>">
-                <div class="form-actions" style="border-top: none; padding-top: 0; display: flex; gap: 1rem;">
+                <div class="form-actions actions-clean">
                     <button type="submit" class="btn btn-danger">Sí, borrar permanentemente</button>
                     <a href="/index.php?page=patients_details&id=<?= $patientId ?>" class="btn btn-secondary">Cancelar</a>
                 </div>
