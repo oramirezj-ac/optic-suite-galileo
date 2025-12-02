@@ -212,4 +212,54 @@ class PatientModel
         // Devolvemos la lista final de duplicados únicos
         return array_values($duplicates);
     }
+
+    /**
+     * Obtiene los 10 pacientes modificados más recientemente.
+     * Ideal para la pestaña "Recientes".
+     */
+    public function getRecientes()
+    {
+        try {
+            // Ordenamos por fecha_actualizacion descendente para ver lo último que tocaste
+            $stmt = $this->pdo->prepare("SELECT * FROM pacientes ORDER BY fecha_actualizacion DESC LIMIT 10");
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Obtiene el listado completo de pacientes (con un límite de seguridad).
+     * Ordenado alfabéticamente.
+     */
+    public function getAllPacientes()
+    {
+        try {
+            // Límite de 2000 para seguridad del navegador
+            $stmt = $this->pdo->prepare("SELECT * FROM pacientes ORDER BY apellido_paterno ASC, apellido_materno ASC, nombre ASC LIMIT 2000");
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Busca pacientes filtrando por su fecha de primera visita (Alta).
+     */
+    public function searchByDateRange($start, $end)
+    {
+        try {
+            $sql = "SELECT * FROM pacientes 
+                    WHERE fecha_primera_visita BETWEEN ? AND ? 
+                    ORDER BY fecha_primera_visita DESC";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$start, $end]);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

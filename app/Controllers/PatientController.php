@@ -225,9 +225,39 @@ function handlePatientAction()
             }
             break;
 
-        default:
-            // 'list' (default)
-            $searchTerm = $_GET['search'] ?? '';
-            return $patientModel->getAll($searchTerm);
+       default:
+            // Lógica de Pestañas para el Directorio
+            $tab = $_GET['tab'] ?? 'recent'; // 'recent' es el default
+            $patients = [];
+
+            if ($tab === 'search') {
+                // Pestaña Búsqueda (Usamos la función getAll existente que busca por nombre/teléfono)
+                $searchTerm = $_GET['q'] ?? '';
+                if (!empty($searchTerm)) {
+                    $patients = $patientModel->getAll($searchTerm);
+                }
+            } 
+            elseif ($tab === 'dates') {
+                // Pestaña Por Fechas
+                $start = $_GET['date_start'] ?? '';
+                $end = $_GET['date_end'] ?? '';
+                if (!empty($start) && !empty($end)) {
+                    $patients = $patientModel->searchByDateRange($start, $end);
+                }
+            } 
+            elseif ($tab === 'all') {
+                // Pestaña Todos (Con límite de seguridad)
+                $patients = $patientModel->getAllPacientes();
+            } 
+            else {
+                // Pestaña Recientes (Default) - Últimos 10 modificados
+                $patients = $patientModel->getRecientes();
+            }
+
+            // Retornamos el paquete de datos para la vista
+            return [
+                'patients' => $patients,
+                'activeTab' => $tab
+            ];
     }
 }
