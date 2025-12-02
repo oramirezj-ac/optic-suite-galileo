@@ -1,4 +1,14 @@
 <?php
+// --- INICIO DE CARGA DE ENTORNO ---
+// 1. Cargamos el Autoloader de Composer (necesario para leer .env)
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// 2. Cargamos las variables del archivo .env de forma segura
+// (Usamos createImmutable para que busque en la carpeta raíz del proyecto)
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->safeLoad(); // safeLoad evita error fatal si el archivo no existe
+// --- FIN DE CARGA DE ENTORNO ---
+
 require_once '../config/session.php';
 
 if (!isset($_SESSION['user_id'])) {
