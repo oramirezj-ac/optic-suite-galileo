@@ -14,7 +14,7 @@ class VentaModel
 
     /**
      * Crea un nuevo encabezado de venta.
-     * * @param array $data Datos de la venta (id_paciente, numero_nota, total, etc.)
+     * @param array $data Datos de la venta
      * @return string|false El ID de la nueva venta o false si falla.
      */
     public function create($data)
@@ -24,18 +24,20 @@ class VentaModel
                         id_paciente, 
                         numero_nota, 
                         numero_nota_sufijo,
+                        vendedor_armazon,   
                         fecha_venta, 
                         costo_total, 
                         estado_pago, 
                         observaciones_venta
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             
             $stmt = $this->pdo->prepare($sql);
             
             $stmt->execute([
                 $data['id_paciente'],
                 $data['numero_nota'],
-                $data['numero_nota_sufijo'] ?? null, // El sufijo opcional (-A, -D)
+                $data['numero_nota_sufijo'] ?? null,
+                $data['vendedor_armazon'] ?? null,
                 $data['fecha_venta'],
                 $data['costo_total'],
                 $data['estado_pago'] ?? 'pendiente',
@@ -46,6 +48,64 @@ class VentaModel
 
         } catch (PDOException $e) {
             error_log("Error en VentaModel::create: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza los datos principales de una venta.
+     */
+    public function update($id, $data)
+    {
+        try {
+            $sql = "UPDATE ventas SET 
+                        numero_nota = ?,
+                        vendedor_armazon = ?, -- CAMPO NUEVO
+                        fecha_venta = ?,
+                        costo_total = ?,
+                        observaciones_venta = ?
+                    WHERE id_venta = ?";
+            
+            $stmt = $this->pdo->prepare($sql);
+            
+            return $stmt->execute([
+                $data['numero_nota'],
+                $data['vendedor_armazon'] ?? null,
+                $data['fecha_venta'],
+                $data['costo_total'],
+                $data['observaciones'],
+                (int)$id
+            ]);
+
+        } catch (PDOException $e) {
+            error_log("Error en VentaModel::update: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Elimina una venta y sus registros dependientes (Abonos y Detalles).
+     */
+    public function delete($id)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            $stmt = $this->pdo->prepare("DELETE FROM abonos WHERE id_venta = ?");
+            $stmt->execute([(int)$id]);
+
+            $stmt = $this->pdo->prepare("DELETE FROM venta_detalles WHERE id_venta = ?");
+            $stmt->execute([(int)$id]);
+
+            $stmt = $this->pdo->prepare("DELETE FROM ventas WHERE id_venta = ?");
+            $result = $stmt->execute([(int)$id]);
+
+            $this->pdo->commit();
+            return $result;
+
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Error en VentaModel::delete: " . $e->getMessage());
             return false;
         }
     }
@@ -80,95 +140,34 @@ class VentaModel
     }
 
     /**
-     * Verifica si un número de nota ya existe.
-     * @return bool True si existe, False si está libre.
+     * Obtiene TODAS las ventas registradas (Histórico Completo).
      */
-    public function existsNumeroNota($numeroNota)
-    {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM ventas WHERE numero_nota = ?");
-        $stmt->execute([$numeroNota]);
-        return $stmt->fetchColumn() > 0;
-    }
-
-    /**
-     * Elimina una venta y sus registros dependientes (Abonos y Detalles).
-     * Usa una transacción para asegurar que se borre todo o nada.
-     * * @param int $id El ID de la venta.
-     * @return bool
-     */
-    public function delete($id)
+    public function getAll()
     {
         try {
-            // 1. Iniciamos una transacción (Modo seguro)
-            $this->pdo->beginTransaction();
-
-            // 2. Borramos los ABONOS (Hijos)
-            $stmt = $this->pdo->prepare("DELETE FROM abonos WHERE id_venta = ?");
-            $stmt->execute([(int)$id]);
-
-            // 3. Borramos los DETALLES DE PRODUCTO (Hijos)
-            // (Aunque tu tabla venta_detalles tenga cascade, hacerlo explícito no daña y asegura el borrado)
-            $stmt = $this->pdo->prepare("DELETE FROM venta_detalles WHERE id_venta = ?");
-            $stmt->execute([(int)$id]);
-
-            // 4. Finalmente, borramos la VENTA (Padre)
-            $stmt = $this->pdo->prepare("DELETE FROM ventas WHERE id_venta = ?");
-            $result = $stmt->execute([(int)$id]);
-
-            // 5. Confirmamos los cambios
-            $this->pdo->commit();
-            
-            return $result;
-
-        } catch (PDOException $e) {
-            // Si algo falló, regresamos el tiempo atrás (Deshacer cambios)
-            $this->pdo->rollBack();
-            error_log("Error en VentaModel::delete: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Actualiza los datos principales de una venta.
-     *
-     * @param int $id El ID de la venta.
-     * @param array $data Nuevos datos (numero_nota, fecha, total, observaciones).
-     * @return bool
-     */
-    public function update($id, $data)
-    {
-        try {
-            $sql = "UPDATE ventas SET 
-                        numero_nota = ?,
-                        fecha_venta = ?,
-                        costo_total = ?,
-                        observaciones_venta = ?
-                    WHERE id_venta = ?";
+            $sql = "SELECT 
+                        v.*, 
+                        p.nombre, 
+                        p.apellido_paterno, 
+                        p.apellido_materno 
+                    FROM ventas v
+                    LEFT JOIN pacientes p ON v.id_paciente = p.id
+                    ORDER BY v.numero_nota DESC";
             
             $stmt = $this->pdo->prepare($sql);
-            
-            return $stmt->execute([
-                $data['numero_nota'],
-                $data['fecha_venta'],
-                $data['costo_total'],
-                $data['observaciones'],
-                (int)$id
-            ]);
-
+            $stmt->execute();
+            return $stmt->fetchAll();
         } catch (PDOException $e) {
-            error_log("Error en VentaModel::update: " . $e->getMessage());
-            return false;
+            return [];
         }
     }
 
     /**
-     * Obtiene las ventas más recientes (limite 50) uniendo datos del paciente.
-     * Ordenado por Número de Nota descendente (las más nuevas arriba).
+     * Obtiene las ventas más recientes (limite 50) con datos de paciente.
      */
     public function getAllWithPatient()
     {
         try {
-            // Hacemos JOIN para obtener el nombre del paciente en la misma consulta
             $sql = "SELECT 
                         v.*, 
                         p.nombre, 
@@ -177,7 +176,7 @@ class VentaModel
                     FROM ventas v
                     LEFT JOIN pacientes p ON v.id_paciente = p.id
                     ORDER BY v.numero_nota DESC
-                    LIMIT 50"; // Límite inicial para rendimiento
+                    LIMIT 50";
             
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
@@ -222,7 +221,6 @@ class VentaModel
     public function searchByDateRange($start, $end)
     {
         try {
-            // Añadimos horas para cubrir el día completo
             $start = $start . ' 00:00:00';
             $end = $end . ' 23:59:59';
 
@@ -245,6 +243,16 @@ class VentaModel
     }
 
     /**
+     * Verifica si un número de nota ya existe.
+     */
+    public function existsNumeroNota($numeroNota)
+    {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM ventas WHERE numero_nota = ?");
+        $stmt->execute([$numeroNota]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+    /**
      * Actualiza solo el estado de pago de una venta.
      */
     public function updateStatus($id, $estado)
@@ -255,31 +263,6 @@ class VentaModel
             return $stmt->execute([$estado, (int)$id]);
         } catch (PDOException $e) {
             return false;
-        }
-    }
-
-    /**
-     * Obtiene TODAS las ventas registradas (Histórico Completo).
-     * Ordenado por Número de Nota descendente.
-     * ¡Cuidado! Puede traer muchos registros.
-     */
-    public function getAll()
-    {
-        try {
-            $sql = "SELECT 
-                        v.*, 
-                        p.nombre, 
-                        p.apellido_paterno, 
-                        p.apellido_materno 
-                    FROM ventas v
-                    LEFT JOIN pacientes p ON v.id_paciente = p.id
-                    ORDER BY v.numero_nota DESC"; // Sin LIMIT
-            
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-            return $stmt->fetchAll();
-        } catch (PDOException $e) {
-            return [];
         }
     }
 }

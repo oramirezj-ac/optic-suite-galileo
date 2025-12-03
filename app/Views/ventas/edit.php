@@ -2,6 +2,7 @@
 // 1. Incluimos los helpers y el controlador
 require_once __DIR__ . '/../../Controllers/VentaController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
+require_once __DIR__ . '/../../Helpers/ConfigHelper.php';
 
 // 2. Forzamos la acción 'edit'
 $_GET['action'] = 'edit'; 
@@ -66,6 +67,23 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                 <div class="form-group">
                     <label for="observaciones">Descripción de Productos / Observaciones</label>
                     <textarea id="observaciones" name="observaciones" rows="4"><?= htmlspecialchars($venta['observaciones_venta'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-group form-group-third">
+                        <label for="vendedor_armazon">Vendedor (Comisión)</label>
+                        <select id="vendedor_armazon" name="vendedor_armazon">
+                            <option value="">-- No Aplica --</option>
+                            <?php 
+                            $actual = $venta['vendedor_armazon'] ?? '';
+                            foreach (ConfigHelper::getVendedoresList() as $vendedor): 
+                                $selected = ($actual === $vendedor) ? 'selected' : '';
+                            ?>
+                                <option value="<?= htmlspecialchars($vendedor) ?>" <?= $selected ?>>
+                                    <?= htmlspecialchars($vendedor) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-actions">

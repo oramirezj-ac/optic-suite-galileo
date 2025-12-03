@@ -58,6 +58,15 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
                     <strong>Descripción de Productos / Observaciones:</strong><br>
                     <p class="observation-text"><?= htmlspecialchars($venta['observaciones_venta'] ?? 'Sin detalles registrados.') ?></p>
                 </div>
+                <?php if (!empty($venta['vendedor_armazon'])): ?>
+                    <div class="data-item full">
+                        <strong>Vendedor (Comisión Armazón):</strong> 
+                        <?= htmlspecialchars($venta['vendedor_armazon']) ?>
+                    </div>
+                <?php endif; ?>
+                </div> 
+
+                <div class="data-item full">
             </div>
         </div>
     </div>

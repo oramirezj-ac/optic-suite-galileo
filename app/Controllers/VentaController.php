@@ -119,7 +119,8 @@ function handleVentaAction()
                     'id_paciente' => $patientId,
                     'numero_nota' => $numeroNota,
                     'numero_nota_sufijo' => $sufijo, // <-- Aquí va la 'D' si aplica
-                    'fecha_venta' => $fechaVentaDB,  // <-- Aquí va la fecha con hora
+                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- NUEVO
+                    'fecha_venta' => $fechaVentaDB,  
                     'costo_total' => $costoTotal,
                     'estado_pago' => $estadoInicial,
                     'observaciones' => $_POST['observaciones'] ?? null
@@ -221,6 +222,7 @@ function handleVentaAction()
                 // Preparamos datos
                 $data = [
                     'numero_nota' => $_POST['numero_nota'],
+                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- NUEVO
                     'fecha_venta' => $_POST['fecha_venta'],
                     'costo_total' => $_POST['costo_total'],
                     'observaciones' => $_POST['observaciones']
