@@ -222,3 +222,65 @@ thead th {
 .fw-bold {
     font-weight: bold;
 }
+
+/* ==========================================================================
+   Componentes del Dashboard
+   ========================================================================== */
+
+/* Tarjeta de Año (Botón Grande) */
+.year-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-width: 150px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1 0 auto; /* Crece para llenar espacio, pero tiene base */
+}
+
+.year-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.year-card.active {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border-color: var(--accent-color);
+}
+
+.year-card.active h2, 
+.year-card.active p {
+    color: #ffffff;
+}
+
+.year-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.year-card p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Contenedor de Meses (Oculto por defecto) */
+.months-container {
+    display: none; /* Se oculta inicialmente */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Clase de utilidad para mostrar */
+.months-container.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

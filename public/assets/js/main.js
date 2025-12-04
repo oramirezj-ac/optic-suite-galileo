@@ -191,3 +191,39 @@ function initAgeCalculator() {
 
 // Añadimos a la inicialización
 document.addEventListener('DOMContentLoaded', initAgeCalculator);
+
+/* ==========================================================================
+   Lógica del Dashboard (Selector de Años)
+   ========================================================================== */
+
+function initializeDashboardTabs() {
+    const yearTriggers = document.querySelectorAll('.js-year-trigger');
+    const emptyState = document.getElementById('dashboard-empty-state');
+    const monthContainers = document.querySelectorAll('.months-container');
+
+    if (yearTriggers.length === 0) return;
+
+    yearTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const targetContent = document.getElementById(targetId);
+
+            // 1. Resetear estado visual de los botones
+            yearTriggers.forEach(btn => btn.classList.remove('active'));
+            
+            // 2. Activar el botón clicado
+            this.classList.add('active');
+
+            // 3. Ocultar mensaje inicial y todos los meses
+            if (emptyState) emptyState.style.display = 'none';
+            monthContainers.forEach(container => container.classList.remove('show'));
+
+            // 4. Mostrar el mes seleccionado
+            if (targetContent) {
+                targetContent.classList.add('show');
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initializeDashboardTabs);

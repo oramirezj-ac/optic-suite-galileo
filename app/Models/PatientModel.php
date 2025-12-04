@@ -125,16 +125,47 @@ class PatientModel
     }
 
     /**
-     * Elimina un paciente.
-     * @param int $id ID del paciente
-     * @return bool True si tuvo éxito, False si no.
+     * Elimina un paciente y TODO su historial asociado.
+     * Realiza un borrado en cascada manual para limpiar:
+     * Abonos -> Detalles Venta -> Ventas -> Graduaciones -> Consultas -> Paciente.
+     *
+     * @param int $id ID del paciente.
+     * @return bool True si tuvo éxito.
      */
     public function delete($id)
     {
         try {
+            $this->pdo->beginTransaction();
+
+            // 1. LIMPIEZA DE VENTAS
+            // Borrar Abonos de las ventas de este paciente
+            $this->pdo->prepare("DELETE FROM abonos WHERE id_venta IN (SELECT id_venta FROM ventas WHERE id_paciente = ?)")->execute([$id]);
+            
+            // Borrar Detalles de productos de las ventas
+            $this->pdo->prepare("DELETE FROM venta_detalles WHERE id_venta IN (SELECT id_venta FROM ventas WHERE id_paciente = ?)")->execute([$id]);
+            
+            // Borrar las Ventas (Encabezados)
+            $this->pdo->prepare("DELETE FROM ventas WHERE id_paciente = ?")->execute([$id]);
+
+
+            // 2. LIMPIEZA CLÍNICA
+            // Borrar Graduaciones de las consultas de este paciente
+            $this->pdo->prepare("DELETE FROM graduaciones WHERE consulta_id IN (SELECT id FROM consultas WHERE paciente_id = ?)")->execute([$id]);
+
+            // Borrar las Consultas
+            $this->pdo->prepare("DELETE FROM consultas WHERE paciente_id = ?")->execute([$id]);
+
+
+            // 3. BORRADO DEL PACIENTE
             $stmt = $this->pdo->prepare("DELETE FROM pacientes WHERE id = ?");
-            return $stmt->execute([$id]);
+            $result = $stmt->execute([$id]);
+
+            $this->pdo->commit();
+            return $result;
+
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Error en PatientModel::delete: " . $e->getMessage());
             return false;
         }
     }
