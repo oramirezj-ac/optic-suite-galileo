@@ -23,4 +23,17 @@ class ConfigHelper
             // Agrega aquí cualquier otra combinación frecuente...
         ];
     }
+
+    /**
+     * Lista de Métodos de Pago disponibles.
+     */
+    public static function getMetodosPago()
+    {
+        return [
+            'Efectivo',
+            'Tarjeta de Débito',
+            'Tarjeta de Crédito',
+            'Transferencia'
+        ];
+    }
 }

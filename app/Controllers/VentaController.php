@@ -144,6 +144,7 @@ function handleVentaAction()
                         $dataAbono = [
                             'id_venta' => $newVentaId,
                             'monto' => $anticipo,
+                            'metodo_pago' => $_POST['metodo_pago_anticipo'] ?? 'Efectivo',
                             'fecha' => $fechaAnticipo
                         ];
                         $abonoModel->create($dataAbono);

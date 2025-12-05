@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../Controllers/AbonoController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
+require_once __DIR__ . '/../../Helpers/ConfigHelper.php';
 
 // Usamos la acción 'edit' del controlador para obtener los datos actuales
 $_GET['action'] = 'edit';
@@ -52,6 +53,21 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     <div class="form-group">
                         <label for="fecha">Fecha del Pago</label>
                         <input type="date" id="fecha" name="fecha" value="<?= $abono['fecha'] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="metodo_pago">Método</label>
+                        <select id="metodo_pago" name="metodo_pago">
+                            <?php 
+                            $actual = $abono['metodo_pago'] ?? 'Efectivo';
+                            foreach (ConfigHelper::getMetodosPago() as $metodo): 
+                                $selected = ($actual === $metodo) ? 'selected' : '';
+                            ?>
+                                <option value="<?= htmlspecialchars($metodo) ?>" <?= $selected ?>>
+                                    <?= htmlspecialchars($metodo) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 

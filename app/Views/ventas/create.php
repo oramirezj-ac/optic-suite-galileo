@@ -128,17 +128,32 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     <label for="observaciones">Descripción de Productos / Observaciones</label>
                     <textarea id="observaciones" name="observaciones" rows="4" placeholder="Describa aquí el armazón, micas, tratamientos y cualquier otro detalle de la nota antigua..."></textarea>
                 </div>
-
-                <div class="form-group form-group-third">
-                        <label for="vendedor_armazon">Vendedor (Comisión)</label>
-                        <select id="vendedor_armazon" name="vendedor_armazon">
-                            <option value="" selected>-- No Aplica --</option>
-                            <?php foreach (ConfigHelper::getVendedoresList() as $vendedor): ?>
-                                <option value="<?= htmlspecialchars($vendedor) ?>"><?= htmlspecialchars($vendedor) ?></option>
+                <div class="form-row">
+                    
+                    <div class="form-group form-group-third">
+                        <label for="metodo_pago">Método de Pago</label>
+                        <select id="metodo_pago" name="metodo_pago">
+                            <?php foreach (ConfigHelper::getMetodosPago() as $metodo): ?>
+                                <option value="<?= htmlspecialchars($metodo) ?>"><?= htmlspecialchars($metodo) ?></option>
                             <?php endforeach; ?>
                         </select>
-                </div>
+                    </div>
 
+                    <div class="form-group form-group-third">
+                        <label for="vendedor_armazon">Vendedor</label>
+                        <select id="vendedor_armazon" name="vendedor_armazon">
+                            <option value="" selected>-- No Aplica --</option>
+                            
+                            <?php foreach (ConfigHelper::getVendedoresList() as $vendedor): ?>
+                                <option value="<?= htmlspecialchars($vendedor) ?>">
+                                    <?= htmlspecialchars($vendedor) ?>
+                                </option>
+                            <?php endforeach; ?>
+                            
+                        </select>
+                    </div>
+                    
+                </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">

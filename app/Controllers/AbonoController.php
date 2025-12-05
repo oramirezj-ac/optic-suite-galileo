@@ -61,11 +61,13 @@ function handleAbonoAction()
         case 'store':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $monto = $_POST['monto'];
+                $metodo = $_POST['metodo_pago'] ?? 'Efectivo';
                 $fecha = $_POST['fecha'];
 
                 $data = [
                     'id_venta' => $ventaId,
                     'monto' => $monto,
+                    'metodo_pago' => $metodo,
                     'fecha' => $fecha
                 ];
 
@@ -106,9 +108,10 @@ function handleAbonoAction()
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $abonoId = $_POST['id_abono'];
                 $monto = $_POST['monto'];
+                $metodo = $_POST['metodo_pago'] ?? 'Efectivo';
                 $fecha = $_POST['fecha'];
 
-                $data = ['monto' => $monto, 'fecha' => $fecha];
+                $data = ['monto' => $monto, 'metodo_pago' => $metodo, 'fecha' => $fecha];
 
                 if ($abonoModel->update($abonoId, $data)) {
                     // ACTUALIZAR ESTADO AUTOMÁTICAMENTE

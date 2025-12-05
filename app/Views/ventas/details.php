@@ -87,6 +87,7 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
                     <tr>
                         <th>Fecha</th>
                         <th>Monto</th>
+                        <th>Método</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -98,6 +99,11 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
                             <tr>
                                 <td><?= FormatHelper::dateFull($abono['fecha']) ?></td>
                                 <td>$<?= number_format($abono['monto'], 2) ?></td>
+                                <td>
+                                    <span class="badge-neutral">
+                                        <?= htmlspecialchars($abono['metodo_pago']) ?>
+                                    </span>
+                                </td>
                                 <td class="actions-cell">
                                     <a href="/index.php?page=abonos_edit&id=<?= $abono['id_abono'] ?>&venta_id=<?= $venta['id_venta'] ?>&patient_id=<?= $paciente['id'] ?>" class="btn btn-secondary btn-sm">
                                         Editar

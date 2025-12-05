@@ -284,3 +284,10 @@ thead th {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Badge para información neutra (gris) */
+.badge-neutral {
+    background-color: #e2e8f0;
+    color: #475569;
+    font-weight: 500; /* Un poco menos grueso que bold, pero legible */
+}

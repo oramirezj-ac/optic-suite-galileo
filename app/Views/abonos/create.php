@@ -2,6 +2,7 @@
 // 1. Incluimos el controlador y helpers
 require_once __DIR__ . '/../../Controllers/AbonoController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
+require_once __DIR__ . '/../../Helpers/ConfigHelper.php';
 
 // 2. Forzamos la acción 'create' para obtener los datos de contexto
 $_GET['action'] = 'create'; 
@@ -58,6 +59,15 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     <div class="form-group">
                         <label for="fecha">Fecha del Pago</label>
                         <input type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="metodo_pago">Método</label>
+                        <select id="metodo_pago" name="metodo_pago">
+                            <?php foreach (ConfigHelper::getMetodosPago() as $metodo): ?>
+                                <option value="<?= htmlspecialchars($metodo) ?>"><?= htmlspecialchars($metodo) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 

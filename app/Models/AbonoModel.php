@@ -21,13 +21,14 @@ class AbonoModel
     public function create($data)
     {
         try {
-            $sql = "INSERT INTO abonos (id_venta, monto, fecha) VALUES (?, ?, ?)";
+            $sql = "INSERT INTO abonos (id_venta, monto, metodo_pago, fecha) VALUES (?, ?, ?, ?)";
             
             $stmt = $this->pdo->prepare($sql);
             
             return $stmt->execute([
                 (int)$data['id_venta'],
                 $data['monto'],
+                $data['metodo_pago'],
                 $data['fecha']
             ]);
 
@@ -92,10 +93,11 @@ class AbonoModel
     public function update($id, $data)
     {
         try {
-            $sql = "UPDATE abonos SET monto = ?, fecha = ? WHERE id_abono = ?";
+            $sql = "UPDATE abonos SET monto = ?, metodo_pago = ?, fecha = ? WHERE id_abono = ?";
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([
                 $data['monto'],
+                $data['metodo_pago'],
                 $data['fecha'],
                 (int)$id
             ]);
