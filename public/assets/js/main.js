@@ -227,3 +227,43 @@ function initializeDashboardTabs() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeDashboardTabs);
+
+/* ==========================================================================
+   Memoria de Fecha (Sticky Date) para Captura Masiva
+   ========================================================================== */
+
+function initializeStickyDate() {
+    // 1. Lista de IDs de los campos de fecha que queremos sincronizar
+    const dateFieldIds = [
+        'fecha_primera_visita', // En Crear/Editar Paciente
+        'fecha',                // En Crear/Editar Consulta y Abono
+        'fecha_venta',          // En Crear Venta
+        'fecha_anticipo'        // En Crear Venta (Anticipo)
+    ];
+
+    // 2. Recuperar la fecha guardada (si existe)
+    const savedDate = sessionStorage.getItem('app_sticky_date');
+
+    dateFieldIds.forEach(id => {
+        const input = document.getElementById(id);
+        
+        if (input) {
+            // A. Si tenemos una fecha guardada, la aplicamos al cargar la página
+            if (savedDate) {
+                input.value = savedDate;
+                
+                // Disparamos el evento 'change' o 'input' por si hay otros scripts escuchando (ej. la calculadora de edad)
+                input.dispatchEvent(new Event('input'));
+            }
+
+            // B. Si el usuario cambia la fecha manualmente, actualizamos la memoria
+            input.addEventListener('change', function() {
+                if (this.value) {
+                    sessionStorage.setItem('app_sticky_date', this.value);
+                }
+            });
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initializeStickyDate);
