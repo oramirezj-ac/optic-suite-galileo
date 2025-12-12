@@ -293,4 +293,51 @@ class PatientModel
             return [];
         }
     }
+
+    /**
+     * Obtiene los años disponibles en el historial de ventas.
+     * Usado para el filtro de la pestaña "Auditoría".
+     */
+    public function getYearsWithSales()
+    {
+        try {
+            $stmt = $this->pdo->query("SELECT DISTINCT YEAR(fecha_venta) as anio FROM ventas ORDER BY anio DESC");
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Obtiene la lista de auditoría para organizar expedientes físicos.
+     * Filtra por Año de Venta y Letra Inicial del Apellido Paterno.
+     */
+    public function getAuditList($year, $letter)
+    {
+        try {
+            $sql = "SELECT 
+                        p.id,
+                        p.nombre, 
+                        p.apellido_paterno, 
+                        p.apellido_materno,
+                        v.numero_nota
+                    FROM ventas v
+                    INNER JOIN pacientes p ON v.id_paciente = p.id
+                    WHERE YEAR(v.fecha_venta) = ? 
+                      AND p.apellido_paterno LIKE ?
+                    ORDER BY 
+                        p.apellido_paterno ASC, 
+                        p.apellido_materno ASC, 
+                        p.nombre ASC,
+                        v.numero_nota ASC";
+            
+            $stmt = $this->pdo->prepare($sql);
+            // Agregamos el comodín '%' para que busque todo lo que empiece con esa letra
+            $stmt->execute([$year, $letter . '%']);
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

@@ -225,13 +225,20 @@ function handlePatientAction()
             }
             break;
 
-       default:
-            // Lógica de Pestañas para el Directorio
-            $tab = $_GET['tab'] ?? 'recent'; // 'recent' es el default
+      default:
+            // Lógica de Pestañas
+            $tab = $_GET['tab'] ?? 'recent'; 
             $patients = [];
+            $yearsAvailable = []; // Variable nueva para el selector de años
+
+            // Obtenemos años disponibles siempre (para el selector)
+            // Solo si estamos en la pestaña de auditoría para no cargar de más en otras pestañas
+            if ($tab === 'audit') {
+                $yearsAvailable = $patientModel->getYearsWithSales();
+            }
 
             if ($tab === 'search') {
-                // Pestaña Búsqueda (Usamos la función getAll existente que busca por nombre/teléfono)
+                // Pestaña Búsqueda
                 $searchTerm = $_GET['q'] ?? '';
                 if (!empty($searchTerm)) {
                     $patients = $patientModel->getAll($searchTerm);
@@ -244,20 +251,30 @@ function handlePatientAction()
                 if (!empty($start) && !empty($end)) {
                     $patients = $patientModel->searchByDateRange($start, $end);
                 }
-            } 
+            }
+            elseif ($tab === 'audit') {
+                // NUEVA PESTAÑA: Auditoría Física
+                $auditYear = $_GET['audit_year'] ?? '';
+                $auditLetter = $_GET['audit_letter'] ?? '';
+                
+                if (!empty($auditYear) && !empty($auditLetter)) {
+                    $patients = $patientModel->getAuditList($auditYear, $auditLetter);
+                }
+            }
             elseif ($tab === 'all') {
-                // Pestaña Todos (Con límite de seguridad)
+                // Pestaña Todos
                 $patients = $patientModel->getAllPacientes();
             } 
             else {
-                // Pestaña Recientes (Default) - Últimos 10 modificados
+                // Pestaña Recientes (Default)
                 $patients = $patientModel->getRecientes();
             }
 
-            // Retornamos el paquete de datos para la vista
+            // Retornamos el paquete de datos actualizado
             return [
                 'patients' => $patients,
-                'activeTab' => $tab
+                'activeTab' => $tab,
+                'yearsAvailable' => $yearsAvailable // Enviamos los años a la vista
             ];
     }
 }

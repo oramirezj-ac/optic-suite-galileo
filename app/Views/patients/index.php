@@ -2,13 +2,13 @@
 require_once __DIR__ . '/../../Controllers/PatientController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
-// El controlador ya maneja la lógica de tabs internamente
+// El controlador ya maneja la lógica de tabs
 $data = handlePatientAction();
 $patients = $data['patients'];
-$activeTab = $data['activeTab']; // 'recent', 'all', 'search', 'dates'
+$activeTab = $data['activeTab'];
+$yearsAvailable = $data['yearsAvailable'] ?? []; // Años disponibles para auditoría
 
-// --- FUNCIÓN HELPER PARA DIBUJAR LA TABLA ---
-// Evita repetir código HTML en cada pestaña
+// --- FUNCIÓN 1: TABLA ESTÁNDAR (Para Recientes, Todos, Buscador) ---
 function renderPatientsTable($patients) {
     if (empty($patients)) {
         echo '<div class="alert alert-secondary text-center">No se encontraron pacientes con estos criterios.</div>';
@@ -41,6 +41,58 @@ function renderPatientsTable($patients) {
     }
     echo '</tbody></table>';
 }
+
+// --- FUNCIÓN 2: TABLA DE AUDITORÍA (Diseño Especial Físico) ---
+function renderAuditTable($patients) {
+    if (empty($patients)) {
+        echo '<div class="alert alert-secondary text-center">No hay notas registradas con estos filtros.</div>';
+        return;
+    }
+
+    // 1. Contador de Documentos (Poka-Yoke)
+    $total = count($patients);
+    echo "<div class='alert alert-info text-center mb-1'>
+            <strong>Documentos Esperados: {$total}</strong>
+            <br><small>Cuente sus notas físicas antes de ordenar.</small>
+          </div>";
+
+    echo '<table>
+            <thead>
+                <tr>
+                    <th style="width: 120px;"># Nota</th>
+                    <th>Paciente (Agrupado)</th>
+                </tr>
+            </thead>
+            <tbody>';
+    
+    $ultimoIdPaciente = null;
+
+    foreach ($patients as $p) {
+        // Lógica de "Control de Ruptura":
+        // Solo mostramos el nombre si el paciente es diferente al del renglón anterior
+        $esNuevoGrupo = ($p['id'] !== $ultimoIdPaciente);
+        
+        $nombreCompleto = '';
+        if ($esNuevoGrupo) {
+            $nombreCompleto = implode(' ', array_filter([
+                $p['apellido_paterno'], 
+                $p['apellido_materno'], 
+                $p['nombre']
+            ]));
+            // Negritas para destacar el inicio del grupo
+            $nombreCompleto = "<strong>" . htmlspecialchars($nombreCompleto) . "</strong>";
+        }
+
+        echo "<tr>
+                <td style='font-size: 1.1rem;'>{$p['numero_nota']}</td>
+                <td>{$nombreCompleto}</td>
+              </tr>";
+
+        // Actualizamos el ID para la siguiente vuelta
+        $ultimoIdPaciente = $p['id'];
+    }
+    echo '</tbody></table>';
+}
 ?>
 
 <div class="page-header">
@@ -56,6 +108,7 @@ function renderPatientsTable($patients) {
             <a href="/index.php?page=patients&tab=all" class="btn btn-secondary <?= $activeTab === 'all' ? 'active' : '' ?>">Todos</a>
             <a href="/index.php?page=patients&tab=search" class="btn btn-secondary <?= $activeTab === 'search' ? 'active' : '' ?>">Buscador</a>
             <a href="/index.php?page=patients&tab=dates" class="btn btn-secondary <?= $activeTab === 'dates' ? 'active' : '' ?>">Por Fechas</a>
+            <a href="/index.php?page=patients&tab=audit" class="btn btn-secondary <?= $activeTab === 'audit' ? 'active' : '' ?>" style="border-left: 2px solid #ccc;">📂 Auditoría (Físico)</a>
         </div>
 
         <div class="card-body">
@@ -76,7 +129,6 @@ function renderPatientsTable($patients) {
                 <form action="/index.php" method="GET" class="mb-2">
                     <input type="hidden" name="page" value="patients">
                     <input type="hidden" name="tab" value="search">
-                    
                     <div class="search-bar">
                         <input type="text" name="q" placeholder="Buscar por Nombre, Apellidos o Teléfono..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" required>
                         <button type="submit" class="btn btn-primary">Buscar</button>
@@ -90,7 +142,6 @@ function renderPatientsTable($patients) {
                 <form action="/index.php" method="GET" class="mb-2">
                     <input type="hidden" name="page" value="patients">
                     <input type="hidden" name="tab" value="dates">
-                    
                     <div class="form-row align-items-end">
                         <div class="form-group">
                             <label>Fecha Inicio</label>
@@ -106,6 +157,51 @@ function renderPatientsTable($patients) {
                     </div>
                 </form>
                 <?php if(isset($_GET['date_start'])) renderPatientsTable($patients); ?>
+            <?php endif; ?>
+
+            <?php if($activeTab === 'audit'): ?>
+                <h3 class="mb-0">Auditoría de Expedientes Físicos</h3>
+                <p class="text-secondary">Genere listas por Año y Letra para ordenar sus archivos de papel.</p>
+                
+                <form action="/index.php" method="GET" class="mb-2" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <input type="hidden" name="page" value="patients">
+                    <input type="hidden" name="tab" value="audit">
+                    
+                    <div class="form-row align-items-end">
+                        <div class="form-group">
+                            <label>Año de Venta</label>
+                            <select name="audit_year" required>
+                                <option value="">-- Seleccione Año --</option>
+                                <?php foreach($yearsAvailable as $year): ?>
+                                    <option value="<?= $year ?>" <?= ($year == ($_GET['audit_year'] ?? '')) ? 'selected' : '' ?>>
+                                        <?= $year ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Letra del Apellido</label>
+                            <select name="audit_letter" required>
+                                <option value="">-- Seleccione Letra --</option>
+                                <?php foreach(range('A', 'Z') as $char): ?>
+                                    <option value="<?= $char ?>" <?= ($char == ($_GET['audit_letter'] ?? '')) ? 'selected' : '' ?>>
+                                        <?= $char ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group flex-no-grow">
+                            <button type="submit" class="btn btn-primary mb-02">Generar Lista</button>
+                        </div>
+                    </div>
+                </form>
+
+                <?php if(isset($_GET['audit_year'])): ?>
+                    <?php renderAuditTable($patients); ?>
+                <?php endif; ?>
+
             <?php endif; ?>
 
         </div>

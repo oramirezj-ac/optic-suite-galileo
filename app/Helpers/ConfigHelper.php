@@ -15,10 +15,18 @@ class ConfigHelper
         return [
             // --- Individuales ---
             'Valeria',
+            'Samantha',
+            'Michelle',
+            'Liz',
+            'Ale',
             
             // --- Combinaciones (Comisión Compartida) ---
             
-            'Valeria, Ana',
+            'Samantha, Michelle',
+            'Samantha, Liz',
+            'Samantha, Ale',
+            'Michelle, Liz',
+            'Michelle, Ale',
             
             // Agrega aquí cualquier otra combinación frecuente...
         ];
