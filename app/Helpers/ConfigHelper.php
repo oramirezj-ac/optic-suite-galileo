@@ -27,6 +27,7 @@ class ConfigHelper
             'Samantha, Ale',
             'Michelle, Liz',
             'Michelle, Ale',
+            'Valeria, Liz',
             
             // Agrega aquí cualquier otra combinación frecuente...
         ];

@@ -146,51 +146,73 @@ function initializeTextGenerator() {
 document.addEventListener('DOMContentLoaded', initializeTextGenerator);
 
 /* ==========================================================================
-   Calculadora Inversa de Edad (Pacientes)
+   Calculadora de Edad Bidireccional (Edad <-> Fecha Nacimiento)
    ========================================================================== */
 
-function initAgeCalculator() {
-    // 1. Identificamos los inputs
-    const inputVisita = document.getElementById('fecha_primera_visita');
-    const inputEdad = document.getElementById('edad_calculadora'); // El campo visual
-    const inputNacimiento = document.getElementById('fecha_nacimiento'); // El campo oculto/real
+function initializeBidirectionalAgeCalculator() {
+    const birthInput = document.getElementById('fecha_nacimiento');
+    const ageInput = document.getElementById('edad');
+    const visitInput = document.getElementById('fecha_primera_visita'); // O fecha de consulta
 
-    // Si no estamos en el formulario de pacientes, salimos
-    if (!inputEdad || !inputNacimiento) return;
+    // Si no existen los campos en esta página, no hacemos nada
+    if (!birthInput || !ageInput) return;
 
-    // 2. Función de cálculo
-    function calculateBirthDate() {
-        const edad = parseInt(inputEdad.value);
-        
-        // Si la fecha de visita está vacía, usamos HOY como referencia
-        const fechaRefString = inputVisita && inputVisita.value ? inputVisita.value : new Date().toISOString().split('T')[0];
-        const fechaRef = new Date(fechaRefString);
+    // --- FUNCIÓN 1: Calcular Edad (Cuando cambias la fecha de nacimiento) ---
+    function calculateAge() {
+        if (!birthInput.value) return;
 
-        if (!isNaN(edad) && edad > 0) {
-            // Restamos la edad al año de referencia
-            const anioNacimiento = fechaRef.getFullYear() - edad;
-            
-            // Mantenemos mes y día de la fecha de referencia
-            // (Es una estimación, pero consistente)
-            const mes = (fechaRef.getMonth() + 1).toString().padStart(2, '0');
-            const dia = fechaRef.getDate().toString().padStart(2, '0');
+        // Tomamos la fecha de referencia (Visita) o la fecha de hoy si no hay visita
+        const refDateVal = visitInput ? visitInput.value : new Date().toISOString().split('T')[0];
+        const refDate = new Date(refDateVal);
+        const birthDate = new Date(birthInput.value);
 
-            // Formato YYYY-MM-DD para el input date
-            const fechaStr = `${anioNacimiento}-${mes}-${dia}`;
-            
-            inputNacimiento.value = fechaStr;
+        let age = refDate.getFullYear() - birthDate.getFullYear();
+        const m = refDate.getMonth() - birthDate.getMonth();
+
+        // Ajuste si aún no cumple años en ese mes
+        if (m < 0 || (m === 0 && refDate.getDate() < birthDate.getDate())) {
+            age--;
         }
+
+        ageInput.value = age;
     }
 
-    // 3. Escuchamos cambios en Edad y en Fecha de Visita
-    inputEdad.addEventListener('input', calculateBirthDate);
-    if (inputVisita) {
-        inputVisita.addEventListener('change', calculateBirthDate);
+    // --- FUNCIÓN 2: Calcular Fecha Nacimiento (Cuando escribes la edad) ---
+    function calculateBirthDate() {
+        const age = parseInt(ageInput.value);
+        if (isNaN(age)) return;
+
+        // Tomamos la fecha de referencia
+        const refDateVal = visitInput ? visitInput.value : new Date().toISOString().split('T')[0];
+        const refDate = new Date(refDateVal);
+
+        // Restamos la edad al año de la visita
+        const birthYear = refDate.getFullYear() - age;
+        
+        // Mantenemos el mismo mes y día de la visita para ser precisos con la edad
+        // (Ej: Si vino el 20/09/2023 y tiene 20 años, nació aprox el 20/09/2003)
+        const month = String(refDate.getMonth() + 1).padStart(2, '0');
+        const day = String(refDate.getDate()).padStart(2, '0');
+
+        birthInput.value = `${birthYear}-${month}-${day}`;
+    }
+
+    // --- LISTENERS (Escuchadores de eventos) ---
+
+    // A. Si el usuario escribe la FECHA -> Calculamos la Edad
+    birthInput.addEventListener('change', calculateAge); // 'change' para que no calcule mientras escribes el año incompleto
+
+    // B. Si el usuario escribe la EDAD -> Calculamos la Fecha
+    ageInput.addEventListener('input', calculateBirthDate); // 'input' para que sea instantáneo al teclear
+
+    // C. Si cambia la FECHA DE VISITA -> Recalculamos la Edad (priorizamos la fecha de nacimiento fija)
+    if (visitInput) {
+        visitInput.addEventListener('change', calculateAge);
     }
 }
 
-// Añadimos a la inicialización
-document.addEventListener('DOMContentLoaded', initAgeCalculator);
+// Inicializamos cuando carga la página
+document.addEventListener('DOMContentLoaded', initializeBidirectionalAgeCalculator);
 
 /* ==========================================================================
    Lógica del Dashboard (Selector de Años)
