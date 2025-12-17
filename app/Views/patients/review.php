@@ -5,6 +5,7 @@
 
 // 1. Incluimos el controlador
 require_once __DIR__ . '/../../Controllers/PatientController.php';
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
 // 2. Obtenemos los datos del paciente NUEVO de la sesión
 if (!isset($_SESSION['new_patient_data'])) {
@@ -43,16 +44,6 @@ function formatPatientName($patient) {
 // 5. OBTENEMOS EL ID DEL PRIMER DUPLICADO (el más relevante)
 $firstDuplicateId = $duplicates[0]['id'];
 
-// 6. Preparamos los datos nuevos para los formularios
-function renderNewPatientHiddenFields($data) {
-    echo '<input type="hidden" name="nombre" value="'.htmlspecialchars($data['nombre'] ?? '').'">';
-    echo '<input type="hidden" name="apellido_paterno" value="'.htmlspecialchars($data['apellido_paterno'] ?? '').'">';
-    echo '<input type="hidden" name="apellido_materno" value="'.htmlspecialchars($data['apellido_materno'] ?? '').'">';
-    echo '<input type="hidden" name="domicilio" value="'.htmlspecialchars($data['domicilio'] ?? '').'">';
-    echo '<input type="hidden" name="telefono" value="'.htmlspecialchars($data['telefono'] ?? '').'">';
-    echo '<input type="hidden" name="edad" value="'.htmlspecialchars($data['edad'] ?? '').'">';
-    echo '<input type="hidden" name="antecedentes_medicos" value="'.htmlspecialchars($data['antecedentes'] ?? '').'">';
-}
 ?>
 
 <div class="page-header">
@@ -82,34 +73,50 @@ function renderNewPatientHiddenFields($data) {
                     <div class="data-item full"><strong>Nombre:</strong> <?= htmlspecialchars(formatPatientName($patient)) ?></div>
                     <div class="data-item half"><strong>Teléfono:</strong> <?= htmlspecialchars($patient['telefono'] ?? 'N/A') ?></div>
                     <div class="data-item half"><strong>Domicilio:</strong> <?= htmlspecialchars($patient['domicilio'] ?? 'N/A') ?></div>
+                    
+                    <div class="data-item half">
+                        <strong>Edad:</strong> 
+                        <?= !empty($patient['fecha_nacimiento']) ? \FormatHelper::calculateAge($patient['fecha_nacimiento']) . ' años' : 'N/A' ?>
+                    </div>
+                    
+                    <div class="data-item full">
+                        <div class="actions-cell" style="justify-content: flex-end;">
+                            
+                            <a href="/index.php?page=patients_details&id=<?= $patient['id'] ?>" class="btn btn-secondary" title="Descartar captura actual y abrir este expediente existente">
+                                Usar este (Descartar cambios)
+                            </a>
+
+                            <form action="/patient_handler.php?action=force_update" method="POST" class="inline-block">
+                                <input type="hidden" name="id" value="<?= $patient['id'] ?>">
+                                <?php \FormatHelper::renderNewPatientHiddenFields($newPatientData); ?>
+                                
+                                <button type="submit" class="btn btn-danger" title="Sobrescribir este registro con los datos nuevos">
+                                    Actualizar este expediente
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+
                 </div>
             <?php endforeach; ?>
 
-       </div><div class="card-footer justify-start flex-wrap">
+       </div>
+
+       <div class="card-footer justify-start flex-wrap">
             
-            <form action="/patient_handler.php?action=force_update" method="POST" class="inline-block">
-                <input type="hidden" name="id" value="<?= $firstDuplicateId ?>">
-                <?php renderNewPatientHiddenFields($newPatientData); ?>
-                
-                <button type="submit" class="btn btn-primary" title="Conserva solo los nuevos datos capturados">
-                    Actualizar Paciente
-                </button>
-            </form>
-
-            <a href="/index.php?page=patients_details&id=<?= $firstDuplicateId ?>" class="btn btn-secondary" title="Se conserva paciente sin cambios">
-                Descartar datos nuevos
-            </a>
-
             <form action="/patient_handler.php?action=force_create" method="POST" class="inline-block">
-                <?php renderNewPatientHiddenFields($newPatientData); ?>
+                <?php \FormatHelper::renderNewPatientHiddenFields($newPatientData); ?>
                 
-                <button type="submit" class="btn btn-success" title="Se crea paciente capturado">
+                <button type="submit" class="btn btn-success" title="Ignorar coincidencias y crear registro nuevo">
                     Crear paciente nuevo
                 </button>
             </form>
 
-            <a href="/index.php?page=patients" class="btn btn-secondary" title="Se regresa a lista de pacientes sin hacer cambios">
+            <a href="/index.php?page=patients" class="btn btn-secondary" title="Cancelar operación y volver a la lista">
                 Cancelar
             </a>
         
-        </div> </div> </div>
+        </div> 
+    </div> 
+</div>

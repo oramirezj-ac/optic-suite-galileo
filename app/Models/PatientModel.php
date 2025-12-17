@@ -73,7 +73,7 @@ class PatientModel
                 $data['fecha_primera_visita'] ?: null,  // Guardamos fecha o NULL
                 $data['domicilio'],
                 $data['telefono'],
-                $data['antecedentes']
+                $data['antecedentes_medicos']
             ]);
 
             if ($success) {
@@ -86,21 +86,40 @@ class PatientModel
     }
 
     /**
-     * Actualiza un paciente existente.
-     * @param int $id ID del paciente
-     * @param array $data Datos del paciente
-     * @return bool True si tuvo éxito, False si no.
+     * Actualiza un paciente existente preservando la fecha de visita más antigua.
      */
     public function update($id, $data)
     {
         try {
-            // SQL Actualizado: Cambiamos 'edad' por las fechas
+            // 1. RECUPERAR DATOS ACTUALES
+            // Consultamos el paciente actual para ver su fecha original
+            $pacienteActual = $this->getById($id);
+            $fechaOriginal = $pacienteActual['fecha_primera_visita'] ?? null;
+            $fechaNueva = $data['fecha_primera_visita'] ?? null;
+
+            // 2. LÓGICA DE ANTIGÜEDAD (El dato más antiguo gana)
+            // Definimos cuál fecha final vamos a guardar
+            $fechaFinal = $fechaNueva;
+
+            if ($fechaOriginal && $fechaNueva) {
+                // Si existen ambas, comparamos strings (YYYY-MM-DD funciona perfecto así)
+                if ($fechaOriginal < $fechaNueva) {
+                    $fechaFinal = $fechaOriginal; // Gana la original (2020)
+                }
+            } elseif ($fechaOriginal && empty($fechaNueva)) {
+                // Si no mandaron fecha nueva, conservamos la original
+                $fechaFinal = $fechaOriginal;
+            }
+            // (Si no había original, se queda la nueva por defecto)
+
+
+            // 3. PREPARAR SQL (Ahora es más limpio, ya decidimos la fecha en PHP)
             $sql = "UPDATE pacientes SET 
                         nombre = ?, 
                         apellido_paterno = ?, 
                         apellido_materno = ?, 
                         fecha_nacimiento = ?,
-                        fecha_primera_visita = ?,
+                        fecha_primera_visita = ?, 
                         domicilio = ?, 
                         telefono = ?, 
                         antecedentes_medicos = ? 
@@ -113,12 +132,13 @@ class PatientModel
                 $data['apellido_paterno'],
                 $data['apellido_materno'],
                 $data['fecha_nacimiento'] ?: null,
-                $data['fecha_primera_visita'] ?: null,
+                $fechaFinal, // <--- Aquí va la fecha ganadora
                 $data['domicilio'],
                 $data['telefono'],
-                $data['antecedentes'],
+                $data['antecedentes_medicos'],
                 (int)$id
             ]);
+
         } catch (PDOException $e) {
             return false;
         }

@@ -19,6 +19,7 @@ class ConfigHelper
             'Michelle',
             'Liz',
             'Ale',
+            'Escarlet',
             
             // --- Combinaciones (Comisión Compartida) ---
             
@@ -28,6 +29,7 @@ class ConfigHelper
             'Michelle, Liz',
             'Michelle, Ale',
             'Valeria, Liz',
+            'Liz, Escarlet',
             
             // Agrega aquí cualquier otra combinación frecuente...
         ];

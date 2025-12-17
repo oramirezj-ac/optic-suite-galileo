@@ -56,4 +56,30 @@ class FormatHelper
             return 'Error en fecha';
         }
     }
+
+    /**
+     * NUEVA FUNCIÓN: Genera inputs ocultos para no perder datos
+     * al pasar de una vista a otra.
+     */
+    public static function renderNewPatientHiddenFields($data)
+    {
+        // Lista de datos que queremos conservar
+        $fields = [
+            'nombre', 
+            'apellido_paterno', 
+            'apellido_materno', 
+            'telefono', 
+            'domicilio', 
+            'antecedentes_medicos', 
+            'edad',
+            'fecha_nacimiento',      // <--- EL DATO QUE FALTABA
+            'fecha_primera_visita'   // <--- EL DATO QUE FALTABA
+        ];
+
+        foreach ($fields as $field) {
+            if (isset($data[$field])) {
+                echo '<input type="hidden" name="' . htmlspecialchars($field) . '" value="' . htmlspecialchars($data[$field]) . '">' . PHP_EOL;
+            }
+        }
+    }
 }

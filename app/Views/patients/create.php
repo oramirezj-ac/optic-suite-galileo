@@ -40,13 +40,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="edad_calculadora">Edad</label>
-                        <input type="number" id="edad_calculadora" placeholder="Ej. 82" min="0" max="120">
+                        <label for="edad">Edad</label>
+                        <input type="number" id="edad" name="edad_calculadora" placeholder="Ej. 82" min="0" max="120" 
+                               value="<?= htmlspecialchars($edadCalculada) ?>">
                     </div>
 
                     <div class="form-group">
                         <label for="fecha_nacimiento">Fecha de Nacimiento</label>
-                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" readonly>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" 
+                               value="<?= htmlspecialchars($patient['fecha_nacimiento'] ?? '') ?>">
                     </div>
                 </div>
 

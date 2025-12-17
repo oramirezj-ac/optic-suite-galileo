@@ -39,7 +39,7 @@ function handlePatientAction()
                     'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : date('Y-m-d'),
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
-                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                    'antecedentes_medicos' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
                 ];
 
                 // --- INICIO DE LA NUEVA LÓGICA DE CONTROL ---
@@ -96,7 +96,7 @@ function handlePatientAction()
                     'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : null,
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
-                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                    'antecedentes_medicos' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
                 ];
 
                 if ($patientModel->update($id, $data)) {
@@ -167,8 +167,9 @@ function handlePatientAction()
                     'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
-                    'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
-                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                    'antecedentes_medicos' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : '',
+                    'fecha_nacimiento' => !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null,
+                    'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : date('Y-m-d')
                 ];
 
                 // 2. Creamos el paciente
@@ -207,7 +208,9 @@ function handlePatientAction()
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
                     'edad' => !empty($_POST['edad']) ? $_POST['edad'] : null,
-                    'antecedentes' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
+                    'antecedentes_medicos' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : '',
+                    'fecha_nacimiento' => !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null,
+                    'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : null
                 ];
 
                 // 3. Llamamos al modelo para actualizar

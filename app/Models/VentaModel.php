@@ -163,7 +163,7 @@ class VentaModel
     }
 
     /**
-     * Obtiene las ventas más recientes (limite 50) con datos de paciente.
+     * Obtiene las ventas más recientes (limite 50) por orden de captura.
      */
     public function getAllWithPatient()
     {
@@ -175,7 +175,7 @@ class VentaModel
                         p.apellido_materno 
                     FROM ventas v
                     LEFT JOIN pacientes p ON v.id_paciente = p.id
-                    ORDER BY v.numero_nota DESC
+                    ORDER BY v.id_venta DESC  -- << CAMBIO CLAVE: Ordenar por ID (momento de captura)
                     LIMIT 50";
             
             $stmt = $this->pdo->prepare($sql);
