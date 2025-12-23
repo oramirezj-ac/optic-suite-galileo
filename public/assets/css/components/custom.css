@@ -291,3 +291,86 @@ thead th {
     color: #475569;
     font-weight: 500; /* Un poco menos grueso que bold, pero legible */
 }
+
+/* =========================================
+   Estilos para Auditoría de Folios (Ventas)
+   ========================================= */
+
+.audit-alert-container {
+    background-color: #fff1f2; /* Rojo muy suave */
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.audit-label {
+    background-color: #e11d48; /* Rojo intenso */
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.audit-missing-numbers {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+}
+
+/* =========================================
+   Estilos para el Constructor de Descripción (Ventas)
+   ========================================= */
+
+.form-toolbar {
+    background-color: #f9fafb; /* Gris muy claro */
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
+
+.toolbar-title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #374151;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toolbar-help-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* =========================================
+   Estilos para Tabla de Auditoría (Ventas)
+   ========================================= */
+
+tr.row-missing {
+    background-color: #fee2e2; /* Rojo suave */
+}
+
+tr.row-missing td {
+    color: #991b1b;
+}
+
+tr.row-duplicate {
+    background-color: #fef9c3; /* Amarillo suave */
+}
+
+tr.row-duplicate td {
+    color: #854d0e;
+}

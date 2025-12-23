@@ -49,7 +49,64 @@ function handleVentaAction()
             $tab = $_GET['tab'] ?? 'recent'; 
             $ventas = [];
 
-            if ($tab === 'search') {
+            // --- LÓGICA DE AUDITORÍA (NUEVO) ---
+            if ($tab === 'audit') {
+                $folioStart = $_GET['folio_start'] ?? '';
+                $folioEnd = $_GET['folio_end'] ?? '';
+                $auditResults = []; // Aquí guardaremos: OK, Faltantes y Duplicados
+                
+                // Solo procesamos si el usuario ya puso un rango
+                if (!empty($folioStart) && !empty($folioEnd)) {
+                    $start = (int)$folioStart;
+                    $end = (int)$folioEnd;
+
+                    // 1. Obtenemos lo que SÍ existe en la BD
+                    $rawSales = $ventaModel->getByFolioRange($start, $end);
+
+                    // 2. Indexamos para búsqueda rápida [Folio => [Venta1, Venta2...]]
+                    $salesMap = [];
+                    foreach ($rawSales as $row) {
+                        $num = (int)$row['numero_nota'];
+                        $salesMap[$num][] = $row;
+                    }
+
+                    // 3. COMPARACIÓN: Iteramos el rango IDEAL paso a paso
+                    for ($i = $start; $i <= $end; $i++) {
+                        if (isset($salesMap[$i])) {
+                            // SI EXISTE EN BD
+                            $rows = $salesMap[$i];
+                            $isDuplicate = count($rows) > 1;
+
+                            foreach ($rows as $row) {
+                                $auditResults[] = [
+                                    'folio' => $i,
+                                    'status' => $isDuplicate ? 'duplicate' : 'ok', // Marcamos si es duplicado
+                                    'data' => $row
+                                ];
+                            }
+                        } else {
+                            // NO EXISTE (HUECO)
+                            $auditResults[] = [
+                                'folio' => $i,
+                                'status' => 'missing',
+                                'data' => null
+                            ];
+                        }
+                    }
+                }
+                
+                // Pasamos los resultados procesados a la vista
+                return [
+                    'ventas' => [], // Vacío para no confundir la tabla normal
+                    'auditResults' => $auditResults, // <--- Nueva variable para la vista
+                    'activeTab' => 'audit',
+                    'folioStart' => $folioStart,
+                    'folioEnd' => $folioEnd
+                ];
+            }
+            // --- FIN LÓGICA DE AUDITORÍA ---
+
+            elseif ($tab === 'search') {
                 $term = $_GET['q'] ?? '';
                 if (!empty($term)) {
                     $ventas = $ventaModel->searchByTerm($term);
@@ -119,7 +176,7 @@ function handleVentaAction()
                     'id_paciente' => $patientId,
                     'numero_nota' => $numeroNota,
                     'numero_nota_sufijo' => $sufijo, // <-- Aquí va la 'D' si aplica
-                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- NUEVO
+                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- CAPTURA CORRECTA
                     'fecha_venta' => $fechaVentaDB,  
                     'costo_total' => $costoTotal,
                     'estado_pago' => $estadoInicial,
@@ -144,7 +201,7 @@ function handleVentaAction()
                         $dataAbono = [
                             'id_venta' => $newVentaId,
                             'monto' => $anticipo,
-                            'metodo_pago' => $_POST['metodo_pago_anticipo'] ?? 'Efectivo',
+                            'metodo_pago' => $_POST['metodo_pago'] ?? 'Efectivo', // <-- CORREGIDO: metodo_pago coincide con el name del select en create.php
                             'fecha' => $fechaAnticipo
                         ];
                         $abonoModel->create($dataAbono);
@@ -223,7 +280,7 @@ function handleVentaAction()
                 // Preparamos datos
                 $data = [
                     'numero_nota' => $_POST['numero_nota'],
-                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- NUEVO
+                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- CAPTURA CORRECTA
                     'fecha_venta' => $_POST['fecha_venta'],
                     'costo_total' => $_POST['costo_total'],
                     'observaciones' => $_POST['observaciones']

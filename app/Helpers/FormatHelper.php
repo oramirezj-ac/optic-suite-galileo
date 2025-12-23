@@ -6,23 +6,18 @@
 class FormatHelper
 {
     /**
-     * Convierte una fecha (ej. '2025-11-14 18:00') al formato 
-     * "largo" en español (ej. "viernes, 14 de noviembre de 2025").
-     *
-     * @param string $dateString La fecha de la base de datos.
-     * @return string La fecha formateada.
+     * Convierte una fecha al formato "largo" en español.
+     * Ej: "viernes, 14 de noviembre de 2025"
      */
     public static function dateFull($dateString)
     {
-        // Si la fecha está vacía, no intentes formatear
         if (empty($dateString)) {
             return 'N/A';
         }
 
-        // Creamos un formateador para Español (es_ES), con fecha COMPLETA
         $formatter = new IntlDateFormatter(
             'es_ES', 
-            IntlDateFormatter::FULL, // Esto da "viernes, 14 de noviembre de 2025"
+            IntlDateFormatter::FULL, 
             IntlDateFormatter::NONE
         );
         
@@ -30,15 +25,7 @@ class FormatHelper
     }
 
     /**
-     * (Aquí podremos añadir más funciones en el futuro, 
-     * ej. formatCurrency(), formatPhone(), etc.)
-     */
-
-    /**
-     * Calcula la edad actual basada en la fecha de nacimiento.
-     *
-     * @param string|null $fechaNacimiento Fecha en formato Y-m-d
-     * @return string Edad formateada (ej. "45 años") o "Edad desconocida"
+     * Calcula la edad actual.
      */
     public static function calculateAge($fechaNacimiento)
     {
@@ -48,7 +35,7 @@ class FormatHelper
         
         try {
             $nacimiento = new DateTime($fechaNacimiento);
-            $hoy = new DateTime(); // Fecha actual del servidor
+            $hoy = new DateTime();
             $diferencia = $hoy->diff($nacimiento);
             
             return $diferencia->y . ' años';
@@ -58,22 +45,14 @@ class FormatHelper
     }
 
     /**
-     * NUEVA FUNCIÓN: Genera inputs ocultos para no perder datos
-     * al pasar de una vista a otra.
+     * Genera inputs ocultos (Para persistencia de datos).
      */
     public static function renderNewPatientHiddenFields($data)
     {
-        // Lista de datos que queremos conservar
         $fields = [
-            'nombre', 
-            'apellido_paterno', 
-            'apellido_materno', 
-            'telefono', 
-            'domicilio', 
-            'antecedentes_medicos', 
-            'edad',
-            'fecha_nacimiento',      // <--- EL DATO QUE FALTABA
-            'fecha_primera_visita'   // <--- EL DATO QUE FALTABA
+            'nombre', 'apellido_paterno', 'apellido_materno', 
+            'telefono', 'domicilio', 'antecedentes_medicos', 
+            'edad', 'fecha_nacimiento', 'fecha_primera_visita'
         ];
 
         foreach ($fields as $field) {
@@ -81,5 +60,33 @@ class FormatHelper
                 echo '<input type="hidden" name="' . htmlspecialchars($field) . '" value="' . htmlspecialchars($data[$field]) . '">' . PHP_EOL;
             }
         }
+    }
+
+    /* =========================================================
+       NUEVAS FUNCIONES AGREGADAS (Para Ventas)
+       ========================================================= */
+
+    /**
+     * Formatea una cantidad monetaria.
+     * Ej: 1500.5 -> "$ 1,500.50"
+     */
+    public static function money($amount)
+    {
+        if (!is_numeric($amount)) {
+            return '$ 0.00';
+        }
+        return '$ ' . number_format((float)$amount, 2);
+    }
+
+    /**
+     * Formatea una fecha en formato corto para tablas.
+     * Ej: "23/12/2025"
+     */
+    public static function dateShort($dateString)
+    {
+        if (empty($dateString)) {
+            return '-';
+        }
+        return date('d/m/Y', strtotime($dateString));
     }
 }

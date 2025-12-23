@@ -1,27 +1,20 @@
 <?php
-// 1. Incluimos los helpers y el controlador
 require_once __DIR__ . '/../../Controllers/ConsultaController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
-// 2. Forzamos la acción 'edit' para obtener los datos
 $_GET['action'] = 'edit'; 
 $data = handleConsultaAction();
 
-// 3. Desempaquetamos los datos
 $paciente = $data['paciente'];
 $consulta = $data['consulta'];
 $patientId = $paciente['id'];
 
-// 4. (Seguridad)
 if (!$paciente || !$consulta) {
     header('Location: /index.php?page=patients&error=data_not_found');
     exit();
 }
 
-// 5. Creamos el nombre completo
 $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
-
-// 6. Formateamos la fecha para el input 'date'
 $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
 ?>
 
@@ -48,13 +41,10 @@ $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
 
                 <div class="form-row">
                     <div class="form-group flex-grow-2">
-                        <label for="motivo_consulta">Motivo de la Consulta</label>
+                        <label for="motivo_consulta">Tipo de Consulta</label>
                         <select id="motivo_consulta" name="motivo_consulta" required>
-                            <?php $motivo = $consulta['motivo_consulta']; ?>
-                            <option value="Primera vez - requiere lentes" <?= $motivo == 'Primera vez - requiere lentes' ? 'selected' : '' ?>>Primera vez - requiere lentes</option>
-                            <option value="Primera vez - malestar/infección" <?= $motivo == 'Primera vez - malestar/infección' ? 'selected' : '' ?>>Primera vez - malestar/infección</option>
-                            <option value="Reconsulta - requiere lentes" <?= $motivo == 'Reconsulta - requiere lentes' ? 'selected' : '' ?>>Reconsulta - requiere lentes</option>
-                            <option value="Reconsulta - recaída" <?= $motivo == 'Reconsulta - recaída' ? 'selected' : '' ?>>Reconsulta - recaída</option>
+                            <option value="Refractiva" <?= $consulta['motivo_consulta'] == 'Refractiva' ? 'selected' : '' ?>>👓 Examen de Vista (Lentes)</option>
+                            <option value="Médica" <?= $consulta['motivo_consulta'] == 'Médica' ? 'selected' : '' ?>>🩺 Consulta Médica (Patología)</option>
                         </select>
                     </div>
 
@@ -66,12 +56,17 @@ $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
 
                 <div class="form-group">
                     <label for="detalle_motivo">Detalles del Motivo</label>
-                    <input type="text" id="detalle_motivo" name="detalle_motivo" value="<?= htmlspecialchars($consulta['detalle_motivo'] ?? '') ?>" placeholder="Ej: Paciente refiere dolor de cabeza...">
+                    <input type="text" id="detalle_motivo" name="detalle_motivo" value="<?= htmlspecialchars($consulta['detalle_motivo'] ?? '') ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnostico_dx">Diagnóstico (Opcional)</label>
+                    <input type="text" id="diagnostico_dx" name="diagnostico_dx" value="<?= htmlspecialchars($consulta['diagnostico_dx'] ?? '') ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="observaciones">Observaciones Generales</label>
-                    <textarea id="observaciones" name="observaciones" rows="3" placeholder="Observaciones internas..."><?= htmlspecialchars($consulta['observaciones'] ?? '') ?></textarea>
+                    <textarea id="observaciones" name="observaciones" rows="3"><?= htmlspecialchars($consulta['observaciones'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-actions">

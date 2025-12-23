@@ -265,4 +265,40 @@ class VentaModel
             return false;
         }
     }
+
+    /**
+     * Obtiene las ventas dentro de un rango numérico de folios.
+     * Esencial para la auditoría de faltantes y duplicados.
+     * * @param int $start Folio inicial
+     * @param int $end Folio final
+     */
+    public function getByFolioRange($start, $end)
+    {
+        try {
+            // Usamos CAST para que la búsqueda sea NUMÉRICA y no de texto.
+            // Traemos datos del paciente para saber de quién es la nota.
+            $sql = "SELECT 
+                        v.id_venta, 
+                        v.numero_nota, 
+                        v.numero_nota_sufijo, 
+                        v.fecha_venta,
+                        v.costo_total, 
+                        v.estado_pago, 
+                        v.id_paciente,
+                        p.nombre, 
+                        p.apellido_paterno, 
+                        p.apellido_materno
+                    FROM ventas v
+                    LEFT JOIN pacientes p ON v.id_paciente = p.id
+                    WHERE CAST(v.numero_nota AS UNSIGNED) BETWEEN ? AND ?
+                    ORDER BY CAST(v.numero_nota AS UNSIGNED) ASC, v.numero_nota_sufijo ASC";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([(int)$start, (int)$end]);
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

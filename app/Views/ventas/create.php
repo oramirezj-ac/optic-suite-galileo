@@ -1,5 +1,5 @@
 <?php
-// 1. Incluimos y ejecutamos el controlador
+// 1. Incluimos y ejecutamos el controlador de VENTAS
 require_once __DIR__ . '/../../Controllers/VentaController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 require_once __DIR__ . '/../../Helpers/ConfigHelper.php';
@@ -128,6 +128,7 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                     <label for="observaciones">Descripción de Productos / Observaciones</label>
                     <textarea id="observaciones" name="observaciones" rows="4" placeholder="Describa aquí el armazón, micas, tratamientos y cualquier otro detalle de la nota antigua..."></textarea>
                 </div>
+                
                 <div class="form-row">
                     
                     <div class="form-group form-group-third">
@@ -143,13 +144,11 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                         <label for="vendedor_armazon">Vendedor</label>
                         <select id="vendedor_armazon" name="vendedor_armazon">
                             <option value="" selected>-- No Aplica --</option>
-                            
                             <?php foreach (ConfigHelper::getVendedoresList() as $vendedor): ?>
                                 <option value="<?= htmlspecialchars($vendedor) ?>">
                                     <?= htmlspecialchars($vendedor) ?>
                                 </option>
                             <?php endforeach; ?>
-                            
                         </select>
                     </div>
                     

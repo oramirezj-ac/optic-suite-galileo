@@ -1,21 +1,16 @@
 <?php
-// 1. Incluimos y ejecutamos el controlador
 require_once __DIR__ . '/../../Controllers/ConsultaController.php';
-// Forzamos la acción 'create' para que el controlador nos dé los datos
 $_GET['action'] = 'create'; 
 $data = handleConsultaAction();
 
-// 2. Desempaquetamos los datos
 $paciente = $data['paciente'];
 $patientId = $paciente['id'];
 
-// 3. (Seguridad)
 if (!$paciente) {
     header('Location: /index.php?page=patients&error=patient_not_found');
     exit();
 }
 
-// 4. Creamos el nombre completo
 $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
 ?>
 
@@ -40,13 +35,10 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
 
                 <div class="form-row">
                     <div class="form-group flex-grow-2">
-                        <label for="motivo_consulta">Motivo de la Consulta</label>
+                        <label for="motivo_consulta">Tipo de Consulta</label>
                         <select id="motivo_consulta" name="motivo_consulta" required>
-                            <option value="" disabled selected>-- Seleccione un motivo --</option>
-                            <option value="Primera vez - requiere lentes">Primera vez - requiere lentes</option>
-                            <option value="Primera vez - malestar/infección">Primera vez - malestar/infección</option>
-                            <option value="Reconsulta - requiere lentes">Reconsulta - requiere lentes</option>
-                            <option value="Reconsulta - recaída">Reconsulta - recaída</option>
+                            <option value="Refractiva" selected>👓 Examen de Vista (Lentes)</option>
+                            <option value="Médica">🩺 Consulta Médica (Patología)</option>
                         </select>
                     </div>
 

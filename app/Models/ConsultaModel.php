@@ -1,30 +1,20 @@
 <?php
 /* ==========================================================================
-   Modelo para la Gestión de Consultas
+   Modelo para la Gestión de Consultas (Refractivas y Médicas)
    ========================================================================== */
 
 class ConsultaModel
 {
-    /**
-     * @var PDO La conexión a la base de datos
-     */
     private $pdo;
 
-    /**
-     * Constructor. Recibe la conexión PDO.
-     * @param PDO $pdo
-     */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
     /**
-     * Obtiene un resumen de las 3 consultas más recientes de un paciente,
-     * incluyendo graduación final y datos biométricos.
-     *
-     * @param int $patientId El ID del paciente.
-     * @return array Una lista de hasta 3 consultas.
+     * Obtiene un resumen de las 3 consultas más recientes.
+     * (Esta función NO SE TOCA, funciona bien para lentes).
      */
     public function getResumenConsultasPorPaciente($patientId)
     {
@@ -37,14 +27,10 @@ class ConsultaModel
                     c.dp_od,
                     c.dp_oi,
                     c.altura_oblea,
-                    
-                    -- Columnas para Ojo Derecho (OD)
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.esfera ELSE NULL END) AS od_esfera,
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.cilindro ELSE NULL END) AS od_cilindro,
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.eje ELSE NULL END) AS od_eje,
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.adicion ELSE NULL END) AS od_adicion,
-                    
-                    -- Columnas para Ojo Izquierdo (OI)
                     MAX(CASE WHEN g.ojo = 'OI' THEN g.esfera ELSE NULL END) AS oi_esfera,
                     MAX(CASE WHEN g.ojo = 'OI' THEN g.cilindro ELSE NULL END) AS oi_cilindro,
                     MAX(CASE WHEN g.ojo = 'OI' THEN g.eje ELSE NULL END) AS oi_eje,
@@ -61,43 +47,35 @@ class ConsultaModel
                     c.fecha DESC
                 LIMIT 3
             ";
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([(int)$patientId]);
-            
             return $stmt->fetchAll();
-
         } catch (PDOException $e) {
-            error_log("Error en ConsultaModel::getResumenConsultas: " . $e->getMessage());
             return [];
         }
     }
 
     /**
-     * Obtiene TODAS las consultas de un paciente, incluyendo la
-     * graduación final (OD y OI) en una sola fila.
-     *
-     * @param int $patientId El ID del paciente.
-     * @return array Una lista de todas sus consultas.
+     * Obtiene TODAS las consultas de un paciente.
+     * UPDATE: Agregamos campos médicos y financieros al SELECT.
      */
     public function getAllByPaciente($patientId)
     {
         try {
-            // Esta consulta usa LEFT JOIN y MAX(CASE...) para "pivotar"
-            // los datos de graduación (OD y OI) y ponerlos en una sola fila.
-            
             $sql = "
                 SELECT 
                     c.id AS consulta_id, 
                     c.fecha, 
+                    c.motivo_consulta,      -- NECESARIO
+                    c.detalle_motivo,       -- NECESARIO
+                    c.costo_servicio,       -- NUEVO
+                    c.estado_financiero,    -- NUEVO
+                    c.diagnostico_dx,       -- NUEVO (Para mostrar si es médica)
                     
-                    -- Columnas para Ojo Derecho (OD)
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.esfera ELSE NULL END) AS od_esfera,
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.cilindro ELSE NULL END) AS od_cilindro,
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.eje ELSE NULL END) AS od_eje,
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.adicion ELSE NULL END) AS od_adicion,
-                    
-                    -- Columnas para Ojo Izquierdo (OI)
                     MAX(CASE WHEN g.ojo = 'OI' THEN g.esfera ELSE NULL END) AS oi_esfera,
                     MAX(CASE WHEN g.ojo = 'OI' THEN g.cilindro ELSE NULL END) AS oi_cilindro,
                     MAX(CASE WHEN g.ojo = 'OI' THEN g.eje ELSE NULL END) AS oi_eje,
@@ -109,27 +87,21 @@ class ConsultaModel
                 WHERE 
                     c.paciente_id = ?
                 GROUP BY 
-                    c.id, c.fecha
+                    c.id, c.fecha, c.motivo_consulta, c.detalle_motivo, c.costo_servicio, c.estado_financiero, c.diagnostico_dx
                 ORDER BY 
                     c.fecha DESC
-            "; // (Es la misma consulta que el Resumen, pero sin LIMIT 3)
-
+            ";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([(int)$patientId]);
-            
             return $stmt->fetchAll();
-
         } catch (PDOException $e) {
-            error_log("Error en ConsultaModel::getAllByPaciente: " . $e->getMessage());
             return [];
         }
     }
 
     /**
      * Crea un nuevo registro de consulta.
-     *
-     * @param array $data Datos de la consulta (patient_id, motivo_consulta, etc.)
-     * @return string|false El ID de la nueva consulta insertada, o false si falla.
+     * UPDATE: Soporta campos médicos y financieros.
      */
     public function createConsulta($data)
     {
@@ -140,8 +112,12 @@ class ConsultaModel
                         fecha, 
                         motivo_consulta, 
                         detalle_motivo, 
-                        observaciones
-                    ) VALUES (?, ?, ?, ?, ?, ?)";
+                        observaciones,
+                        diagnostico_dx,
+                        tratamiento_rx,
+                        costo_servicio,
+                        estado_financiero
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $this->pdo->prepare($sql);
 
@@ -151,10 +127,14 @@ class ConsultaModel
                 $data['fecha'],
                 $data['motivo_consulta'],
                 $data['detalle_motivo'],
-                $data['observaciones']
+                $data['observaciones'],
+                // Nuevos Campos (Opcionales / NULL)
+                $data['diagnostico_dx'] ?? null,
+                $data['tratamiento_rx'] ?? null,
+                $data['costo_servicio'] ?? 0.00,
+                $data['estado_financiero'] ?? 'cobrado'
             ]);
 
-            // Devolvemos el ID de la consulta que acabamos de crear
             return $this->pdo->lastInsertId();
 
         } catch (PDOException $e) {
@@ -164,52 +144,8 @@ class ConsultaModel
     }
 
     /**
-     * Obtiene una consulta específica por su ID.
-     *
-     * @param int $consultaId El ID de la consulta.
-     * @return array|false Los datos de la consulta o false si no la encuentra.
-     */
-    public function getConsultaById($consultaId)
-    {
-        try {
-            $sql = "SELECT * FROM consultas WHERE id = ?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([(int)$consultaId]);
-            return $stmt->fetch(); // Devuelve una sola fila
-
-        } catch (PDOException $e) {
-            error_log("Error en ConsultaModel::getConsultaById: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Elimina una consulta específica por su ID.
-     * (Gracias a 'ON DELETE CASCADE' en la BD, esto también
-     * eliminará todas las 'graduaciones' asociadas).
-     *
-     * @param int $consultaId El ID de la consulta a borrar.
-     * @return bool True si el borrado fue exitoso, false si no.
-     */
-    public function deleteConsulta($consultaId)
-    {
-        try {
-            $sql = "DELETE FROM consultas WHERE id = ?";
-            $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([(int)$consultaId]);
-
-        } catch (PDOException $e) {
-            error_log("Error en ConsultaModel::deleteConsulta: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Actualiza una consulta existente por su ID.
-     *
-     * @param int $consultaId El ID de la consulta a actualizar.
-     * @param array $data Los nuevos datos (fecha, motivo, etc.).
-     * @return bool True si la actualización fue exitosa, false si no.
+     * Actualiza una consulta existente.
+     * UPDATE: Soporta campos médicos y financieros.
      */
     public function updateConsulta($consultaId, $data)
     {
@@ -218,7 +154,11 @@ class ConsultaModel
                         fecha = ?,
                         motivo_consulta = ?,
                         detalle_motivo = ?,
-                        observaciones = ?
+                        observaciones = ?,
+                        diagnostico_dx = ?,
+                        tratamiento_rx = ?,
+                        costo_servicio = ?,
+                        estado_financiero = ?
                     WHERE id = ?";
             
             $stmt = $this->pdo->prepare($sql);
@@ -228,6 +168,11 @@ class ConsultaModel
                 $data['motivo_consulta'],
                 $data['detalle_motivo'],
                 $data['observaciones'],
+                // Nuevos Campos
+                $data['diagnostico_dx'] ?? null,
+                $data['tratamiento_rx'] ?? null,
+                $data['costo_servicio'] ?? 0.00,
+                $data['estado_financiero'] ?? 'cobrado',
                 (int)$consultaId
             ]);
 
@@ -238,42 +183,55 @@ class ConsultaModel
     }
 
     /**
-     * Actualiza exclusivamente los datos biométricos de la consulta.
-     *
-     * @param int $id El ID de la consulta.
-     * @param array $data Los datos (dp_total, dp_od, dp_oi, altura).
-     * @return bool
+     * Obtiene una consulta por ID.
      */
-    public function updateBiometria($id, $data)
+    public function getConsultaById($consultaId)
     {
         try {
-            $sql = "UPDATE consultas SET 
-                        dp_lejos_total = ?,
-                        dp_od = ?,
-                        dp_oi = ?,
-                        altura_oblea = ?
-                    WHERE id = ?";
-            
+            $sql = "SELECT * FROM consultas WHERE id = ?";
             $stmt = $this->pdo->prepare($sql);
-            
-            return $stmt->execute([
-                $data['dp_lejos_total'] ?: null, // Si está vacío, guarda NULL
-                $data['dp_od'] ?: null,
-                $data['dp_oi'] ?: null,
-                $data['altura_oblea'] ?: null,
-                (int)$id
-            ]);
-
+            $stmt->execute([(int)$consultaId]);
+            return $stmt->fetch();
         } catch (PDOException $e) {
-            error_log("Error en ConsultaModel::updateBiometria: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Obtiene todas las opciones del catálogo de agudeza visual.
-     * @return array Lista de [id, valor] (ej. 1 => '20/20')
+     * Elimina una consulta.
      */
+    public function deleteConsulta($consultaId)
+    {
+        try {
+            $sql = "DELETE FROM consultas WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([(int)$consultaId]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // --- FUNCIONES ESPECÍFICAS (NO SE TOCAN, SE MANTIENEN IGUAL) ---
+
+    public function updateBiometria($id, $data)
+    {
+        try {
+            $sql = "UPDATE consultas SET 
+                        dp_lejos_total = ?, dp_od = ?, dp_oi = ?, altura_oblea = ?
+                    WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([
+                $data['dp_lejos_total'] ?: null,
+                $data['dp_od'] ?: null,
+                $data['dp_oi'] ?: null,
+                $data['altura_oblea'] ?: null,
+                (int)$id
+            ]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
     public function getCatalogoAV()
     {
         try {
@@ -284,27 +242,14 @@ class ConsultaModel
         }
     }
 
-    /**
-     * Actualiza los datos clínicos (AV y CV) usando los IDs del catálogo.
-     * Incluye OD, OI y AO.
-     * @param int $id ID de la consulta.
-     * @param array $data Array con los IDs de av_od_id, av_ao_id, etc.
-     */
     public function updateDatosClinicos($id, $data)
     {
         try {
-            // Actualizamos los 6 campos (OD, OI, AO)
             $sql = "UPDATE consultas SET 
-                        av_ao_id = ?,
-                        av_od_id = ?, 
-                        av_oi_id = ?,
-                        cv_ao_id = ?,
-                        cv_od_id = ?, 
-                        cv_oi_id = ?
+                        av_ao_id = ?, av_od_id = ?, av_oi_id = ?,
+                        cv_ao_id = ?, cv_od_id = ?, cv_oi_id = ?
                     WHERE id = ?";
-
             $stmt = $this->pdo->prepare($sql);
-            
             return $stmt->execute([
                 $data['av_ao_id'] ?: null,
                 $data['av_od_id'] ?: null,
@@ -314,9 +259,7 @@ class ConsultaModel
                 $data['cv_oi_id'] ?: null,
                 (int)$id
             ]);
-
         } catch (PDOException $e) {
-            error_log("Error en updateDatosClinicos: " . $e->getMessage());
             return false;
         }
     }
