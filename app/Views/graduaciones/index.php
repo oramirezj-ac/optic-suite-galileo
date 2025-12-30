@@ -80,7 +80,7 @@ foreach ($catalogoAV as $av) {
                     <div class="lista-graduaciones mb-2">
                     <?php foreach ($graduacionesAgrupadas as $tipo => $grad): ?>
                         <?php $od = $grad['OD'] ?? []; $oi = $grad['OI'] ?? []; ?>
-                        <div class="graduacion-fila">
+                        <div class="graduacion-fila" data-tipo="<?= $tipo ?>">
                             <div class="graduacion-columna-tipo">
                                 <strong><?= htmlspecialchars($grad['tipo_label']) ?></strong>
                                 <?php if($grad['es_final']): ?>
@@ -88,7 +88,15 @@ foreach ($catalogoAV as $av) {
                                 <?php endif; ?>
                             </div>
                             <div class="graduacion-columna-formulas graduacion-display">
-                                <div class="graduacion-formula">
+                                <div class="graduacion-formula" 
+                                     data-od-esfera="<?= htmlspecialchars($od['esfera'] ?? '0.00') ?>"
+                                     data-od-cilindro="<?= htmlspecialchars($od['cilindro'] ?? '0.00') ?>"
+                                     data-od-eje="<?= htmlspecialchars($od['eje'] ?? '0') ?>"
+                                     data-od-adicion="<?= htmlspecialchars($od['adicion'] ?? '0.00') ?>"
+                                     data-oi-esfera="<?= htmlspecialchars($oi['esfera'] ?? '0.00') ?>"
+                                     data-oi-cilindro="<?= htmlspecialchars($oi['cilindro'] ?? '0.00') ?>"
+                                     data-oi-eje="<?= htmlspecialchars($oi['eje'] ?? '0') ?>"
+                                     data-oi-adicion="<?= htmlspecialchars($oi['adicion'] ?? '0.00') ?>">
                                     <span class="graduacion-ojo-label">OD</span>
                                     <span class="valor"><?= htmlspecialchars($od['esfera'] ?? '0.00') ?></span>
                                     <span class="simbolo">=</span>
@@ -110,6 +118,10 @@ foreach ($catalogoAV as $av) {
                                 </div>
                             </div>
                             <div class="graduacion-columna-acciones">
+                                <button type="button" class="btn btn-info btn-sm btn-copiar-graduacion" 
+                                        title="Copiar valores al formulario">
+                                    📋 Copiar
+                                </button>
                                 <a href="/index.php?page=graduaciones_edit&consulta_id=<?= $consulta['id'] ?>&tipo=<?= $tipo ?>&patient_id=<?= $paciente['id'] ?>" class="btn btn-secondary btn-sm">Editar</a>
                                 <a href="/index.php?page=graduaciones_delete&consulta_id=<?= $consulta['id'] ?>&tipo=<?= $tipo ?>&patient_id=<?= $paciente['id'] ?>" class="btn btn-danger btn-sm">Borrar</a>
                             </div>
@@ -185,58 +197,135 @@ foreach ($catalogoAV as $av) {
                 </form>
             </div>
 
+
             <div id="view-clinicos" class="view-panel">
-                <h3>Agudeza y Corrección Visual</h3>
-                <form action="/consulta_handler.php?action=update_clinicos" method="POST">
-                    <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
-                    <input type="hidden" name="patient_id" value="<?= $paciente['id'] ?>">
-
-                    <div class="form-row">
+                <div class="row">
+                    
+                    <!-- COLUMNA IZQUIERDA: AGUDEZA VISUAL (Sin Lentes) -->
+                    <div class="col-md-6">
+                        <h3>👁️ Agudeza Visual (Sin Lentes)</h3>
                         
-                        <div class="form-group">
-                            <h4>Ambos Ojos (AO)</h4>
-                            <label class="mt-2">AV (Entrada)</label>
-                            <select name="av_ao_id">
-                                <?= str_replace('value="' . ($consulta['av_ao_id'] ?? '') . '"', 'value="' . ($consulta['av_ao_id'] ?? '') . '" selected', $avOptions) ?>
-                            </select>
-
-                            <label class="mt-2">CV (Salida)</label>
-                            <select name="cv_ao_id">
-                                <?= str_replace('value="' . ($consulta['cv_ao_id'] ?? '') . '"', 'value="' . ($consulta['cv_ao_id'] ?? '') . '" selected', $avOptions) ?>
-                            </select>
+                        <!-- AV Registrada -->
+                        <?php if (!empty($consulta['av_ao_id']) || !empty($consulta['av_od_id']) || !empty($consulta['av_oi_id'])): ?>
+                        <div class="av-display-grid mb-2">
+                            <div class="av-item">
+                                <strong>AV AO</strong>
+                                <span class="av-value"><?= $catalogoAV[array_search($consulta['av_ao_id'], array_column($catalogoAV, 'id'))]['valor'] ?? '-' ?></span>
+                            </div>
+                            <div class="av-item">
+                                <strong>AV OD</strong>
+                                <span class="av-value"><?= $catalogoAV[array_search($consulta['av_od_id'], array_column($catalogoAV, 'id'))]['valor'] ?? '-' ?></span>
+                            </div>
+                            <div class="av-item">
+                                <strong>AV OI</strong>
+                                <span class="av-value"><?= $catalogoAV[array_search($consulta['av_oi_id'], array_column($catalogoAV, 'id'))]['valor'] ?? '-' ?></span>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <h4>Ojo Derecho (OD)</h4>
-                            <label class="mt-2">AV (Entrada)</label>
-                            <select name="av_od_id">
-                                <?= str_replace('value="' . ($consulta['av_od_id'] ?? '') . '"', 'value="' . ($consulta['av_od_id'] ?? '') . '" selected', $avOptions) ?>
-                            </select>
-
-                            <label class="mt-2">CV (Salida)</label>
-                            <select name="cv_od_id">
-                                <?= str_replace('value="' . ($consulta['cv_od_id'] ?? '') . '"', 'value="' . ($consulta['cv_od_id'] ?? '') . '" selected', $avOptions) ?>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <h4>Ojo Izquierdo (OI)</h4>
-                            <label class="mt-2">AV (Entrada)</label>
-                            <select name="av_oi_id">
-                                <?= str_replace('value="' . ($consulta['av_oi_id'] ?? '') . '"', 'value="' . ($consulta['av_oi_id'] ?? '') . '" selected', $avOptions) ?>
-                            </select>
-
-                            <label class="mt-2">CV (Salida)</label>
-                            <select name="cv_oi_id">
-                                <?= str_replace('value="' . ($consulta['cv_oi_id'] ?? '') . '"', 'value="' . ($consulta['cv_oi_id'] ?? '') . '" selected', $avOptions) ?>
-                            </select>
-                        </div>
+                        <?php else: ?>
+                        <p class="text-center text-muted mb-2">No se ha capturado la agudeza visual.</p>
+                        <?php endif; ?>
+                        
+                        <hr class="mb-2">
+                        
+                        <!-- Formulario AV -->
+                        <h4 class="mb-2">Capturar / Actualizar AV</h4>
+                        <form action="/consulta_handler.php?action=update_clinicos" method="POST">
+                            <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
+                            <input type="hidden" name="patient_id" value="<?= $paciente['id'] ?>">
+                            <input type="hidden" name="tipo" value="av">
+                            
+                            <div class="form-group">
+                                <label>AV AO (Ambos Ojos)</label>
+                                <select name="av_ao_id" class="form-control-sm">
+                                    <?= str_replace('value="' . ($consulta['av_ao_id'] ?? '') . '"', 'value="' . ($consulta['av_ao_id'] ?? '') . '" selected', $avOptions) ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>AV OD (Ojo Derecho)</label>
+                                <select name="av_od_id" class="form-control-sm">
+                                    <?= str_replace('value="' . ($consulta['av_od_id'] ?? '') . '"', 'value="' . ($consulta['av_od_id'] ?? '') . '" selected', $avOptions) ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>AV OI (Ojo Izquierdo)</label>
+                                <select name="av_oi_id" class="form-control-sm">
+                                    <?= str_replace('value="' . ($consulta['av_oi_id'] ?? '') . '"', 'value="' . ($consulta['av_oi_id'] ?? '') . '" selected', $avOptions) ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <?= empty($consulta['av_ao_id']) ? '💾 Guardar AV' : '🔄 Actualizar AV' ?>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Guardar Datos Clínicos</button>
+                    
+                    <!-- COLUMNA DERECHA: CORRECCIÓN VISUAL (Con Lentes) -->
+                    <div class="col-md-6">
+                        <h3>👓 Corrección Visual (Con Lentes)</h3>
+                        
+                        <!-- CV Registrada -->
+                        <?php if (!empty($consulta['cv_ao_id']) || !empty($consulta['cv_od_id']) || !empty($consulta['cv_oi_id'])): ?>
+                        <div class="cv-display-grid mb-2">
+                            <div class="cv-item">
+                                <strong>CV AO</strong>
+                                <span class="cv-value"><?= $catalogoAV[array_search($consulta['cv_ao_id'], array_column($catalogoAV, 'id'))]['valor'] ?? '-' ?></span>
+                            </div>
+                            <div class="cv-item">
+                                <strong>CV OD</strong>
+                                <span class="cv-value"><?= $catalogoAV[array_search($consulta['cv_od_id'], array_column($catalogoAV, 'id'))]['valor'] ?? '-' ?></span>
+                            </div>
+                            <div class="cv-item">
+                                <strong>CV OI</strong>
+                                <span class="cv-value"><?= $catalogoAV[array_search($consulta['cv_oi_id'], array_column($catalogoAV, 'id'))]['valor'] ?? '-' ?></span>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <p class="text-center text-muted mb-2">No se ha capturado la corrección visual.</p>
+                        <?php endif; ?>
+                        
+                        <hr class="mb-2">
+                        
+                        <!-- Formulario CV -->
+                        <h4 class="mb-2">Capturar / Actualizar CV</h4>
+                        <form action="/consulta_handler.php?action=update_clinicos" method="POST">
+                            <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
+                            <input type="hidden" name="patient_id" value="<?= $paciente['id'] ?>">
+                            <input type="hidden" name="tipo" value="cv">
+                            
+                            <div class="form-group">
+                                <label>CV AO (Ambos Ojos)</label>
+                                <select name="cv_ao_id" class="form-control-sm">
+                                    <?= str_replace('value="' . ($consulta['cv_ao_id'] ?? '') . '"', 'value="' . ($consulta['cv_ao_id'] ?? '') . '" selected', $avOptions) ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>CV OD (Ojo Derecho)</label>
+                                <select name="cv_od_id" class="form-control-sm">
+                                    <?= str_replace('value="' . ($consulta['cv_od_id'] ?? '') . '"', 'value="' . ($consulta['cv_od_id'] ?? '') . '" selected', $avOptions) ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>CV OI (Ojo Izquierdo)</label>
+                                <select name="cv_oi_id" class="form-control-sm">
+                                    <?= str_replace('value="' . ($consulta['cv_oi_id'] ?? '') . '"', 'value="' . ($consulta['cv_oi_id'] ?? '') . '" selected', $avOptions) ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <?= empty($consulta['cv_ao_id']) ? '💾 Guardar CV' : '🔄 Actualizar CV' ?>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                    
+                </div>
             </div>
 
         </div> <!-- card-body -->

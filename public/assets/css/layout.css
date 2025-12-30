@@ -1,0 +1,121 @@
+/* ==========================================================================
+   ESTRUCTURA DEL LAYOUT (LAYOUT & GRID)
+   ========================================================================== */
+
+/* 1. Grid Principal (Dashboard) */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: var(--header-height) 1fr auto;
+    grid-template-areas:
+        "sidebar header"
+        "sidebar main"
+        "sidebar footer";
+    height: 100vh;
+}
+
+/* 2. Header Principal */
+.header {
+    grid-area: header;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+
+/* 3. Sidebar */
+.sidebar {
+    grid-area: sidebar;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--sidebar-text-hover);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.8rem 1.2rem;
+    color: var(--sidebar-text);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-nav li a .icon {
+    font-size: 1.3em;
+    line-height: 1;
+}
+
+.sidebar-nav li a:hover {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-text-hover);
+}
+
+.sidebar-nav li a.active {
+    background-color: var(--accent-color);
+    color: #ffffff;
+}
+
+/* 4. Main Content */
+.main-content {
+    grid-area: main;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* 5. Footer */
+.footer {
+    grid-area: footer;
+    background-color: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* 6. Page Headers (Sub-componente del Layout) */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+/* 7. Data Layout (Data Grid) */
+.data-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+.data-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.data-item.full { flex-basis: 100%; }
+.data-item.half { flex-basis: calc(50% - 0.5rem); }
+.data-item.quarter { flex-basis: calc(25% - 0.75rem); }
+
+.data-item strong {
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+}

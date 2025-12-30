@@ -12,6 +12,11 @@ if (!$paciente) {
 }
 
 $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+
+// Filter out non-Refractive consultations (Legacy module is for Lenses only)
+$consultas = array_filter($consultas, function($c) {
+    return $c['motivo_consulta'] === 'Refractiva';
+});
 ?>
 
 <div class="page-header">
@@ -61,16 +66,10 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
                                 </td>
 
                                 <td>
-                                    <?php if ($consulta['motivo_consulta'] === 'Médica'): ?>
-                                        <div class="text-info">
-                                            <strong>Dx:</strong> <?= htmlspecialchars($consulta['diagnostico_dx'] ?? 'Sin diagnóstico') ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <div class="graduacion-display">
-                                            <div><strong>OD:</strong> <?= htmlspecialchars($consulta['od_esfera'] ?? '-') ?> / <?= htmlspecialchars($consulta['od_cilindro'] ?? '-') ?> x <?= htmlspecialchars($consulta['od_eje'] ?? '-') ?></div>
-                                            <div><strong>OI:</strong> <?= htmlspecialchars($consulta['oi_esfera'] ?? '-') ?> / <?= htmlspecialchars($consulta['oi_cilindro'] ?? '-') ?> x <?= htmlspecialchars($consulta['oi_eje'] ?? '-') ?></div>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="graduacion-display">
+                                        <div><strong>OD:</strong> <?= htmlspecialchars($consulta['od_esfera'] ?? '-') ?> / <?= htmlspecialchars($consulta['od_cilindro'] ?? '-') ?> x <?= htmlspecialchars($consulta['od_eje'] ?? '-') ?></div>
+                                        <div><strong>OI:</strong> <?= htmlspecialchars($consulta['oi_esfera'] ?? '-') ?> / <?= htmlspecialchars($consulta['oi_cilindro'] ?? '-') ?> x <?= htmlspecialchars($consulta['oi_eje'] ?? '-') ?></div>
+                                    </div>
                                 </td>
                                 
                                 <td class="actions-cell">

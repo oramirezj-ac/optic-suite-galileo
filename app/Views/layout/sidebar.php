@@ -15,6 +15,11 @@
                 </a>
             </li>
             <li>
+                <a href="index.php?page=clinica_index" class="<?= (strpos($page, 'clinica') !== false) ? 'active' : '' ?>">
+                    📋 Consultas Live
+                </a>
+            </li>
+            <li>
                 <a href="index.php?page=ventas_index" class="<?= ($page === 'ventas_index') ? 'active' : '' ?>">
                     <span class="icon">🛒</span> Ventas
                 </a>

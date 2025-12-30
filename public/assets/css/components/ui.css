@@ -1,0 +1,177 @@
+/* ==========================================================================
+   COMPONENTES DE INTERFAZ (UI - TABS, SEARCH, TOOLBAR)
+   ========================================================================== */
+
+/* 1. Barras de Búsqueda */
+.search-bar {
+    display: flex;
+    gap: 0.5rem;
+}
+.search-bar input {
+    flex-grow: 1;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* 2. Pestañas y Vistas (Tabs) */
+.view-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.view-actions .btn.active {
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-bg);
+}
+
+/* Pestañas de navegación (tabs) */
+.view-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.view-tab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.view-tab:hover {
+    color: #2196F3;
+    background: #f5f5f5;
+}
+
+.view-tab.active {
+    color: #2196F3;
+    border-bottom-color: #2196F3;
+    background: transparent;
+}
+
+.view-panel { display: none; }
+.view-panel.active { display: block; }
+
+
+/* 3. Barras de Herramientas (Toolbar) */
+.form-toolbar {
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+/* Variante específica (usada en Ventas/Auditoría) con estilos override */
+.form-toolbar .toolbar-title {
+    display: block; 
+    margin-bottom: 0.75rem; 
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Variante más específica encontrada en custom.css legacy */
+.form-toolbar.toolbar-complex {
+   background-color: #f9fafb; /* Gris muy claro */
+   border: 1px solid #e5e7eb;
+}
+
+.toolbar-title.uppercase {
+    color: #374151;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toolbar-help-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* 4. Agudeza Visual (AV) Display */
+.av-display {
+    margin-bottom: 1.5rem;
+}
+
+.av-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.av-row:last-child {
+    border-bottom: none;
+}
+
+.av-row strong {
+    color: #333;
+}
+
+.av-row span {
+    color: #0066cc;
+    font-weight: 500;
+}
+
+.card-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* 5. AV/CV Display Grids */
+.av-display-grid,
+.cv-display-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.av-item,
+.cv-item {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #0066cc;
+    text-align: center;
+}
+
+.av-item strong,
+.cv-item strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.av-value,
+.cv-value {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #0066cc;
+}
+
+/* Column layout for forms */
+.row {
+    display: flex;
+    gap: 2rem;
+}
+
+.col-md-6 {
+    flex: 1;
+    min-width: 0;
+}

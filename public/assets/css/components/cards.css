@@ -1,0 +1,153 @@
+/* ==========================================================================
+   COMPONENTE: TARJETAS (CARDS)
+   ========================================================================== */
+
+.card {
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end; /* Alineación a la derecha por defecto */
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    gap: 1rem;
+}
+
+/* Sub-componente: Info Box (Usado en Biometría) */
+.info-box {
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.info-box-title {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+
+.info-box-content {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Componente: Cabecera de Contexto (Usado en Edición/Detalles) */
+.context-header {
+    margin-bottom: 1.5rem;
+}
+
+.context-header .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+}
+
+.context-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Tarjeta de Año (Botón Grande - Dashboard) */
+.year-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-width: 150px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1 0 auto;
+}
+
+.year-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.year-card.active {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border-color: var(--accent-color);
+}
+
+.year-card.active h2, 
+.year-card.active p {
+    color: #ffffff;
+}
+
+.year-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.year-card p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Contenedor de Meses (Animación Dashboard) */
+.months-container {
+    display: none; /* Se oculta inicialmente */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.months-container.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Warning Card (Delete confirmations) */
+.warning-card {
+    border: 2px solid #dc3545;
+    background-color: #fff8f8;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+/* Alert Boxes */
+.alert {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+}
+
+/* Background Colors */
+.bg-danger {
+    background-color: #dc3545;
+}

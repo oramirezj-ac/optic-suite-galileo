@@ -36,10 +36,33 @@ $allowedPages = [
                     'consultas_create',
                     'consultas_edit',
                     'consultas_delete',
+                    'clinica_index',          // Hub de clínica
+                    'clinica_review',         // Revisión de duplicados
+                    'clinica_delete',         // Confirmar borrado paciente
+                    // Consultas Médicas
+                    'consultas_medicas_index',
+                    'consultas_medicas_create',
+                    'consultas_medicas_edit',
+                    'consultas_medicas_delete',
+                    'consultas_medicas_details',
+                    // Consultas de Lentes
+                    'consultas_lentes_index',
+                    'consultas_lentes_create',
+                    'consultas_lentes_edit',
+                    'consultas_lentes_delete',
+                    'consultas_lentes_details',
+                    // AV Live
+                    'av_live_index',
+                    'av_live_create',
+                    'av_live_edit',
+                    'av_live_delete',
+                    // Graduaciones
                     'graduaciones_index',
                     'graduaciones_create',
                     'graduaciones_edit',
                     'graduaciones_delete',
+                    'graduaciones_live_index',
+                    'graduaciones_live_create',
                     'ventas_index',
                     'ventas_create',
                     'ventas_details',
@@ -67,6 +90,18 @@ if ($page === 'dashboard') {
 } elseif (strpos($page, 'users') === 0) { // Lógica simplificada para todas las páginas de usuarios
     $viewPath = "../app/Views/users/" . str_replace('users_', '', $page) . ".php";
     if ($page === 'users') $viewPath = "../app/Views/users/index.php";
+} elseif (strpos($page, 'consultas_medicas') === 0) {
+    // Enrutamiento para consultas médicas (DEBE IR ANTES de 'consultas')
+    $viewPath = "../app/Views/consultas_medicas/" . str_replace('consultas_medicas_', '', $page) . ".php";
+    if ($page === 'consultas_medicas' || $page === 'consultas_medicas_index') {
+        $viewPath = "../app/Views/consultas_medicas/index.php";
+    }
+} elseif (strpos($page, 'consultas_lentes') === 0) {
+    // Enrutamiento para consultas de lentes (DEBE IR ANTES de 'consultas')
+    $viewPath = "../app/Views/consultas_lentes/" . str_replace('consultas_lentes_', '', $page) . ".php";
+    if ($page === 'consultas_lentes' || $page === 'consultas_lentes_index') {
+        $viewPath = "../app/Views/consultas_lentes/index.php";
+    }
 } elseif (strpos($page, 'consultas') === 0) {
     // Si la página empieza con 'consultas_', busca en la carpeta /app/Views/consultas/
     $viewPath = "../app/Views/consultas/" . str_replace('consultas_', '', $page) . ".php";
@@ -75,7 +110,27 @@ if ($page === 'dashboard') {
     if ($page === 'consultas' || $page === 'consultas_index') {
         $viewPath = "../app/Views/consultas/index.php";
     }
-} elseif (strpos($page, 'graduaciones') === 0) {
+} elseif (strpos($page, 'clinica') === 0) {
+    // Si la página empieza con 'clinica_', busca en la carpeta /app/Views/clinica/
+    $viewPath = "../app/Views/clinica/" . str_replace('clinica_', '', $page) . ".php";
+    
+    // Si la página es solo 'clinica' (o 'clinica_index'), usa index.php
+    if ($page === 'clinica' || $page === 'clinica_index') {
+        $viewPath = "../app/Views/clinica/index.php";
+    }
+} elseif (strpos($page, 'av_live') === 0) {
+    // IMPORTANTE: Esto debe ir ANTES de otros módulos
+    $viewFile = str_replace('av_live_', '', $page);
+    $viewPath = "../app/Views/av_live/" . $viewFile . ".php";
+    if ($page === 'av_live' || $page === 'av_live_index') {
+        $viewPath = "../app/Views/av_live/index.php";
+    }
+} elseif (strpos($page, 'graduaciones_live') === 0) {
+    // IMPORTANTE: Esto debe ir ANTES de 'graduaciones' para evitar conflictos
+    $viewFile = str_replace('graduaciones_live_', '', $page);
+    $viewPath = "../app/Views/graduaciones_live/" . $viewFile . ".php";
+}
+elseif (strpos($page, 'graduaciones') === 0) {
     // Si la página empieza con 'graduaciones_', busca en la carpeta /app/Views/graduaciones/
     $viewFile = str_replace('graduaciones_', '', $page);
     
@@ -113,7 +168,7 @@ elseif (strpos($page, 'abonos') === 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= ucfirst(str_replace('_', ' ', $page)) ?> - Optic Suite Galileo</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css?v=<?= time() ?>">
 </head>
 <body>
     

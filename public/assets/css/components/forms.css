@@ -94,7 +94,42 @@
     grid-column: 1 / -1;
 }
 
-/* Ocupar 1/3 del ancho (útil en filas largas) */
-.form-group-third {
-    max-width: 33.33%;
+/* Ocupar 1/3 del ancho (33.33%) */
+.form-row .form-group.form-group-third {
+    flex: 0 0 calc(33.3333% - 1rem); /* Gap approx correction */
+    max-width: calc(33.3333% - 1rem);
+}
+
+/* Ocupar 1/4 del ancho (25%) - Ajustado para gap de 1.5rem */
+.form-row .form-group.form-group-quarter {
+    flex: 0 0 calc(25% - 0.75rem);
+    max-width: calc(25% - 0.75rem);
+}
+
+/* Ocupar 3/4 del ancho (75%) - Ajustado para gap de 1.5rem */
+.form-row .form-group.form-group-three-quarters {
+    flex: 0 0 calc(75% - 0.75rem);
+    max-width: calc(75% - 0.75rem);
+}
+
+/* ------------------------------------------------------
+   5. Sistema de Grid Personalizado (Utilerias de Flexbox)
+   ------------------------------------------------------ */
+/* Desactivar crecimiento automático para elementos con ancho fijo */
+.form-row .form-group[class*="form-group-"] {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+/* Ajuste para móviles: en pantallas muy chicas, volver a 100% si es necesario */
+@media (max-width: 576px) {
+    .form-row .form-group.form-group-quarter,
+    .form-row .form-group.form-group-three-quarters,
+    .form-row .form-group.form-group-third {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .form-row {
+        flex-wrap: wrap; 
+    }
 }

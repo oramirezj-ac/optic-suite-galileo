@@ -281,6 +281,22 @@ class PatientModel
     }
 
     /**
+     * Obtiene los N pacientes modificados más recientemente.
+     * @param int $limit Número de pacientes a obtener
+     * @return array
+     */
+    public function getRecentPatients($limit = 5)
+    {
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM pacientes ORDER BY fecha_actualizacion DESC LIMIT ?");
+            $stmt->execute([$limit]);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Obtiene el listado completo de pacientes (con un límite de seguridad).
      * Ordenado alfabéticamente.
      */

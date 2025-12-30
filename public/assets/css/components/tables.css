@@ -1,0 +1,41 @@
+/* ==========================================================================
+   COMPONENTE: TABLAS (TABLES)
+   ========================================================================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+thead th {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Estilos para Tabla de Auditoría (Row States) */
+tr.row-missing {
+    background-color: #fee2e2; /* Rojo suave */
+}
+
+tr.row-missing td {
+    color: #991b1b;
+}
+
+tr.row-duplicate {
+    background-color: #fef9c3; /* Amarillo suave */
+}
+
+tr.row-duplicate td {
+    color: #854d0e;
+}

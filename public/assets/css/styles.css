@@ -2,15 +2,30 @@
    Archivo Principal de Estilos - Optic Suite Galileo
    ========================================================================== */
 
+/* 1. Tokens y Utilidades */
 @import 'variables.css';
+@import 'utilities.css';
+
+/* 2. Layout y Estructura Global */
+@import 'layout.css';
+
+/* 3. Componentes Base */
 @import 'components/buttons.css';
-@import 'components/custom.css';
 @import 'components/forms.css';
+@import 'components/cards.css';
+@import 'components/tables.css';
+@import 'components/status.css';
+@import 'components/ui.css';
+
+/* 4. Componentes de Módulos Específicos */
 @import 'components/graduaciones.css';
 @import 'components/login.css';
+@import 'components/clinica.css';
+
+/* nota: custom.css ha sido depreciado y su contenido distribuido en componentes */
 
 /* ==========================================================================
-   1. Estilos Globales y Reseteo
+   Estilos Globales y Reseteo
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
@@ -20,107 +35,8 @@ body {
     font-family: var(--font-main);
     background-color: var(--bg-secondary);
     color: var(--text-primary);
-    font-size: var(--font-size-base); /* Usamos la nueva variable */
+    font-size: var(--font-size-base);
     line-height: 1.6;
 }
 
 a { text-decoration: none; color: var(--accent-color); }
-
-/* ==========================================================================
-   2. Estructura del Layout (Grid)
-   ========================================================================== */
-.dashboard-container {
-    display: grid;
-    grid-template-columns: var(--sidebar-width) 1fr;
-    grid-template-rows: var(--header-height) 1fr auto;
-    grid-template-areas:
-        "sidebar header"
-        "sidebar main"
-        "sidebar footer";
-    height: 100vh;
-}
-
-/* ==========================================================================
-   3. Estilos de Componentes del Layout
-   ========================================================================== */
-
-/* --- Header --- */
-.header {
-    grid-area: header;
-    background-color: var(--bg-primary);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-}
-
-/* --- Sidebar (Aquí están los cambios principales) --- */
-.sidebar {
-    grid-area: sidebar;
-    background-color: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-brand {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--sidebar-text-hover);
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.sidebar-nav ul {
-    /* CAMBIO: Eliminamos los puntos de la lista */
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar-nav li a {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem; /* Espacio entre ícono y texto */
-    padding: 0.8rem 1.2rem; /* Más padding para apariencia de botón */
-    color: var(--sidebar-text);
-    border-radius: 8px; /* Bordes más redondeados */
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.sidebar-nav li a .icon {
-    /* CAMBIO: Hacemos el ícono un poco más grande */
-    font-size: 1.3em;
-    line-height: 1;
-}
-
-.sidebar-nav li a:hover {
-    background-color: var(--sidebar-active-bg);
-    color: var(--sidebar-text-hover);
-}
-
-.sidebar-nav li a.active {
-    /* CAMBIO: El nuevo estilo para el menú activo */
-    background-color: var(--accent-color);
-    color: #ffffff; /* Texto blanco para máximo contraste */
-}
-
-/* --- Main Content --- */
-.main-content {
-    grid-area: main;
-    padding: 2rem;
-    overflow-y: auto;
-}
-
-/* --- Footer --- */
-.footer {
-    grid-area: footer;
-    background-color: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-    padding: 1rem 2rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}

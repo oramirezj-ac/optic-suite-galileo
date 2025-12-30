@@ -114,5 +114,134 @@
     display: grid;
     grid-template-columns: auto 1fr; /* 2 columnas: etiqueta y cajas */
     gap: 1.2rem;
+    gap: 1.2rem;
     align-items: center;
+}
+
+/* Espaciado para mensajes de estado vacío */
+.empty-state-message {
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* --- 4. AV INPUTS (Compact & Centered) --- */
+.av-input-label {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.av-select-compact {
+    padding: 0 5px;
+}
+
+.av-centered-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.av-capture-card {
+    width: 100%;
+    max-width: 400px; /* Equivalent to col-lg-4 roughly */
+}
+
+/* --- 5. CONSULTA LENTES CREATE Layout --- */
+.form-row-date {
+    flex: 1;
+}
+.form-row-motive {
+    flex: 3;
+}
+
+/* --- 6. GRADUACIONES LIVE CREATE Layout --- */
+.dp-section-minimal-content {
+    gap: 15px;
+}
+.dp-input-group-total {
+    width: 100px;
+}
+.dp-input-group-eye {
+    width: 80px;
+}
+
+/* --- 7. GRADUACIONES LIVE INDEX Styles --- */
+.patient-header-fixed {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.graduaciones-live {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+.grad-card {
+    margin-bottom: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+}
+
+.grad-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.grad-card.border-success {
+    border-color: #28a745;
+    border-width: 1px;
+}
+
+.grad-card .card-header {
+    background: #f8f9fa;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.grad-card .card-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.mini-graduacion .graduacion-formula {
+    background: #f1f3f5;
+    padding: 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-family: monospace;
+    font-size: 1.1em;
+}
+
+.mini-graduacion .graduacion-ojo-label {
+    background: #333;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 0.8em;
+}
+
+.mini-graduacion .simbolo {
+    color: #888;
+    margin: 0 4px;
+    font-size: 0.8em;
+}
+
+.mini-graduacion .valor {
+    font-weight: bold;
+    color: #000;
+}
+
+.mini-graduacion .valor-add {
+    color: #d63384; 
 }

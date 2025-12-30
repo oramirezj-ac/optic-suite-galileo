@@ -1,0 +1,102 @@
+/* ==========================================================================
+   WIZARD DE CONSULTAS - Estilos Mínimos
+   ========================================================================== */
+
+/* Pasos del Wizard */
+.wizard-step {
+    display: none;
+}
+
+.wizard-step.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botones deshabilitados en el header */
+.card-header .btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Formulario */
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ========================================================================
+   ESTILOS ESPECÍFICOS DE CLÍNICA
+   ======================================================================== */
+
+/* Actions cell alineado a la derecha */
+.actions-cell-end {
+    justify-content: flex-end;
+}
+
+/* Footer de clínica con botones de tipo de consulta */
+.clinica-footer {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-top: 2px solid #dee2e6;
+}
+
+.clinica-footer-title {
+    margin-bottom: 1.5rem;
+    color: #495057;
+}
+
+.clinica-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.clinica-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.clinica-btn-subtitle {
+    opacity: 0.9;
+}
+
+/* Encabezado de información del paciente en consultas */
+.patient-info-header {
+    background: #f8f9fa;
+    border-left: 4px solid var(--primary-color);
+    padding: 1.5rem;
+}
+
+.patient-info-header h4 {
+    margin: 0 0 0.75rem 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.patient-info-details {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.patient-info-details span {
+    display: inline-block;
+}
+

@@ -11,8 +11,13 @@ require_once __DIR__ . '/../Models/VentaModel.php';
 // VOLVEMOS A LA FUNCIÓN ORIGINAL (SIN PARÁMETROS)
 function handlePatientAction()
 {
-    // El 'action' vendrá SIEMPRE de la URL
-    $action = $_GET['action'] ?? 'list';
+    // Lógica inteligente para detectar la acción
+    // Si es POST, la acción viene del formulario
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['action'] ?? $_GET['action'] ?? 'list';
+    } else {
+        $action = $_GET['action'] ?? 'list';
+    }
     
     $pdo = getConnection();
     $patientModel = new PatientModel($pdo);
@@ -34,13 +39,25 @@ function handlePatientAction()
                     'nombre' => $nombre,
                     'apellido_paterno' => !empty($_POST['apellido_paterno']) ? $_POST['apellido_paterno'] : null,
                     'apellido_materno' => !empty($_POST['apellido_materno']) ? $_POST['apellido_materno'] : null,
-                    // NUEVO: Recibimos las fechas, ignoramos 'edad'
-                    'fecha_nacimiento' => !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null,
                     'fecha_primera_visita' => !empty($_POST['fecha_primera_visita']) ? $_POST['fecha_primera_visita'] : date('Y-m-d'),
                     'domicilio' => !empty($_POST['domicilio']) ? $_POST['domicilio'] : null,
                     'telefono' => !empty($_POST['telefono']) ? $_POST['telefono'] : null,
                     'antecedentes_medicos' => !empty($_POST['antecedentes_medicos']) ? $_POST['antecedentes_medicos'] : ''
                 ];
+                
+                // Calcular fecha_nacimiento si no viene o está vacía
+                if (!empty($_POST['fecha_nacimiento'])) {
+                    $data['fecha_nacimiento'] = $_POST['fecha_nacimiento'];
+                } elseif (!empty($_POST['edad_calculadora'])) {
+                    // Calcular desde la edad
+                    $edad = intval($_POST['edad_calculadora']);
+                    $fechaReferencia = $data['fecha_primera_visita'];
+                    $birthYear = date('Y', strtotime($fechaReferencia)) - $edad;
+                    $data['fecha_nacimiento'] = $birthYear . date('-m-d', strtotime($fechaReferencia));
+                } else {
+                    // Si no se proporciona edad, guardar null
+                    $data['fecha_nacimiento'] = null;
+                }
 
                 // --- INICIO DE LA NUEVA LÓGICA DE CONTROL ---
                 
@@ -55,8 +72,16 @@ function handlePatientAction()
                     // para que la siguiente página pueda usarlos.
                     $_SESSION['new_patient_data'] = $data; 
                     
-                    // Redirigimos a la nueva página de revisión (que aún no existe)
-                    header('Location: /index.php?page=patients_review');
+                    // Verificar si viene desde el wizard
+                    $redirectTo = $_POST['redirect_to'] ?? 'details';
+                    
+                    if ($redirectTo === 'wizard') {
+                        // Redirigir a la página de revisión del wizard
+                        header('Location: /index.php?page=clinica_review');
+                    } else {
+                        // Redirigir a la página de revisión normal
+                        header('Location: /index.php?page=patients_review');
+                    }
                     exit();
 
                 } else {
@@ -65,7 +90,14 @@ function handlePatientAction()
                     $newPatientId = $patientModel->create($data);
                 
                     if ($newPatientId) {
-                        header('Location: /index.php?page=patients_details&id=' . $newPatientId . '&success=created');
+                        // Verificar si viene desde el wizard
+                        $redirectTo = $_POST['redirect_to'] ?? 'details';
+                        
+                        if ($redirectTo === 'wizard') {
+                            header('Location: /index.php?page=clinica_index&patient_id=' . $newPatientId . '&success=created');
+                        } else {
+                            header('Location: /index.php?page=patients_details&id=' . $newPatientId . '&success=created');
+                        }
                     } else {
                         header('Location: /index.php?page=patients_create&error=' . urlencode('Error al crear el paciente.'));
                     }
@@ -100,8 +132,14 @@ function handlePatientAction()
                 ];
 
                 if ($patientModel->update($id, $data)) {
-                    // Redirigimos a DETALLES del paciente, pasando el ID
-                    header('Location: /index.php?page=patients_details&id=' . $id . '&success=updated');
+                    // Verificar si viene desde el wizard
+                    $redirectTo = $_POST['redirect_to'] ?? 'details';
+                    
+                    if ($redirectTo === 'wizard') {
+                        header('Location: /index.php?page=clinica_index&patient_id=' . $id . '&success=updated');
+                    } else {
+                        header('Location: /index.php?page=patients_details&id=' . $id . '&success=updated');
+                    }
                 } else {
                     $error_message = "Error al actualizar al paciente.";
                     header('Location: /index.php?page=patients_edit&id=' . $id . '&error=' . urlencode($error_message));
@@ -119,10 +157,20 @@ function handlePatientAction()
                     exit();
                 }
                 
+                $redirectTo = $_POST['redirect_to'] ?? 'patients';
+                
                 if ($patientModel->delete($id)) {
-                    header('Location: /index.php?page=patients&success=deleted');
+                    if ($redirectTo === 'clinica') {
+                        header('Location: /index.php?page=clinica_index&success=deleted');
+                    } else {
+                        header('Location: /index.php?page=patients&success=deleted');
+                    }
                 } else {
-                    header('Location: /index.php?page=patients&error=delete_failed');
+                    if ($redirectTo === 'clinica') {
+                        header('Location: /index.php?page=clinica_index&error=delete_failed');
+                    } else {
+                        header('Location: /index.php?page=patients&error=delete_failed');
+                    }
                 }
                 exit();
             }

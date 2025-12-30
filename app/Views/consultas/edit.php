@@ -38,30 +38,18 @@ $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
                 
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
+                <input type="hidden" name="motivo_consulta" value="Refractiva">
 
                 <div class="form-row">
-                    <div class="form-group flex-grow-2">
-                        <label for="motivo_consulta">Tipo de Consulta</label>
-                        <select id="motivo_consulta" name="motivo_consulta" required>
-                            <option value="Refractiva" <?= $consulta['motivo_consulta'] == 'Refractiva' ? 'selected' : '' ?>>👓 Examen de Vista (Lentes)</option>
-                            <option value="Médica" <?= $consulta['motivo_consulta'] == 'Médica' ? 'selected' : '' ?>>🩺 Consulta Médica (Patología)</option>
-                        </select>
-                    </div>
-
                     <div class="form-group">
-                        <label for="fecha">Fecha</label>
+                        <label for="fecha">Fecha de Consulta</label>
                         <input type="date" id="fecha" name="fecha" value="<?= $fechaInput ?>" required>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="detalle_motivo">Detalles del Motivo</label>
-                    <input type="text" id="detalle_motivo" name="detalle_motivo" value="<?= htmlspecialchars($consulta['detalle_motivo'] ?? '') ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="diagnostico_dx">Diagnóstico (Opcional)</label>
-                    <input type="text" id="diagnostico_dx" name="diagnostico_dx" value="<?= htmlspecialchars($consulta['diagnostico_dx'] ?? '') ?>">
+                    
+                    <div class="form-group flex-grow-2">
+                        <label for="detalle_motivo">Motivo de la Consulta</label>
+                        <input type="text" id="detalle_motivo" name="detalle_motivo" value="<?= htmlspecialchars($consulta['detalle_motivo'] ?? '') ?>" placeholder="Ej: Revisión anual, cambio de graduación...">
+                    </div>
                 </div>
 
                 <div class="form-group">

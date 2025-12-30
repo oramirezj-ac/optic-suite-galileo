@@ -32,25 +32,17 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
             
             <form action="/consulta_handler.php?action=store" method="POST">
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
+                <input type="hidden" name="motivo_consulta" value="Refractiva">
 
                 <div class="form-row">
-                    <div class="form-group flex-grow-2">
-                        <label for="motivo_consulta">Tipo de Consulta</label>
-                        <select id="motivo_consulta" name="motivo_consulta" required>
-                            <option value="Refractiva" selected>👓 Examen de Vista (Lentes)</option>
-                            <option value="Médica">🩺 Consulta Médica (Patología)</option>
-                        </select>
-                    </div>
-
                     <div class="form-group">
-                        <label for="fecha">Fecha</label>
+                        <label for="fecha">Fecha de Consulta</label>
                         <input type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="detalle_motivo">Detalles del Motivo</label>
-                    <input type="text" id="detalle_motivo" name="detalle_motivo" placeholder="Ej: Paciente refiere dolor de cabeza...">
+                    <div class="form-group flex-grow-2">
+                        <label for="detalle_motivo">Motivo de la Consulta</label>
+                        <input type="text" id="detalle_motivo" name="detalle_motivo" placeholder="Ej: Revisión anual, cambio de graduación...">
+                    </div>
                 </div>
 
                 <div class="form-group">
