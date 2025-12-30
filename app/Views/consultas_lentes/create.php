@@ -61,13 +61,13 @@ $edad = $patient['fecha_nacimiento'] ? \FormatHelper::calculateAge($patient['fec
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
                 
                 <div class="form-row">
-                    <div class="form-group form-row-date">
-                        <label>Fecha de Consulta</label>
-                        <input type="date" name="fecha_consulta" value="<?= date('Y-m-d') ?>" required>
+                    <div class="form-group form-group-quarter">
+                        <label for="fecha_consulta">Fecha de Consulta</label>
+                        <input type="date" id="fecha_consulta" name="fecha_consulta" value="<?= date('Y-m-d') ?>" required>
                     </div>
-                    <div class="form-group form-row-motive">
-                        <label>Motivo</label>
-                        <input type="text" name="motivo" placeholder="Ej. Revisión anual">
+                    <div class="form-group form-group-three-quarters">
+                        <label for="motivo">Motivo de Consulta</label>
+                        <input type="text" id="motivo" name="motivo" placeholder="Ej. Revisión anual">
                     </div>
                 </div>
                 

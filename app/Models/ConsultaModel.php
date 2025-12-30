@@ -15,6 +15,7 @@ class ConsultaModel
     /**
      * Obtiene un resumen de las 3 consultas más recientes.
      * (Esta función NO SE TOCA, funciona bien para lentes).
+     * UPDATE: Corregido JOIN para usar es_graduacion_final
      */
     public function getResumenConsultasPorPaciente($patientId)
     {
@@ -22,7 +23,8 @@ class ConsultaModel
             $sql = "
                 SELECT 
                     c.id AS consulta_id, 
-                    c.fecha, 
+                    c.fecha,
+                    c.motivo_consulta,
                     c.dp_lejos_total,
                     c.dp_od,
                     c.dp_oi,
@@ -38,11 +40,11 @@ class ConsultaModel
                 FROM 
                     consultas c
                 LEFT JOIN 
-                    graduaciones g ON c.id = g.consulta_id AND g.tipo = 'final'
+                    graduaciones g ON c.id = g.consulta_id AND g.es_graduacion_final = 1
                 WHERE 
                     c.paciente_id = ?
                 GROUP BY 
-                    c.id, c.fecha, c.dp_lejos_total, c.dp_od, c.dp_oi, c.altura_oblea
+                    c.id, c.fecha, c.motivo_consulta, c.dp_lejos_total, c.dp_od, c.dp_oi, c.altura_oblea
                 ORDER BY 
                     c.fecha DESC
                 LIMIT 3
@@ -59,6 +61,7 @@ class ConsultaModel
      * Obtiene TODAS las consultas de un paciente.
      * UPDATE: Agregamos campos médicos y financieros al SELECT.
      * UPDATE 2: Agregamos filtro opcional por tipo de consulta
+     * UPDATE 3: Corregido JOIN para usar es_graduacion_final en lugar de tipo='final'
      */
     public function getAllByPaciente($patientId, $tipo = null)
     {
@@ -85,7 +88,7 @@ class ConsultaModel
                 FROM 
                     consultas c
                 LEFT JOIN 
-                    graduaciones g ON c.id = g.consulta_id AND g.tipo = 'final'
+                    graduaciones g ON c.id = g.consulta_id AND g.es_graduacion_final = 1
                 WHERE 
                     c.paciente_id = ?";
             

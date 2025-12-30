@@ -226,6 +226,44 @@ function handleConsultaLentesAction()
             break;
         
         /* ==========================================================
+           CASO: STORE CV (Corrección Visual)
+           ========================================================================== */
+        case 'store_cv':
+        case 'update_cv':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $consultaId = $_POST['consulta_id'] ?? null;
+                $patientId = $_POST['patient_id'] ?? null;
+
+                if (!$consultaId || !$patientId) {
+                    header('Location: /index.php?page=consultas_lentes_index&error=' . urlencode('Datos incompletos'));
+                    exit();
+                }
+
+                $cvData = [
+                    'cv_ao_id' => !empty($_POST['cv_ao_id']) ? (int)$_POST['cv_ao_id'] : null,
+                    'cv_od_id' => !empty($_POST['cv_od_id']) ? (int)$_POST['cv_od_id'] : null,
+                    'cv_oi_id' => !empty($_POST['cv_oi_id']) ? (int)$_POST['cv_oi_id'] : null,
+                ];
+
+                $sql = "UPDATE consultas SET 
+                        cv_ao_id = :cv_ao_id,
+                        cv_od_id = :cv_od_id,
+                        cv_oi_id = :cv_oi_id
+                        WHERE id = :consulta_id";
+                
+                $stmt = $pdo->prepare($sql);
+                $cvData['consulta_id'] = $consultaId;
+                
+                if ($stmt->execute($cvData)) {
+                    header('Location: /index.php?page=graduaciones_live_index&id=' . $consultaId . '&patient_id=' . $patientId . '&success=' . urlencode('Corrección Visual guardada'));
+                } else {
+                    header('Location: /index.php?page=av_live_create&consulta_id=' . $consultaId . '&patient_id=' . $patientId . '&mode=cv&error=' . urlencode('Error al guardar CV'));
+                }
+                exit();
+            }
+            break;
+        
+        /* ==========================================================
            CASO: UPDATE_DP - Actualizar Distancia Pupilar
            ========================================================== */
         case 'update_dp':

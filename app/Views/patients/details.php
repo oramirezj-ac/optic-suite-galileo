@@ -18,7 +18,12 @@ $patient = $data['patient'];
 $resumenConsultas = $data['resumen'];
 $ventas = $data['ventas'] ?? [];
 
-// 5. Creamos las variables que la vista necesita
+// 5. Filtramos solo consultas refractivas (lentes)
+$resumenConsultas = array_filter($resumenConsultas, function($c) {
+    return ($c['motivo_consulta'] ?? '') === 'Refractiva';
+});
+
+// 6. Creamos las variables que la vista necesita
 $patientId = $patient['id'];
 $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
 ?>
@@ -39,6 +44,17 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
             <button class="btn btn-secondary active" data-view="details">Detalles</button>
             <button class="btn btn-secondary" data-view="consults">Consultas</button>
             <button class="btn btn-secondary" data-view="ventas">Ventas</button>
+            
+            <!-- Accesos directos a módulos de consultas -->
+            <a href="/index.php?page=consultas_medicas_index&patient_id=<?= $patientId ?>" 
+               class="btn btn-outline-primary" 
+               style="margin-left: auto;">
+                🏥 Consultas Médicas
+            </a>
+            <a href="/index.php?page=consultas_lentes_index&patient_id=<?= $patientId ?>" 
+               class="btn btn-outline-success">
+                👓 Consultas Lentes
+            </a>
         </div>
 
         <div class="card-body">
@@ -75,6 +91,8 @@ $fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_pa
                     
                     <?php 
                     // Header de Biometría (Última Consulta)
+                    // Re-indexar el array después del filtro
+                    $resumenConsultas = array_values($resumenConsultas);
                     $ultimaConsulta = $resumenConsultas[0];
                     $tieneBiometria = !empty($ultimaConsulta['dp_lejos_total']) || !empty($ultimaConsulta['altura_oblea']);
                     ?>

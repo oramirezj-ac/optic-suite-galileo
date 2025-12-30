@@ -67,8 +67,24 @@ $consultas = array_filter($consultas, function($c) {
 
                                 <td>
                                     <div class="graduacion-display">
-                                        <div><strong>OD:</strong> <?= htmlspecialchars($consulta['od_esfera'] ?? '-') ?> / <?= htmlspecialchars($consulta['od_cilindro'] ?? '-') ?> x <?= htmlspecialchars($consulta['od_eje'] ?? '-') ?></div>
-                                        <div><strong>OI:</strong> <?= htmlspecialchars($consulta['oi_esfera'] ?? '-') ?> / <?= htmlspecialchars($consulta['oi_cilindro'] ?? '-') ?> x <?= htmlspecialchars($consulta['oi_eje'] ?? '-') ?></div>
+                                        <div class="graduacion-formula">
+                                            <span class="graduacion-ojo-label">OD</span>
+                                            <span class="valor"><?= htmlspecialchars($consulta['od_esfera'] ?? '-') ?></span>
+                                            <span class="simbolo">=</span>
+                                            <span class="valor"><?= htmlspecialchars($consulta['od_cilindro'] ?? '-') ?></span>
+                                            <span class="simbolo">x</span>
+                                            <span class="valor"><?= htmlspecialchars($consulta['od_eje'] ?? '-') ?></span>
+                                            <span class="simbolo">°</span>
+                                        </div>
+                                        <div class="graduacion-formula">
+                                            <span class="graduacion-ojo-label">OI</span>
+                                            <span class="valor"><?= htmlspecialchars($consulta['oi_esfera'] ?? '-') ?></span>
+                                            <span class="simbolo">=</span>
+                                            <span class="valor"><?= htmlspecialchars($consulta['oi_cilindro'] ?? '-') ?></span>
+                                            <span class="simbolo">x</span>
+                                            <span class="valor"><?= htmlspecialchars($consulta['oi_eje'] ?? '-') ?></span>
+                                            <span class="simbolo">°</span>
+                                        </div>
                                     </div>
                                 </td>
                                 

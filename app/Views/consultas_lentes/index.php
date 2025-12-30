@@ -78,26 +78,24 @@ $edad = $patient['fecha_nacimiento'] ? \FormatHelper::calculateAge($patient['fec
                                     <div class="graduacion-formula">
                                         <span class="graduacion-ojo-label">OD</span>
                                         <span class="valor"><?= htmlspecialchars($consulta['od_esfera'] ?? '') ?></span>
-                                        <span class="simbolo">Sph</span>
+                                        <span class="simbolo">=</span>
                                         <span class="valor"><?= htmlspecialchars($consulta['od_cilindro'] ?? '') ?></span>
-                                        <span class="simbolo">Cyl</span>
+                                        <span class="simbolo">x</span>
                                         <span class="valor"><?= htmlspecialchars($consulta['od_eje'] ?? '') ?></span>
                                         <span class="simbolo">°</span>
-                                        <?php if (!empty($consulta['od_adicion'])): ?>
-                                            <span class="simbolo">Add</span>
+                                        <?php if (!empty($consulta['od_adicion']) && $consulta['od_adicion'] != '0.00'): ?>
                                             <span class="valor valor-add"><?= htmlspecialchars($consulta['od_adicion']) ?></span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="graduacion-formula">
                                         <span class="graduacion-ojo-label">OI</span>
                                         <span class="valor"><?= htmlspecialchars($consulta['oi_esfera'] ?? '') ?></span>
-                                        <span class="simbolo">Sph</span>
+                                        <span class="simbolo">=</span>
                                         <span class="valor"><?= htmlspecialchars($consulta['oi_cilindro'] ?? '') ?></span>
-                                        <span class="simbolo">Cyl</span>
+                                        <span class="simbolo">x</span>
                                         <span class="valor"><?= htmlspecialchars($consulta['oi_eje'] ?? '') ?></span>
                                         <span class="simbolo">°</span>
-                                        <?php if (!empty($consulta['oi_adicion'])): ?>
-                                            <span class="simbolo">Add</span>
+                                        <?php if (!empty($consulta['oi_adicion']) && $consulta['oi_adicion'] != '0.00'): ?>
                                             <span class="valor valor-add"><?= htmlspecialchars($consulta['oi_adicion']) ?></span>
                                         <?php endif; ?>
                                     </div>

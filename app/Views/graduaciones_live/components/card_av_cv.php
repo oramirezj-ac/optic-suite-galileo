@@ -1,7 +1,7 @@
 <?php
 /**
  * Componente: Card AV/CV (Agudeza Visual y Corrección Visual)
- * Variables requeridas: $consulta, $paciente, $hasAV, $hasCV
+ * Variables requeridas: $consulta, $paciente, $hasAV, $hasCV, $avLookup
  */
 ?>
 
@@ -14,52 +14,70 @@
         <?php endif; ?>
     </div>
     <div class="card-body">
-        <?php if ($hasAV): ?>
-            <div class="av-display mb-3">
-                <h6 class="text-muted">Agudeza Visual (Sin Lentes)</h6>
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>OD:</strong> <?= $consulta['av_od_lejos'] ?? '-' ?> (Lejos) | <?= $consulta['av_od_cerca'] ?? '-' ?> (Cerca)
+        <div class="row">
+            
+            <!-- COLUMNA IZQUIERDA: AV (Sin Lentes) -->
+            <div class="col-md-6">
+                <h5 class="text-muted mb-3">👁️ Sin Lentes (AV)</h5>
+                
+                <?php if ($hasAV): ?>
+                    <div class="av-display-grid mb-3">
+                        <div class="av-item">
+                            <strong>AV AO</strong>
+                            <span class="av-value"><?= $avLookup[$consulta['av_ao_id']] ?? '-' ?></span>
+                        </div>
+                        <div class="av-item">
+                            <strong>AV OD</strong>
+                            <span class="av-value"><?= $avLookup[$consulta['av_od_id']] ?? '-' ?></span>
+                        </div>
+                        <div class="av-item">
+                            <strong>AV OI</strong>
+                            <span class="av-value"><?= $avLookup[$consulta['av_oi_id']] ?? '-' ?></span>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <strong>OI:</strong> <?= $consulta['av_oi_lejos'] ?? '-' ?> (Lejos) | <?= $consulta['av_oi_cerca'] ?? '-' ?> (Cerca)
-                    </div>
+                <?php else: ?>
+                    <p class="text-secondary empty-state-message text-center">Primer paso: Captura la agudeza visual sin lentes.</p>
+                <?php endif; ?>
+                
+                <div class="text-center">
+                    <a href="/index.php?page=av_live_index&consulta_id=<?= $consulta['id'] ?>&patient_id=<?= $paciente['id'] ?>" 
+                       class="btn <?= $hasAV ? 'btn-secondary' : 'btn-primary' ?> btn-sm">
+                        <?= $hasAV ? '✏️ Editar AV' : '🚀 Capturar AV' ?>
+                    </a>
                 </div>
             </div>
-        <?php else: ?>
-            <p class="text-secondary empty-state-message text-center">Primer paso: Captura la agudeza visual sin lentes.</p>
-        <?php endif; ?>
-        
-        <div class="text-center">
-            <a href="/index.php?page=av_live_index&consulta_id=<?= $consulta['id'] ?>&patient_id=<?= $paciente['id'] ?>&mode=av" 
-               class="btn <?= $hasAV ? 'btn-secondary' : 'btn-primary' ?> btn-sm">
-                <?= $hasAV ? '✏️ Editar AV' : '🚀 Capturar AV' ?>
-            </a>
-        </div>
-        
-        <hr class="my-3">
-        
-        <?php if ($hasCV): ?>
-            <div class="cv-display">
-                <h6 class="text-muted">Corrección Visual (Con Lentes)</h6>
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>OD:</strong> <?= $consulta['cv_od_lejos'] ?? '-' ?> (Lejos) | <?= $consulta['cv_od_cerca'] ?? '-' ?> (Cerca)
+            
+            <!-- COLUMNA DERECHA: CV (Con Lentes) -->
+            <div class="col-md-6 border-left">
+                <h5 class="text-muted mb-3">👓 Con Lentes (CV)</h5>
+                
+                <?php if ($hasCV): ?>
+                    <div class="cv-display-grid mb-3">
+                        <div class="cv-item">
+                            <strong>CV AO</strong>
+                            <span class="cv-value"><?= $avLookup[$consulta['cv_ao_id']] ?? '-' ?></span>
+                        </div>
+                        <div class="cv-item">
+                            <strong>CV OD</strong>
+                            <span class="cv-value"><?= $avLookup[$consulta['cv_od_id']] ?? '-' ?></span>
+                        </div>
+                        <div class="cv-item">
+                            <strong>CV OI</strong>
+                            <span class="cv-value"><?= $avLookup[$consulta['cv_oi_id']] ?? '-' ?></span>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <strong>OI:</strong> <?= $consulta['cv_oi_lejos'] ?? '-' ?> (Lejos) | <?= $consulta['cv_oi_cerca'] ?? '-' ?> (Cerca)
-                    </div>
+                <?php else: ?>
+                    <p class="text-secondary empty-state-message text-center">Último paso: Captura la corrección visual con lentes.</p>
+                <?php endif; ?>
+                
+                <div class="text-center">
+                    <a href="/index.php?page=av_live_index&consulta_id=<?= $consulta['id'] ?>&patient_id=<?= $paciente['id'] ?>&mode=cv" 
+                       class="btn <?= $hasCV ? 'btn-secondary' : 'btn-primary' ?> btn-sm">
+                        <?= $hasCV ? '✏️ Editar CV' : '🚀 Capturar CV' ?>
+                    </a>
                 </div>
             </div>
-        <?php else: ?>
-            <p class="text-secondary empty-state-message text-center">Último paso: Captura la corrección visual con lentes.</p>
-        <?php endif; ?>
-        
-        <div class="text-center">
-            <a href="/index.php?page=av_live_index&consulta_id=<?= $consulta['id'] ?>&patient_id=<?= $paciente['id'] ?>&mode=cv" 
-               class="btn <?= $hasCV ? 'btn-secondary' : 'btn-primary' ?> btn-sm">
-                <?= $hasCV ? '✏️ Editar CV' : '🚀 Capturar CV' ?>
-            </a>
+            
         </div>
     </div>
     
