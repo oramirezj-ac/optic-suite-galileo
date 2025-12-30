@@ -1,0 +1,60 @@
+﻿foreach ($catalogoAV as $av) {
+    $avLookup[$av['id']] = $av['valor'];
+}
+
+// Verificar si tiene AV o CV
+$hasAV = !empty($consulta['av_ao_id']) || !empty($consulta['av_od_id']) || !empty($consulta['av_oi_id']);
+$hasCV = !empty($consulta['cv_ao_id']) || !empty($consulta['cv_od_id']) || !empty($consulta['cv_oi_id']);
+
+// Helper para renderizar ojo
+function renderOjoLive($label, $data) {
+    if (empty($data)) return '<div class="text-muted">Sin datos</div>';
+    
+    $html = '<div class="graduacion-formula">';
+    $html .= '<span class="graduacion-ojo-label">' . $label . '</span>';
+    $html .= '<span class="valor">' . ($data['esfera'] ?? '0.00') . '</span> <span class="simbolo">=</span> ';
+    $html .= '<span class="valor">' . ($data['cilindro'] ?? '0.00') . '</span> <span class="simbolo">x</span> ';
+    $html .= '<span class="valor">' . ($data['eje'] ?? '0') . '</span> <span class="simbolo">Â°</span>';
+    if (!empty($data['adicion']) && $data['adicion'] != '0.00') {
+        $html .= ' <span class="valor valor-add">' . $data['adicion'] . '</span>';
+    }
+    $html .= '</div>';
+    return $html;
+}
+?>
+
+<!-- Header con info del paciente -->
+<div class="patient-header-fixed">
+    <div>
+        <h3>ðŸ‘¤ <?= htmlspecialchars($fullName) ?></h3>
+        <p class="text-muted">Consulta del <?= \FormatHelper::dateFull($consulta['fecha']) ?></p>
+    </div>
+    <div class="header-actions">
+        <a href="/index.php?page=consultas_lentes_index&patient_id=<?= $paciente['id'] ?>" class="btn btn-secondary">â† Volver al Historial</a>
+    </div>
+</div>
+
+<div class="page-content graduaciones-live">
+    
+    <!-- 0. AV / CV -->
+    <div class="card grad-card <?= ($hasAV && $hasCV) ? 'border-success' : '' ?>">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>ðŸ‘ï¸ Agudeza Visual / CorrecciÃ³n Visual</h4>
+            <?php if ($hasAV && $hasCV): ?>
+                <span class="badge badge-success">âœ“ Completado</span>
+            <?php elseif ($hasAV || $hasCV): ?>
+                <span class="badge badge-warning">Â½ Parcial</span>
+            <?php endif; ?>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                
+                <!-- COLUMNA IZQUIERDA: AV (Sin Lentes) -->
+                <div class="col-md-6">
+                    <h5 class="text-muted mb-3">ðŸ‘ï¸ Sin Lentes (AV)</h5>
+                    
+                    <?php if ($hasAV): ?>
+                        <div class="av-display-grid mb-3">
+                            <div class="av-item">
+                                <strong>AV AO</strong>
+                                <span class="av-value"><?= $avLookup[$consulta['av_ao_id']] ?? '-' ?></span>
