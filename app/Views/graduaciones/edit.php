@@ -20,7 +20,7 @@ if (!$paciente || !$consulta || !$graduacion) {
 }
 
 // 5. Creamos nombres y fechas para mostrar
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 $fechaConsulta = FormatHelper::dateFull($consulta['fecha']);
 
 // 6. Extraemos los datos de OD y OI (o arrays vacíos si uno no existe)

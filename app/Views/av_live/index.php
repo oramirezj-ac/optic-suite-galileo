@@ -29,7 +29,7 @@ if (!$consulta || !$patient) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
+$fullName = FormatHelper::patientName($patient);
 $catalogoAV = $consultaModel->getCatalogoAV();
 
 // Crear lookup para valores de AV

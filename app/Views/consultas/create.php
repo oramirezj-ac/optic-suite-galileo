@@ -11,7 +11,7 @@ if (!$paciente) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 ?>
 
 <div class="page-header">
@@ -30,16 +30,16 @@ $fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_
     <div class="card">
         <div class="card-body">
             
-            <form action="/consulta_handler.php?action=store" method="POST">
+            <form action="/index.php?page=consultas_index&action=store" method="POST">
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
                 <input type="hidden" name="motivo_consulta" value="Refractiva">
 
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group form-group-quarter">
                         <label for="fecha">Fecha de Consulta</label>
                         <input type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
                     </div>
-                    <div class="form-group flex-grow-2">
+                    <div class="form-group form-group-three-quarters">
                         <label for="detalle_motivo">Motivo de la Consulta</label>
                         <input type="text" id="detalle_motivo" name="detalle_motivo" placeholder="Ej: Revisión anual, cambio de graduación...">
                     </div>

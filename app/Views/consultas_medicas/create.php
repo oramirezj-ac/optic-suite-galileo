@@ -64,7 +64,7 @@ $edad = $patient['fecha_nacimiento'] ? \FormatHelper::calculateAge($patient['fec
         </div>
         
         <div class="card-body">
-            <form action="/consulta_medica_handler.php?action=store" method="POST">
+            <form action="/index.php?page=consultas_medicas_index&action=store" method="POST">
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
                 
                 <!-- Pestaña: Datos de Consulta -->

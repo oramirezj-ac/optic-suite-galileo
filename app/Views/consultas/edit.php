@@ -14,7 +14,7 @@ if (!$paciente || !$consulta) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
 ?>
 
@@ -34,7 +34,7 @@ $fechaInput = date('Y-m-d', strtotime($consulta['fecha']));
     <div class="card">
         <div class="card-body">
             
-            <form action="/consulta_handler.php?action=update" method="POST">
+            <form action="/index.php?page=consultas_index&action=update" method="POST">
                 
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">

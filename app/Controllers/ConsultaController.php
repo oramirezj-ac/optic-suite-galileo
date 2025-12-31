@@ -70,6 +70,8 @@ function handleConsultaAction()
                     // COMPORTAMIENTO ORIGINAL: Redirigir a Graduaciones
                     header('Location: /index.php?page=graduaciones_index&id=' . $newConsultaId . '&patient_id=' . $data['patient_id']);
                 } else {
+                    // Log del error para debugging
+                    error_log("Failed to create consulta. Data: " . print_r($data, true));
                     header('Location: /index.php?page=consultas_create&patient_id=' . $data['patient_id'] . '&error=create_failed');
                 }
                 exit();

@@ -16,7 +16,7 @@ if (!$paciente || !$consulta) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 $fechaConsulta = FormatHelper::dateFull($consulta['fecha']);
 
 // --- PREPARAR OPCIONES DE AV (Para no repetir código en el HTML) ---

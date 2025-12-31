@@ -15,7 +15,7 @@ $patient = $data['patient']; // <-- CAMBIO: Extraemos el paciente del paquete
 
 // 4. El resto del código funciona igual
 $patientId = $patient['id'];
-$fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
+$fullName = FormatHelper::patientName($patient);
 ?>
 
 <div class="page-header">

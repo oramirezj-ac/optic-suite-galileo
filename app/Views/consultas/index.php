@@ -11,7 +11,7 @@ if (!$paciente) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 
 // Filter out non-Refractive consultations (Legacy module is for Lenses only)
 $consultas = array_filter($consultas, function($c) {

@@ -18,7 +18,7 @@ if (!$paciente || !$consulta) {
 }
 
 // 5. Formateamos los datos para mostrar
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 $fechaConsulta = FormatHelper::dateFull($consulta['fecha']);
 ?>
 
@@ -40,7 +40,7 @@ $fechaConsulta = FormatHelper::dateFull($consulta['fecha']);
                 <strong>Advertencia:</strong> Esta acción no se puede deshacer. Se eliminará la consulta y todas las graduaciones asociadas a ella.
             </div>
 
-            <form action="/consulta_handler.php?action=delete" method="POST">
+            <form action="/index.php?page=consultas_index&action=delete" method="POST">
                 
                 <input type="hidden" name="id_consulta" value="<?= $consulta['id'] ?>">
                 <input type="hidden" name="patient_id" value="<?= $paciente['id'] ?>"> 

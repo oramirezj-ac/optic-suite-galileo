@@ -60,7 +60,7 @@ class VentaModel
         try {
             $sql = "UPDATE ventas SET 
                         numero_nota = ?,
-                        vendedor_armazon = ?, -- CAMPO NUEVO
+                        vendedor_armazon = ?,
                         fecha_venta = ?,
                         costo_total = ?,
                         observaciones_venta = ?
@@ -73,7 +73,7 @@ class VentaModel
                 $data['vendedor_armazon'] ?? null,
                 $data['fecha_venta'],
                 $data['costo_total'],
-                $data['observaciones'],
+                $data['observaciones_venta'] ?? null,
                 (int)$id
             ]);
 

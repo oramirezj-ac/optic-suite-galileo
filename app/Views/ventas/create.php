@@ -19,7 +19,7 @@ if (!$paciente) {
 }
 
 // 5. Nombre completo para el título
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 ?>
 
 <div class="page-header">

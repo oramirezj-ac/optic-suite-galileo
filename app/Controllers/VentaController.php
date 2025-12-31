@@ -176,11 +176,11 @@ function handleVentaAction()
                     'id_paciente' => $patientId,
                     'numero_nota' => $numeroNota,
                     'numero_nota_sufijo' => $sufijo, // <-- Aquí va la 'D' si aplica
-                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- CAPTURA CORRECTA
+                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null,
                     'fecha_venta' => $fechaVentaDB,  
                     'costo_total' => $costoTotal,
                     'estado_pago' => $estadoInicial,
-                    'observaciones' => $_POST['observaciones'] ?? null
+                    'observaciones_venta' => $_POST['observaciones'] ?? null
                 ];
 
                 try {
@@ -269,10 +269,15 @@ function handleVentaAction()
            CASE: UPDATE (Procesar cambios)
            ------------------------------------------------------ */
         case 'update':
+            // Debug: Log que llegamos aquí
+            error_log("VentaController UPDATE - Method: " . $_SERVER['REQUEST_METHOD']);
+            error_log("VentaController UPDATE - POST data: " . print_r($_POST, true));
+            
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ventaId = $_POST['id_venta'] ?? null;
 
                 if (!$ventaId) {
+                    error_log("VentaController UPDATE - Missing id_venta");
                     header('Location: /index.php?page=patients&error=missing_ids');
                     exit();
                 }
@@ -280,17 +285,25 @@ function handleVentaAction()
                 // Preparamos datos
                 $data = [
                     'numero_nota' => $_POST['numero_nota'],
-                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null, // <-- CAPTURA CORRECTA
+                    'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null,
                     'fecha_venta' => $_POST['fecha_venta'],
                     'costo_total' => $_POST['costo_total'],
-                    'observaciones' => $_POST['observaciones']
+                    'observaciones_venta' => $_POST['observaciones'] ?? null
                 ];
 
+                error_log("VentaController UPDATE - Data to update: " . print_r($data, true));
+                
                 if ($ventaModel->update($ventaId, $data)) {
+                    error_log("VentaController UPDATE - Success");
                     header('Location: /index.php?page=ventas_details&id=' . $ventaId . '&patient_id=' . $patientId . '&success=sale_updated');
                 } else {
+                    error_log("VentaController UPDATE - Failed");
                     header('Location: /index.php?page=ventas_edit&id=' . $ventaId . '&patient_id=' . $patientId . '&error=update_failed');
                 }
+                exit();
+            } else {
+                error_log("VentaController UPDATE - Not POST request, redirecting to index");
+                header('Location: /index.php?page=ventas_index');
                 exit();
             }
             break;

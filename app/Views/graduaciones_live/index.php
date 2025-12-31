@@ -18,7 +18,7 @@ if (!$paciente || !$consulta) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 $edad = $paciente['fecha_nacimiento'] ? \FormatHelper::calculateAge($paciente['fecha_nacimiento']) : 0;
 
 // Obtener graduaciones específicas

@@ -25,7 +25,7 @@ $resumenConsultas = array_filter($resumenConsultas, function($c) {
 
 // 6. Creamos las variables que la vista necesita
 $patientId = $patient['id'];
-$fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
+$fullName = FormatHelper::patientName($patient);
 ?>
 
 <div class="page-header">

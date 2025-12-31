@@ -67,7 +67,7 @@ $fechaSoloFecha = date('Y-m-d', strtotime($consulta['fecha']));
     <!-- Formulario de edición -->
     <div class="card">
         <div class="card-body">
-            <form action="/consulta_medica_handler.php?action=update&id=<?= $consultaId ?>" method="POST">
+            <form action="/index.php?page=consultas_medicas_index&action=update&id=<?= $consultaId ?>" method="POST">
                 <input type="hidden" name="patient_id" value="<?= $consulta['paciente_id'] ?>">
                 <input type="hidden" name="consulta_id" value="<?= $consultaId ?>">
                 

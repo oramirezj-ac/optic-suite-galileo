@@ -16,7 +16,7 @@ if (!$abono || !$venta) {
     exit();
 }
 
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 ?>
 
 <div class="page-header">

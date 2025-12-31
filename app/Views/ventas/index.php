@@ -3,7 +3,10 @@ require_once __DIR__ . '/../../Controllers/VentaController.php';
 require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
 // 1. Ejecutamos el controlador
-$_GET['action'] = 'index';
+// Solo establecemos 'index' si no hay action definida
+if (!isset($_GET['action'])) {
+    $_GET['action'] = 'index';
+}
 $data = handleVentaAction();
 
 // 2. Desempaquetamos datos
@@ -186,7 +189,7 @@ function renderSalesTable($ventas) {
                                         $statusBadge = '<span class="badge badge-warning">DUPLICADO</span>';
                                         
                                         $v = $row['data'];
-                                        $paciente = htmlspecialchars(implode(' ', array_filter([$v['nombre'], $v['apellido_paterno']])));
+                                        $paciente = FormatHelper::patientName($v);
                                         $sufijo = $v['numero_nota_sufijo'] ? ' ('.$v['numero_nota_sufijo'].')' : '';
                                         $monto = FormatHelper::money($v['costo_total']);
                                         
@@ -197,7 +200,7 @@ function renderSalesTable($ventas) {
                                         // OK
                                         $statusBadge = '<span class="badge badge-success">OK</span>';
                                         $v = $row['data'];
-                                        $paciente = htmlspecialchars(implode(' ', array_filter([$v['nombre'], $v['apellido_paterno']])));
+                                        $paciente = FormatHelper::patientName($v);
                                         $detalle = "$paciente";
                                         $accion = '<a href="/index.php?page=ventas_details&id='.$v['id_venta'].'&patient_id='.$v['id_paciente'].'" class="btn btn-secondary btn-sm">Ver</a>';
                                     }

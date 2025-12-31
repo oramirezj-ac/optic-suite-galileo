@@ -62,6 +62,7 @@ class ConsultaModel
      * UPDATE: Agregamos campos médicos y financieros al SELECT.
      * UPDATE 2: Agregamos filtro opcional por tipo de consulta
      * UPDATE 3: Corregido JOIN para usar es_graduacion_final en lugar de tipo='final'
+     * UPDATE 4: Removido metodo_pago (no existe en tabla)
      */
     public function getAllByPaciente($patientId, $tipo = null)
     {
@@ -74,7 +75,6 @@ class ConsultaModel
                     c.detalle_motivo,       -- NECESARIO
                     c.costo_servicio,       -- NUEVO
                     c.estado_financiero,    -- NUEVO
-                    c.metodo_pago,          -- NUEVO (Campo Real)
                     c.diagnostico_dx,       -- NUEVO (Para mostrar si es médica)
                     
                     MAX(CASE WHEN g.ojo = 'OD' THEN g.esfera ELSE NULL END) AS od_esfera,
@@ -101,7 +101,7 @@ class ConsultaModel
             
             $sql .= "
                 GROUP BY 
-                    c.id, c.fecha, c.motivo_consulta, c.detalle_motivo, c.costo_servicio, c.estado_financiero, c.metodo_pago, c.diagnostico_dx
+                    c.id, c.fecha, c.motivo_consulta, c.detalle_motivo, c.costo_servicio, c.estado_financiero, c.diagnostico_dx
                 ORDER BY 
                     c.fecha DESC
             ";
@@ -131,7 +131,6 @@ class ConsultaModel
                         tratamiento_rx,
                         costo_servicio,
                         estado_financiero,
-                        metodo_pago,
                         av_ao_id,
                         av_od_id,
                         av_oi_id,
@@ -141,8 +140,8 @@ class ConsultaModel
                         dp_lejos_total,
                         dp_od,
                         dp_oi,
-                        dp_cerca
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        altura_oblea
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $this->pdo->prepare($sql);
 
@@ -158,7 +157,6 @@ class ConsultaModel
                 $data['tratamiento_rx'] ?? null,
                 $data['costo_servicio'] ?? 0.00,
                 $data['estado_financiero'] ?? 'cobrado',
-                $data['metodo_pago'] ?? null,
                 // Agudeza Visual
                 $data['av_ao_id'] ?? null,
                 $data['av_od_id'] ?? null,
@@ -171,7 +169,7 @@ class ConsultaModel
                 $data['dp_lejos_total'] ?? null,
                 $data['dp_od'] ?? null,
                 $data['dp_oi'] ?? null,
-                $data['dp_cerca'] ?? null
+                $data['altura_oblea'] ?? null
             ]);
 
             return $this->pdo->lastInsertId();

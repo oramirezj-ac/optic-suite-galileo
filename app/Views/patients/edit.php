@@ -21,7 +21,7 @@ if (!$data || !$data['patient']) {
 $patient = $data['patient'];
 
 // 4. Creamos el nombre completo
-$fullName = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
+$fullName = FormatHelper::patientName($patient);
 
 // 5. Lógica de Pre-cálculo para la Vista
 // Si tenemos fecha de nacimiento, calculamos la edad (número) para llenar el input visual

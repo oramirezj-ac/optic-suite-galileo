@@ -27,7 +27,7 @@ function renderPatientsTable($patients) {
             <tbody>';
     
     foreach ($patients as $patient) {
-        $nombreCompleto = implode(' ', array_filter([$patient['nombre'], $patient['apellido_paterno'], $patient['apellido_materno']]));
+        $nombreCompleto = FormatHelper::patientName($patient);
         $edad = FormatHelper::calculateAge($patient['fecha_nacimiento']);
         
         echo "<tr>

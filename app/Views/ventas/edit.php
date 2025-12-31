@@ -20,7 +20,7 @@ if (!$paciente || !$venta) {
 }
 
 // 5. Preparar datos para visualización
-$fullName = implode(' ', array_filter([$paciente['nombre'], $paciente['apellido_paterno'], $paciente['apellido_materno']]));
+$fullName = FormatHelper::patientName($paciente);
 $fechaVentaInput = date('Y-m-d', strtotime($venta['fecha_venta']));
 $fechaAnticipoInput = !empty($venta['fecha_anticipo']) ? date('Y-m-d', strtotime($venta['fecha_anticipo'])) : '';
 ?>
@@ -44,9 +44,9 @@ $fechaAnticipoInput = !empty($venta['fecha_anticipo']) ? date('Y-m-d', strtotime
         </div>
         <div class="card-body">
             
-            <form action="/venta_handler.php?action=update" method="POST">
+            <form action="/index.php?page=ventas_index&action=update" method="POST">
                 
-                <input type="hidden" name="id" value="<?= $venta['id'] ?>">
+                <input type="hidden" name="id_venta" value="<?= $venta['id_venta'] ?>">
                 <input type="hidden" name="patient_id" value="<?= $patientId ?>">
 
                 <div class="form-row">
@@ -65,16 +65,6 @@ $fechaAnticipoInput = !empty($venta['fecha_anticipo']) ? date('Y-m-d', strtotime
                     <div class="form-group">
                         <label for="costo_total">Costo Total ($)</label>
                         <input type="number" id="costo_total" name="costo_total" step="0.01" value="<?= $venta['costo_total'] ?>" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="monto_anticipo">Anticipo / Abonos ($)</label>
-                        <input type="number" id="monto_anticipo" name="monto_anticipo" step="0.01" value="<?= $venta['monto_anticipo'] ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fecha_anticipo">Fecha del Último Pago</label>
-                        <input type="date" id="fecha_anticipo" name="fecha_anticipo" value="<?= $fechaAnticipoInput ?>">
                     </div>
                 </div>
 
@@ -131,7 +121,7 @@ $fechaAnticipoInput = !empty($venta['fecha_anticipo']) ? date('Y-m-d', strtotime
 
                 <div class="form-group">
                     <label for="observaciones">Descripción de Productos / Observaciones</label>
-                    <textarea id="observaciones" name="observaciones" rows="4"><?= htmlspecialchars($venta['observaciones'] ?? '') ?></textarea>
+                    <textarea id="observaciones" name="observaciones" rows="4"><?= htmlspecialchars($venta['observaciones_venta'] ?? '') ?></textarea>
                 </div>
                 
                 <div class="form-row">
