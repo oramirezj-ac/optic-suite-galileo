@@ -4,6 +4,7 @@
    ========================================================================== */
 
 require_once __DIR__ . '/../../Controllers/ConsultaLentesController.php';
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
 $consultaId = $_GET['id'] ?? null;
 $patientId = $_GET['patient_id'] ?? null;

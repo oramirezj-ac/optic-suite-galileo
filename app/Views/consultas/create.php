@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Controllers/ConsultaController.php';
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 $_GET['action'] = 'create'; 
 $data = handleConsultaAction();
 

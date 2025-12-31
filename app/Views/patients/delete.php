@@ -1,6 +1,7 @@
 <?php
 // 1. Incluimos el controlador
 require_once __DIR__ . '/../../Controllers/PatientController.php';
+require_once __DIR__ . '/../../Helpers/FormatHelper.php';
 
 // 2. Le decimos al controlador qué acción ejecutar
 $_GET['action'] = 'details';
