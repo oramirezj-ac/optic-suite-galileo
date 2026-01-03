@@ -27,11 +27,7 @@ if (!$consulta) {
 $patientModel = new PatientModel($pdo);
 $patient = $patientModel->getById($consulta['paciente_id']);
 
-$fullName = implode(' ', array_filter([
-    $patient['nombre'], 
-    $patient['apellido_paterno'], 
-    $patient['apellido_materno']
-]));
+$fullName = FormatHelper::patientName($patient);
 
 // Obtener productos médicos vendidos en esta consulta
 $productosMedicos = $consultaModel->getProductosMedicosByConsulta($consultaId);

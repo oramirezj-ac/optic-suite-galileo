@@ -41,15 +41,10 @@ function renderSalesTable($ventas) {
             <tbody>';
     
     foreach ($ventas as $venta) {
-        $nombreCompleto = implode(' ', array_filter([
-            $venta['nombre'] ?? '', 
-            $venta['apellido_paterno'] ?? '', 
-            $venta['apellido_materno'] ?? ''
-        ]));
+        $nombreCompleto = FormatHelper::patientName($venta);
         
         $estadoPago = $venta['estado_pago'] ?? 'pendiente';
         $estadoClass = $estadoPago === 'pagado' ? 'badge-success' : 'badge-danger';
-        $sufijo = !empty($venta['numero_nota_sufijo']) ? ' <small>('.htmlspecialchars($venta['numero_nota_sufijo']).')</small>' : '';
         
         $fecha = FormatHelper::dateFull($venta['fecha_venta']);
         $total = FormatHelper::money($venta['costo_total']);
@@ -57,9 +52,11 @@ function renderSalesTable($ventas) {
         
         $idVenta = $venta['id_venta'] ?? $venta['id'];
         $idPaciente = $venta['id_paciente'] ?? $venta['patient_id'];
+        
+        $notaFormatted = FormatHelper::saleNote($venta['numero_nota'], $venta['numero_nota_sufijo']);
 
         echo "<tr>
-                <td><strong>{$venta['numero_nota']}</strong>{$sufijo}</td>
+                <td>$notaFormatted</td>
                 <td>{$fecha}</td>
                 <td><a href='/index.php?page=patients_details&id={$idPaciente}'>" . htmlspecialchars($nombreCompleto) . "</a></td>
                 <td>{$total}</td>
@@ -190,10 +187,17 @@ function renderSalesTable($ventas) {
                                         
                                         $v = $row['data'];
                                         $paciente = FormatHelper::patientName($v);
-                                        $sufijo = $v['numero_nota_sufijo'] ? ' ('.$v['numero_nota_sufijo'].')' : '';
+                                        $notaFormatted = FormatHelper::saleNote($v['numero_nota'], $v['numero_nota_sufijo']); // Use helper implicitly or construct string
+                                        // The helper returns HTML, strip tags if needed or just use it. 
+                                        // Wait, the detail string is built below.
                                         $monto = FormatHelper::money($v['costo_total']);
                                         
-                                        $detalle = "<strong>Expediente:</strong> $paciente <br> <small>Sufijo: $sufijo | Total: $monto</small>";
+                                        // Re-using helper for Note display might be tricky inside a string if it has HTML. 
+                                        // Helper returns "0001 <small>(D)</small>".
+                                        // Let's just use the helper output directly in the detail line.
+                                        $notaStr = FormatHelper::saleNote($v['numero_nota'], $v['numero_nota_sufijo']);
+                                        
+                                        $detalle = "<strong>Expediente:</strong> $paciente <br> <small>Nota: $notaStr | Total: $monto</small>";
                                         $accion = '<a href="/index.php?page=ventas_details&id='.$v['id_venta'].'&patient_id='.$v['id_paciente'].'" class="btn btn-secondary btn-sm">Ver</a>';
 
                                     } else {

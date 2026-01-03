@@ -125,7 +125,7 @@ class FormatHelper
 
         $fullName = implode(' ', $parts);
         
-        return !empty($fullName) ? htmlspecialchars($fullName) : 'Sin nombre';
+        return !empty($fullName) ? mb_convert_case($fullName, MB_CASE_TITLE, "UTF-8") : 'Sin nombre';
     }
 
     /**
@@ -139,7 +139,7 @@ class FormatHelper
     public static function saleNote($numeroNota, $sufijo = null, $withLabel = false)
     {
         if (empty($numeroNota)) {
-            return $withLabel ? 'Nota de Venta S/N' : 'S/N';
+            return $withLabel ? 'Nota S/N' : 'S/N';
         }
 
         // Formateamos el número (aseguramos 4 dígitos con ceros a la izquierda)
@@ -152,7 +152,7 @@ class FormatHelper
 
         // Agregamos label si se solicita
         if ($withLabel) {
-            return 'Nota de Venta ' . $formattedNumber;
+            return 'Nota ' . $formattedNumber;
         }
 
         return $formattedNumber;

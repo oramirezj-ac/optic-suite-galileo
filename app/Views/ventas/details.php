@@ -18,8 +18,8 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
 
 <div class="page-header">
     <h1>
-        <small>Nota de Venta #<?= htmlspecialchars($venta['numero_nota']) ?></small><br>
-        Paciente: <?= htmlspecialchars($paciente['nombre'] . ' ' . $paciente['apellido_paterno']) ?>
+        <small><?= FormatHelper::saleNote($venta['numero_nota'], null, true) ?></small><br>
+        Paciente: <?= FormatHelper::patientName($paciente) ?>
     </h1>
     <div class="view-actions">
         <a href="/index.php?page=ventas_edit&id=<?= $venta['id_venta'] ?>&patient_id=<?= $paciente['id'] ?>" class="btn btn-primary">

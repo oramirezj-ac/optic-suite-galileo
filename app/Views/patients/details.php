@@ -175,7 +175,7 @@ $fullName = FormatHelper::patientName($patient);
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Nota #</th>
+                                <th>Nota</th>
                                 <th>Total</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
@@ -186,8 +186,7 @@ $fullName = FormatHelper::patientName($patient);
                                 <tr>
                                     <td><?= FormatHelper::dateFull($venta['fecha_venta']) ?></td>
                                     <td>
-                                        <strong><?= htmlspecialchars($venta['numero_nota']) ?></strong>
-                                        <?= $venta['numero_nota_sufijo'] ? ' (' . htmlspecialchars($venta['numero_nota_sufijo']) . ')' : '' ?>
+                                        <?= FormatHelper::saleNote($venta['numero_nota'], $venta['numero_nota_sufijo']) ?>
                                     </td>
                                     <td>$<?= number_format($venta['costo_total'], 2) ?></td>
                                     <td>
