@@ -187,42 +187,27 @@ class ConsultaModel
     public function updateConsulta($consultaId, $data)
     {
         try {
-            $sql = "UPDATE consultas SET 
-                        fecha = ?,
-                        motivo_consulta = ?,
-                        detalle_motivo = ?,
-                        observaciones = ?,
-                        diagnostico_dx = ?,
-                        tratamiento_rx = ?,
-                        costo_servicio = ?,
-                        estado_financiero = ?,
-                        metodo_pago = ?,
-                        dp_lejos_total = ?,
-                        dp_od = ?,
-                        dp_oi = ?,
-                        dp_cerca = ?
-                    WHERE id = ?";
+            if (empty($data)) {
+                return false;
+            }
+
+            $fields = [];
+            $values = [];
             
+            foreach ($data as $key => $value) {
+                // Protección básica contra inyección de nombres de columna (solo permitir letras, números y _)
+                if (preg_match('/^[a-zA-Z0-9_]+$/', $key)) {
+                    $fields[] = "$key = ?";
+                    $values[] = $value;
+                }
+            }
+            
+            $values[] = (int)$consultaId;
+            
+            $sql = "UPDATE consultas SET " . implode(', ', $fields) . " WHERE id = ?";
             $stmt = $this->pdo->prepare($sql);
             
-            return $stmt->execute([
-                $data['fecha'] ?? null,
-                $data['motivo_consulta'] ?? null,
-                $data['detalle_motivo'] ?? null,
-                $data['observaciones'] ?? null,
-                // Campos médicos
-                $data['diagnostico_dx'] ?? null,
-                $data['tratamiento_rx'] ?? null,
-                $data['costo_servicio'] ?? 0.00,
-                $data['estado_financiero'] ?? 'cobrado',
-                $data['metodo_pago'] ?? null,
-                // Campos DP
-                $data['dp_lejos_total'] ?? null,
-                $data['dp_od'] ?? null,
-                $data['dp_oi'] ?? null,
-                $data['dp_cerca'] ?? null,
-                (int)$consultaId
-            ]);
+            return $stmt->execute($values);
 
         } catch (PDOException $e) {
             error_log("Error en ConsultaModel::updateConsulta: " . $e->getMessage());
@@ -283,10 +268,29 @@ class ConsultaModel
     public function deleteConsulta($consultaId)
     {
         try {
+            $this->pdo->beginTransaction();
+
+            // 1. Eliminar Graduaciones asociadas
+            $sqlGrad = "DELETE FROM graduaciones WHERE consulta_id = ?";
+            $stmtGrad = $this->pdo->prepare($sqlGrad);
+            $stmtGrad->execute([(int)$consultaId]);
+
+            // 2. Eliminar Productos Médicos asociados
+            $sqlProd = "DELETE FROM consulta_productos_medicos WHERE consulta_id = ?";
+            $stmtProd = $this->pdo->prepare($sqlProd);
+            $stmtProd->execute([(int)$consultaId]);
+
+            // 3. Eliminar la Consulta
             $sql = "DELETE FROM consultas WHERE id = ?";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([(int)$consultaId]);
+            $result = $stmt->execute([(int)$consultaId]);
+
+            $this->pdo->commit();
+            return $result;
+
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Error en ConsultaModel::deleteConsulta: " . $e->getMessage());
             return false;
         }
     }

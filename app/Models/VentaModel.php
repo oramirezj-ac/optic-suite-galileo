@@ -22,6 +22,7 @@ class VentaModel
         try {
             $sql = "INSERT INTO ventas (
                         id_paciente, 
+                        consulta_id,
                         numero_nota, 
                         numero_nota_sufijo,
                         vendedor_armazon,   
@@ -29,19 +30,20 @@ class VentaModel
                         costo_total, 
                         estado_pago, 
                         observaciones_venta
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
             $stmt = $this->pdo->prepare($sql);
             
             $stmt->execute([
                 $data['id_paciente'],
+                $data['consulta_id'] ?? null,
                 $data['numero_nota'],
                 $data['numero_nota_sufijo'] ?? null,
                 $data['vendedor_armazon'] ?? null,
                 $data['fecha_venta'],
                 $data['costo_total'],
                 $data['estado_pago'] ?? 'pendiente',
-                $data['observaciones'] ?? null
+                $data['observaciones_venta'] ?? null
             ]);
 
             return $this->pdo->lastInsertId();
@@ -59,6 +61,7 @@ class VentaModel
     {
         try {
             $sql = "UPDATE ventas SET 
+                        consulta_id = ?,
                         numero_nota = ?,
                         vendedor_armazon = ?,
                         fecha_venta = ?,
@@ -69,6 +72,7 @@ class VentaModel
             $stmt = $this->pdo->prepare($sql);
             
             return $stmt->execute([
+                $data['consulta_id'] ?? null,
                 $data['numero_nota'],
                 $data['vendedor_armazon'] ?? null,
                 $data['fecha_venta'],

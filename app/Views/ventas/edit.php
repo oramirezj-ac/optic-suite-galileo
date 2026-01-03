@@ -150,6 +150,25 @@ $fechaAnticipoInput = !empty($venta['fecha_anticipo']) ? date('Y-m-d', strtotime
                     </div>
                     
                 </div>
+                
+                <!-- SELECTOR DE VINCULACIÓN CON CONSULTA (RETROACTIVO) -->
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <label for="consulta_id" class="fw-bold">Vinculación con Graduación</label>
+                        <select name="consulta_id" id="consulta_id" class="form-control">
+                            <option value="">-- Ninguna / Venta Directa --</option>
+                            <?php if (!empty($data['consultasRefractivas'])): ?>
+                                <?php foreach ($data['consultasRefractivas'] as $c): ?>
+                                    <?php $selected = ($c['consulta_id'] == ($venta['consulta_id'] ?? null)) ? 'selected' : ''; ?>
+                                    <option value="<?= $c['consulta_id'] ?>" <?= $selected ?>>
+                                        Consulta del <?= FormatHelper::dateShort($c['fecha']) ?> (<?= htmlspecialchars($c['motivo_consulta']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <small class="text-muted">Puede vincular esta venta a una consulta pasada para corregir el historial.</small>
+                    </div>
+                </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">

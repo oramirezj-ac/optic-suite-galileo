@@ -115,9 +115,8 @@ function handleConsultaLentesAction()
                      exit();
                  }
 
-                 // Borrar graduaciones primero
-                 // (Idealmente el modelo manejaria esto en cascada o transaccion, pero aqui lo hacemos explícito)
-                 $pdo->exec("DELETE FROM graduaciones WHERE consulta_id = " . (int)$consultaId);
+                 // Borrar consulta (El modelo se encarga de borrar graduaciones y productos en cascada)
+                 // $pdo->exec("DELETE FROM graduaciones WHERE consulta_id = " . (int)$consultaId);
                  
                  // Borrar consulta
                  if ($consultaModel->deleteConsulta($consultaId)) {

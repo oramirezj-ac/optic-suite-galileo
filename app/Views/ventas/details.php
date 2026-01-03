@@ -45,6 +45,18 @@ $estadoPago = ($saldoPendiente <= 0) ? 'Pagado' : 'Pendiente';
         <div class="card-body">
             <div class="data-grid">
                 <div class="data-item quarter"><strong>Fecha:</strong> <?= FormatHelper::dateFull($venta['fecha_venta']) ?></div>
+                
+                <?php if (!empty($venta['consulta_id'])): ?>
+                    <div class="data-item quarter">
+                        <strong>Graduación Base:</strong><br> 
+                        <a href="/index.php?page=graduaciones_index&id=<?= $venta['consulta_id'] ?>&patient_id=<?= $paciente['id'] ?>" class="btn-link">
+                           Ver Consulta Original
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <div class="data-item quarter"></div>
+                <?php endif; ?>
+
                 <div class="data-item quarter"><strong>Total:</strong> $<?= number_format($venta['costo_total'], 2) ?></div>
                 <div class="data-item quarter"><strong>Pagado:</strong> $<?= number_format($totalPagado, 2) ?></div>
                 <div class="data-item quarter">

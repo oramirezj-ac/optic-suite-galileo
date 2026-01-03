@@ -137,7 +137,15 @@ function handleVentaAction()
            ------------------------------------------------------ */
         case 'create':
             $paciente = $patientModel->getById($patientId);
-            return [ 'paciente' => $paciente ];
+            // Obtener consultas refractivas para vincular
+            require_once __DIR__ . '/../Models/ConsultaModel.php';
+            $consultaModel = new ConsultaModel($pdo);
+            $consultasRefractivas = $consultaModel->getAllByPaciente($patientId, 'Refractiva');
+            
+            return [ 
+                'paciente' => $paciente,
+                'consultasRefractivas' => $consultasRefractivas
+            ];
             break;
 
         /* ------------------------------------------------------
@@ -172,8 +180,11 @@ function handleVentaAction()
                 }
 
                 // --- 4. Preparamos el Array final para el Modelo ---
+                $consultaId = !empty($_POST['consulta_id']) ? $_POST['consulta_id'] : null;
+
                 $dataVenta = [
                     'id_paciente' => $patientId,
+                    'consulta_id' => $consultaId,
                     'numero_nota' => $numeroNota,
                     'numero_nota_sufijo' => $sufijo, // <-- Aquí va la 'D' si aplica
                     'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null,
@@ -258,10 +269,16 @@ function handleVentaAction()
 
             $venta = $ventaModel->getById($ventaId);
             $paciente = $patientModel->getById($patientId);
+            
+            // Obtener consultas refractivas para vincular (retroactividad)
+            require_once __DIR__ . '/../Models/ConsultaModel.php';
+            $consultaModel = new ConsultaModel($pdo);
+            $consultasRefractivas = $consultaModel->getAllByPaciente($patientId, 'Refractiva');
 
             return [
                 'venta' => $venta,
-                'paciente' => $paciente
+                'paciente' => $paciente,
+                'consultasRefractivas' => $consultasRefractivas
             ];
             break;
 
@@ -284,6 +301,7 @@ function handleVentaAction()
 
                 // Preparamos datos
                 $data = [
+                    'consulta_id' => !empty($_POST['consulta_id']) ? $_POST['consulta_id'] : null,
                     'numero_nota' => $_POST['numero_nota'],
                     'vendedor_armazon' => !empty($_POST['vendedor_armazon']) ? $_POST['vendedor_armazon'] : null,
                     'fecha_venta' => $_POST['fecha_venta'],

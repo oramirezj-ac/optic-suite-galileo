@@ -154,6 +154,24 @@ $fullName = FormatHelper::patientName($paciente);
                     
                 </div>
 
+                <!-- SELECTOR DE VINCULACIÓN CON CONSULTA -->
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <label for="consulta_id" class="fw-bold">Vinculación con Graduación (Opcional)</label>
+                        <select name="consulta_id" id="consulta_id" class="form-control">
+                            <option value="">-- Ninguna / Venta Directa --</option>
+                            <?php if (!empty($data['consultasRefractivas'])): ?>
+                                <?php foreach ($data['consultasRefractivas'] as $c): ?>
+                                    <option value="<?= $c['consulta_id'] ?>">
+                                        Consulta del <?= FormatHelper::dateShort($c['fecha']) ?> (<?= htmlspecialchars($c['motivo_consulta']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <small class="text-muted">Seleccione la consulta clinica en la que se basa esta venta para mantener el historial.</small>
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         Guardar Venta y Registrar Anticipo

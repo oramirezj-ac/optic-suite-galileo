@@ -142,12 +142,7 @@ function handleConsultaAction()
                     'fecha' => $_POST['fecha'],
                     'motivo_consulta' => $_POST['motivo_consulta'],
                     'detalle_motivo' => !empty($_POST['detalle_motivo']) ? $_POST['detalle_motivo'] : null,
-                    'observaciones' => !empty($_POST['observaciones']) ? $_POST['observaciones'] : null,
-                    // Campos nuevos nulos/defaults para mantener compatibilidad DB
-                    'diagnostico_dx' => !empty($_POST['diagnostico_dx']) ? $_POST['diagnostico_dx'] : null,
-                    'tratamiento_rx' => !empty($_POST['tratamiento_rx']) ? $_POST['tratamiento_rx'] : null,
-                    'costo_servicio' => 0.00, 
-                    'estado_financiero' => 'cobrado'
+                    'observaciones' => !empty($_POST['observaciones']) ? $_POST['observaciones'] : null
                 ];
 
                 if ($consultaModel->updateConsulta($consultaId, $data)) {
